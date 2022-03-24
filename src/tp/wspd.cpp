@@ -1,7 +1,20 @@
 #include "wspd.h"
 
-namespace CPUSIM
+namespace TP
 {
+    void WSPD_WORKER::run()
+    {
+    }
+
+    void WSPD_WORKER::communicate()
+    {
+    }
+
+    void WSPD_WORKER::acquire()
+    {
+    }
+
+    /*
     THREAD_POOL::THREAD_POOL(size_t n_thread)
     {
         resize(n_thread);
@@ -53,5 +66,5 @@ namespace CPUSIM
         }
         ASSERT(threads_launch_channel_.size() == threads_.size());
     }
-
+    */
 }

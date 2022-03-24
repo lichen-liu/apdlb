@@ -7,10 +7,30 @@
 #include <vector>
 #include <functional>
 #include <memory>
-#include "core/macros.hpp"
+#include <deque>
+#include "macros.hpp"
 
-namespace CPUSIM
+/// work stealing private dequeue
+
+namespace TP
 {
+    using TASK = std::function<void()>;
+    class WSPD_WORKER
+    {
+    public:
+        void run();
+        void communicate();
+        void acquire();
+
+    private:
+        std::deque<TASK> tasks_;
+    };
+
+    class WSPD
+    {
+    };
+
+    /*
     /// A channel with capacity 1 that supports backpressure.
     /// 1. The channel has a capacity of 1, i.e., no buffering.
     /// 2. A send call fulfills the channel, and holds the content until
@@ -205,4 +225,5 @@ namespace CPUSIM
 
         parallel_for_impl(std::move(executor), n_thread, begin, end, std::forward<Function>(f));
     }
+    */
 }
