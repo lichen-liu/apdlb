@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.7.0)
+project(tp_tests)
+
+include_directories(..)
+link_libraries(tp)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_executable(wspdr_tests wspdr_tests.cc)
+add_test(tp_wspdr_tests wspdr_tests)
+
+# Add test executable here
+add_custom_target(tp_tests)
+add_dependencies(tp_tests wspdr_tests)

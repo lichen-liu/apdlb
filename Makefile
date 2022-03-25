@@ -23,7 +23,14 @@ tp: prepare
 	@echo 
 .PHONY: tp
 
+test_tp: tp
+	$(MAKE) -C build tp_tests
+	$(MAKE) -C build test ARGS="-R '^tp_.*_tests'"
+	@echo [=== tp is successfully tested ===]
+	@echo 
+.PHONY: test_tp
+
 # all
 
-all: tp
+all: test_tp
 .PHONY: all

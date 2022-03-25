@@ -10,23 +10,40 @@
 #include <deque>
 #include "macros.hpp"
 
-/// work stealing private dequeue
+/// work stealing private dequeue - receiver
 
 namespace TP
 {
     using TASK = std::function<void()>;
-    class WSPD_WORKER
+    class WSPDR;
+
+    class WSPDR_WORKER
     {
     public:
         void run();
-        void communicate();
-        void acquire();
+        void request_terminate();
+        void init(int worker_id, std::vector<WSPDR_WORKER *> workers)
+        {
+            set_worker_id(worker_id);
+            set_worker_list(std::move(workers));
+        }
+
+    protected:
+        void set_worker_id(int worker_id) { worker_id_ = worker_id; }
+        void set_worker_list(std::vector<WSPDR_WORKER *> workers) { workers_ = std::move(workers); }
 
     private:
+        void communicate();
+        void acquire();
+        void update_status();
+
+    private:
+        int worker_id_ = -1;
         std::deque<TASK> tasks_;
+        std::vector<WSPDR_WORKER *> workers_;
     };
 
-    class WSPD
+    class WSPDR
     {
     };
 

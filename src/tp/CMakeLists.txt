@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(cpusim VERSION 0.1.0)
+project(tp VERSION 0.1.0)
+include(CTest)
 
 find_package(Threads REQUIRED)
 
@@ -12,3 +13,5 @@ file(GLOB_RECURSE tp_lib_SRC
 )
 add_library(tp ${tp_lib_SRC})
 target_link_libraries(tp PRIVATE Threads::Threads)
+
+add_subdirectory(tests)

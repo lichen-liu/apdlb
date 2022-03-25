@@ -1,19 +1,7 @@
-#include "wspd.h"
+#include "wspdr.h"
 
 namespace TP
 {
-    void WSPD_WORKER::run()
-    {
-    }
-
-    void WSPD_WORKER::communicate()
-    {
-    }
-
-    void WSPD_WORKER::acquire()
-    {
-    }
-
     /*
     THREAD_POOL::THREAD_POOL(size_t n_thread)
     {
