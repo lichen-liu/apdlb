@@ -1,22 +1,14 @@
 name: main CI
 
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'src/**'
-      - 'Makefile'
-      - 'CMakeLists.txt'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'src/**'
-      - 'Makefile'
-      - 'CMakeLists.txt'
+on: [push, pull_request]
+  branches: [main]
+  paths:
+    - 'src/**'
+    - 'Makefile'
+    - 'CMakeLists.txt'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
