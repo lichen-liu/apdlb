@@ -20,13 +20,14 @@ namespace TP
     class WSPDR_WORKER
     {
     public:
-        void run();
-        void request_terminate();
         void init(int worker_id, std::vector<WSPDR_WORKER *> workers)
         {
             set_worker_id(worker_id);
             set_worker_list(std::move(workers));
         }
+        void run();
+        void add_task(TASK task);
+        void request_terminate();
 
     protected:
         void set_worker_id(int worker_id) { worker_id_ = worker_id; }
