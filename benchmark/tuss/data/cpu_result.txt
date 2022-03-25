@@ -1,0 +1,38 @@
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -b 100000 -d 0.001 -n 2 -v"
+
+per iteration seconds
+
+# basic
+-t 1 --version 0
+m1: 19.25
+m1 ffast-math: 16.8
+4790 march=native: 79.0
+4790 march=native ffast-math: 41.45
+
+-t 4 --version 0
+m1: 5.23
+m1 ffast-math: 4.60
+4790 march=native: 21.17
+4790 march=native ffast-math: 10.88
+
+# acceleration edge sharing
+-t 1 --version 1
+m1: 17.75
+m1 ffast-math: 17.70
+4790 march=native: 40.79
+4790 march=native ffast-math: 31.24
+
+# acceleraition edge sharing with thread work balancing
+-t 4 --version 1
+m1: 4.74
+m1 ffast-math: 4.74
+4790 march=native: 11.75
+4790 march=native ffast-math: 8.07
+
+# acceleraition edge sharing with linearized triangular matrix index
+# shit
+-t 4 --version 1
+m1: 7.96
+m1 ffast-math: 7.47
+4790 march=native: 41.63
+4790 march=native ffast-math: 20.92
