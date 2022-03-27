@@ -22,16 +22,16 @@ namespace TP
     public:
         void init(int worker_id, std::vector<WSPDR_WORKER *> workers)
         {
-            set_worker_id(worker_id);
-            set_worker_list(std::move(workers));
+            this->set_worker_id(worker_id);
+            this->set_worker_list(std::move(workers));
         }
         void run();
         void add_task(TASK task);
-        void request_terminate();
+        void request_terminate() { this->should_terminate_ = true; }
 
     protected:
-        void set_worker_id(int worker_id) { worker_id_ = worker_id; }
-        void set_worker_list(std::vector<WSPDR_WORKER *> workers) { workers_ = std::move(workers); }
+        void set_worker_id(int worker_id) { this->worker_id_ = worker_id; }
+        void set_worker_list(std::vector<WSPDR_WORKER *> workers) { this->workers_ = std::move(workers); }
 
     private:
         void communicate();
@@ -39,9 +39,10 @@ namespace TP
         void update_status();
 
     private:
-        int worker_id_ = -1;
         std::deque<TASK> tasks_;
-        std::vector<WSPDR_WORKER *> workers_;
+        std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
+        int worker_id_ = -1;
+        bool should_terminate_ = false;
     };
 
     class WSPDR
