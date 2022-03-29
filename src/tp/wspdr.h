@@ -29,11 +29,10 @@ namespace TP
         void add_task(TASK task);
         void request_terminate() { this->should_terminate_ = true; }
 
-    protected:
+    private:
         void set_worker_id(int worker_id) { this->worker_id_ = worker_id; }
         void set_worker_list(std::vector<WSPDR_WORKER *> workers) { this->workers_ = std::move(workers); }
 
-    private:
         void communicate();
         void acquire();
         void update_status();
@@ -43,6 +42,7 @@ namespace TP
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
         int worker_id_ = -1;
         bool should_terminate_ = false;
+        bool has_tasks_ = false;
     };
 
     class WSPDR

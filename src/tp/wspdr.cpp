@@ -41,6 +41,9 @@ namespace TP
 
     void WSPDR_WORKER::update_status()
     {
+        bool b = !this->tasks_.empty();
+        if (this->has_tasks_ != b)
+            this->has_tasks_ = b;
     }
     /*
 THREAD_POOL::THREAD_POOL(size_t n_thread)
