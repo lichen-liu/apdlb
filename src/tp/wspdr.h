@@ -33,7 +33,7 @@ namespace TP
         void set_worker_list(std::vector<WSPDR_WORKER *> workers) { this->workers_ = std::move(workers); }
 
         void communicate();
-        void acquire();
+        bool try_acquire_once();
         void update_status();
 
     private:

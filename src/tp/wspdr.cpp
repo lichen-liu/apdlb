@@ -6,15 +6,25 @@ namespace TP
 {
     void WSPDR_WORKER::run()
     {
+        this->should_terminate_ = false; // A fresh start
+        // Worker event loop
         while (true)
         {
             if (this->tasks_.empty())
             {
-                if (this->should_terminate_)
+                // Acquire loop
+                while (true)
                 {
-                    break;
+                    if (this->try_acquire_once())
+                    {
+                        // Exit acquire loop
+                        break;
+                    }
+                    else if (this->should_terminate_)
+                    {
+                        return;
+                    }
                 }
-                acquire();
             }
             else
             {
@@ -70,19 +80,16 @@ namespace TP
         }
     }
 
-    void WSPDR_WORKER::acquire()
+    bool WSPDR_WORKER::try_acquire_once()
     {
-        while (true)
+        this->received_task_opt_.reset();
+        int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
+        // Does not support self-steal
+        if (target_worker_id != this->worker_id_)
         {
-            this->received_task_opt_.reset();
-            int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
-            // Retry if target_worker is this worker
-            if (target_worker_id == this->worker_id_)
-            {
-                continue;
-            }
             if (this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
             {
+                // Request sent, now waiting for a response
                 while (!this->received_task_opt_.has_value())
                 {
                     // While waiting, still respond to other worker who has sent request to this worker
@@ -93,12 +100,13 @@ namespace TP
                     // Check whether the target worker sent a real task to this worker
                     this->add_task(this->received_task_opt_.value());
                     // this->request_ = NO_REQUEST;
-                    return;
+                    return true;
                 }
             }
             // While looking for target worker to steal from, still respond to other worker who has sent request to this worker
             this->communicate();
         }
+        return false;
     }
 
     void WSPDR_WORKER::update_status()
