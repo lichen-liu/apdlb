@@ -38,7 +38,7 @@ namespace TP
                 this->update_status();
                 this->communicate();
                 t();
-                info("[Worker %d] finished executing a task, %lu tasks left in the deque\n", this->worker_id_, this->tasks_.size());
+                info("[Worker %d] task done, %lu tasks left in the deque\n", this->worker_id_, this->tasks_.size());
             }
         }
     }
@@ -52,7 +52,7 @@ namespace TP
     void WSPDR_WORKER::request_terminate()
     {
         this->should_terminate_ = true;
-        info("[Worker %d] received request to terminate\n", this->worker_id_);
+        info("[Worker %d] request_terminate\n", this->worker_id_);
     }
 
     bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)

@@ -32,18 +32,18 @@ namespace CORE::UTST
             {
                 if (is_active)
                 {
-                    std::cout << "Running test [" << f_name << "] .." << std::endl;
+                    std::cout << "Running test [" << f_name << "] ..\n\n";
                     f();
                 }
                 else
                 {
-                    std::cout << "Not running test [" << f_name << "] .." << std::endl;
+                    std::cout << "Not running test [" << f_name << "] ..\n\n";
                 }
             }
         }
 
     private:
-        std::vector<std::tuple<std::string, function_type, bool> > registered_functions_;
+        std::vector<std::tuple<std::string, function_type, bool>> registered_functions_;
     };
 }
 
