@@ -165,6 +165,9 @@ namespace TP
 
     void WSPDR::execute(const std::vector<TASK> &tasks)
     {
+        // Executors must be launched already
+        ASSERT(!this->executors_.empty());
+
         // For synchronization
         int total_num_tasks = tasks.size();
         std::atomic<int> num_task_done = 0;
