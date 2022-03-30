@@ -1,4 +1,5 @@
 #include "wspdr.h"
+#include <cstdlib>
 
 namespace TP
 {
@@ -31,12 +32,34 @@ namespace TP
         this->update_status();
     }
 
+    bool WSPDR_WORKER::try_send_request(int requester_worker_id)
+    {
+        if (this->has_tasks_)
+        {
+            // https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange
+            int no_request = NO_REQUEST;
+            return std::atomic_compare_exchange_strong(&this->request_, &no_request, requester_worker_id);
+        }
+        return false;
+    }
+
     void WSPDR_WORKER::communicate()
     {
     }
 
     void WSPDR_WORKER::acquire()
     {
+        while (true)
+        {
+            this->transfer_opt_.reset();
+            int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
+            if (target_worker_id == this->worker_id_)
+                continue;
+            if (this->workers_[target_worker_id]->try_send_request(this->worker_id_))
+            {
+                // wip
+            }
+        }
     }
 
     void WSPDR_WORKER::update_status()

@@ -1,13 +1,10 @@
 #pragma once
 #include <thread>
-#include <type_traits>
 #include <optional>
-#include <mutex>
-#include <condition_variable>
 #include <vector>
 #include <functional>
-#include <memory>
 #include <deque>
+#include <atomic>
 #include "macros.hpp"
 
 /// work stealing private dequeue - receiver
@@ -28,6 +25,7 @@ namespace TP
         void run();
         void add_task(TASK task);
         void request_terminate() { this->should_terminate_ = true; }
+        bool try_send_request(int requester_worker_id);
 
     private:
         void set_worker_id(int worker_id) { this->worker_id_ = worker_id; }
@@ -38,9 +36,14 @@ namespace TP
         void update_status();
 
     private:
+        static constexpr int NO_REQUEST = -1;
+
+    private:
         std::deque<TASK> tasks_;
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
+        std::optional<TASK> transfer_opt_;
         int worker_id_ = -1;
+        std::atomic<int> request_ = NO_REQUEST;
         bool should_terminate_ = false;
         bool has_tasks_ = false;
     };
