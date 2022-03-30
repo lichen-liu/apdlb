@@ -1,5 +1,6 @@
 #include "wspdr.h"
 #include "macros.hpp"
+#include <algorithm>
 #include <cstdlib>
 
 namespace TP
@@ -115,57 +116,86 @@ namespace TP
         if (this->has_tasks_ != b)
             this->has_tasks_ = b;
     }
-    /*
-THREAD_POOL::THREAD_POOL(size_t n_thread)
-{
-    resize(n_thread);
-}
 
-void THREAD_POOL::reset()
-{
-    auto thread_quit_event = []()
-    { return false; };
-
-    const size_t n_thread = size();
-    for (size_t thread_id = 0; thread_id < n_thread; thread_id++)
+    WSPDR::WSPDR(size_t num_workers)
     {
-        bool is_sent = threads_launch_channel_[thread_id]
-                           .try_send(thread_quit_event);
-        ASSERT(is_sent);
-        threads_[thread_id].join();
-    }
-    threads_.clear();
-    threads_launch_channel_.clear();
-}
+        // Construct workers
+        this->workers_.reserve(num_workers);
+        std::generate_n(std::back_inserter(this->workers_), num_workers, []()
+                        { return std::make_unique<WSPDR_WORKER>(); });
 
-void THREAD_POOL::resize(size_t n_thread)
-{
-    reset();
-
-    if (n_thread == 0)
-    {
-        return;
-    }
-
-    threads_launch_channel_.resize(n_thread);
-    threads_.reserve(n_thread);
-    for (size_t thread_id = 0; thread_id < n_thread; thread_id++)
-    {
-        auto thread_worker = [&ch = threads_launch_channel_[thread_id]]()
+        // Initialize workers
+        std::vector<WSPDR_WORKER *> worker_ptrs;
+        worker_ptrs.reserve(num_workers);
+        std::transform(this->workers_.begin(), this->workers_.end(), std::back_inserter(worker_ptrs), [](const auto &p)
+                       { return p.get(); });
+        for (int worker_id = 0; worker_id < num_workers; worker_id++)
         {
-            while (true)
+            this->workers_[worker_id]->init(worker_id, worker_ptrs);
+        }
+    }
+
+    WSPDR::~WSPDR()
+    {
+        this->terminate();
+    }
+
+    void WSPDR::start()
+    {
+        this->executors_.clear();
+        this->executors_.reserve(this->workers_.size());
+        for (const auto &worker : this->workers_)
+        {
+            this->executors_.emplace_back(&WSPDR_WORKER::run, worker.get());
+        }
+    }
+
+    void WSPDR::terminate()
+    {
+        for (const auto &worker : this->workers_)
+        {
+            worker->request_terminate();
+        }
+        for (auto &executor : this->executors_)
+        {
+            executor.join();
+        }
+        this->executors_.clear();
+    }
+
+    void WSPDR::execute(const std::vector<TASK> &tasks)
+    {
+        // For synchronization
+        int total_num_tasks = tasks.size();
+        std::atomic<int> num_task_done = 0;
+
+        // Integrate synchronization into argument tasks
+        std::vector<TASK> synced_tasks;
+        synced_tasks.reserve(tasks.size());
+        for (const auto &task : tasks)
+        {
+            auto synced_task = [&task, &num_task_done]()
             {
-                thread_event_type event = ch.receive(); // Blocking wait
-                bool should_continue = event();
-                if (!should_continue)
-                {
-                    break;
-                }
+                task();
+                num_task_done++;
+            };
+            synced_tasks.emplace_back(std::move(synced_task));
+        }
+
+        // Create a scheduler task to do worker->add_task
+        WSPDR_WORKER *scheduler_worker = this->workers_.front().get();
+        auto scheduler_task = [scheduler_worker, &synced_tasks]()
+        {
+            for (const auto &t : synced_tasks)
+            {
+                scheduler_worker->add_task(t);
             }
         };
-        threads_.emplace_back(std::move(thread_worker));
+        scheduler_worker->add_task(scheduler_task);
+
+        // Wait for all tasks do be done
+        while (num_task_done.load() != total_num_tasks)
+        {
+        }
     }
-    ASSERT(threads_launch_channel_.size() == threads_.size());
-}
-*/
 }
