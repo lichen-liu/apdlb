@@ -1,30 +1,53 @@
 #include "utst.hpp"
 #include "wspdr.h"
 #include <cstdio>
+#include <algorithm>
 using namespace TP;
 
 UTST_MAIN();
 
-UTST_TEST(simple_2)
+namespace
 {
-    std::vector<TASK> tasks;
-    tasks.emplace_back([]()
-                       { printf("0\n"); });
-    tasks.emplace_back([]()
-                       { printf("1\n"); });
-    WSPDR pool(2);
-    pool.start();
-    pool.execute(tasks);
+    std::unique_ptr<WSPDR> quick_launch(size_t num_workers, const std::vector<TASK> &tasks)
+    {
+        auto pool = std::make_unique<WSPDR>(num_workers);
+        pool->start();
+        pool->execute(tasks);
+        return pool;
+    }
+
+    std::vector<TASK> generate_simple_print_tasks(size_t num_tasks)
+    {
+        std::vector<TASK> tasks;
+        tasks.reserve(num_tasks);
+        for (int i = 0; i < num_tasks; i++)
+        {
+            tasks.emplace_back([i]()
+                               { printf("%d\n", i); });
+        }
+        return tasks;
+    }
 }
 
-UTST_TEST(simple_2_idle_worker)
+UTST_TEST(simple)
 {
-    std::vector<TASK> tasks;
-    tasks.emplace_back([]()
-                       { printf("0\n"); });
-    tasks.emplace_back([]()
-                       { printf("1\n"); });
-    WSPDR pool(8);
+    quick_launch(2, generate_simple_print_tasks(2));
+}
+
+UTST_TEST(simple_with_idle_worker)
+{
+    quick_launch(4, generate_simple_print_tasks(2));
+}
+
+UTST_TEST(multi_session)
+{
+    int size = 8;
+    WSPDR pool(size);
     pool.start();
-    pool.execute(tasks);
+    for (int i = 1; i <= size; i++)
+    {
+        printf("generate_simple_print_tasks(%d)\n", i);
+        pool.execute(generate_simple_print_tasks(i));
+        pool.status();
+    }
 }
