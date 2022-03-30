@@ -24,7 +24,8 @@ namespace TP
         }
         void run();
         void add_task(TASK task); // Not thread-safe
-        void request_terminate();
+        void terminate();
+        void status() const;
 
     private:
         bool try_send_steal_request(int requester_worker_id);
@@ -35,7 +36,7 @@ namespace TP
 
         void communicate();
         bool try_acquire_once();
-        void update_status();
+        void update_tasks_status();
 
     private:
         static constexpr int NO_REQUEST = -1;
@@ -46,8 +47,8 @@ namespace TP
         std::optional<TASK> received_task_opt_;
         int worker_id_ = -1;
         std::atomic<int> request_ = NO_REQUEST;
-        bool should_terminate_ = false;
         bool has_tasks_ = false;
+        bool should_terminate_ = false;
     };
 
     class WSPDR
@@ -58,7 +59,9 @@ namespace TP
 
         void start();
         void terminate();
+        // A single session of execution, blocking until completed
         void execute(const std::vector<TASK> &tasks);
+        void status() const;
 
     private:
         std::vector<std::unique_ptr<WSPDR_WORKER>> workers_;

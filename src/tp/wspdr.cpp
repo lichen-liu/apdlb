@@ -20,7 +20,6 @@ namespace TP
                     if (this->try_acquire_once())
                     {
                         // Exit acquire loop
-                        debug("[Worker %d] acquired a task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
                         break;
                     }
                     else if (this->should_terminate_)
@@ -35,7 +34,7 @@ namespace TP
             {
                 TASK t = this->tasks_.back();
                 this->tasks_.pop_back();
-                this->update_status();
+                this->update_tasks_status();
                 this->communicate();
                 t();
                 debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
@@ -46,13 +45,20 @@ namespace TP
     void WSPDR_WORKER::add_task(TASK task)
     {
         this->tasks_.emplace_back(std::move(task));
-        this->update_status();
+        this->update_tasks_status();
     }
 
-    void WSPDR_WORKER::request_terminate()
+    void WSPDR_WORKER::terminate()
     {
         this->should_terminate_ = true;
-        debug("[Worker %d] request_terminate\n", this->worker_id_);
+        debug("[Worker %d] terminate\n", this->worker_id_);
+    }
+
+    void WSPDR_WORKER::status() const
+    {
+        warn("[Worker %d] workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, should_terminate=%s\n", this->worker_id_,
+             this->workers_.size(), this->tasks_.size(), (this->received_task_opt_.has_value() ? "true" : "false"),
+             this->request_.load(), (this->has_tasks_ ? "true" : "false"), (this->should_terminate_ ? "true" : "false"));
     }
 
     bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)
@@ -88,7 +94,7 @@ namespace TP
                 this->workers_[requester]->distribute_task(std::move(t));
             }
             this->request_ = NO_REQUEST;
-            this->update_status();
+            this->update_tasks_status();
         }
     }
 
@@ -107,10 +113,13 @@ namespace TP
                     // While waiting, still respond to other worker who has sent request to this worker
                     this->communicate();
                 }
-                if (this->received_task_opt_.value())
+                TASK received_task = this->received_task_opt_.value();
+                this->received_task_opt_.reset();
+                if (received_task)
                 {
                     // Check whether the target worker sent a real task to this worker
-                    this->add_task(this->received_task_opt_.value());
+                    this->add_task(received_task);
+                    debug("[Worker %d] acquired a task from worker %d, %lu tasks in the deque\n", this->worker_id_, target_worker_id, this->tasks_.size());
                     // this->request_ = NO_REQUEST;
                     return true;
                 }
@@ -121,7 +130,7 @@ namespace TP
         return false;
     }
 
-    void WSPDR_WORKER::update_status()
+    void WSPDR_WORKER::update_tasks_status()
     {
         bool b = !this->tasks_.empty();
         if (this->has_tasks_ != b)
@@ -153,7 +162,7 @@ namespace TP
 
     void WSPDR::start()
     {
-        this->executors_.clear();
+        ASSERT(this->executors_.empty());
         this->executors_.reserve(this->workers_.size());
         for (const auto &worker : this->workers_)
         {
@@ -165,7 +174,7 @@ namespace TP
     {
         for (const auto &worker : this->workers_)
         {
-            worker->request_terminate();
+            worker->terminate();
         }
         for (auto &executor : this->executors_)
         {
@@ -176,6 +185,8 @@ namespace TP
 
     void WSPDR::execute(const std::vector<TASK> &tasks)
     {
+        ASSERT(!tasks.empty());
+
         // Executors must be launched already
         ASSERT(!this->executors_.empty());
 
@@ -211,5 +222,16 @@ namespace TP
         while (num_task_done.load() != total_num_tasks)
         {
         }
+    }
+
+    void WSPDR::status() const
+    {
+        warn("===================\n");
+        warn("[WSPDR %lu executors]\n", this->executors_.size());
+        for (const auto &worker : this->workers_)
+        {
+            worker->status();
+        }
+        warn("===================\n");
     }
 }
