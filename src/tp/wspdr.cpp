@@ -51,14 +51,29 @@ namespace TP
     {
         while (true)
         {
-            this->transfer_opt_.reset();
+            this->received_task_opt_.reset();
             int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
             if (target_worker_id == this->worker_id_)
+            {
                 continue;
+            }
             if (this->workers_[target_worker_id]->try_send_request(this->worker_id_))
             {
-                // wip
+                while (!this->received_task_opt_.has_value())
+                {
+                    // While waiting, still respond to other worker who has sent request to this worker
+                    this->communicate();
+                }
+                if (this->received_task_opt_.value())
+                {
+                    // Check whether the target worker sent a real task to this worker
+                    this->add_task(this->received_task_opt_.value());
+                    // this->request_ = NO_REQUEST;
+                    return;
+                }
             }
+            // While looking for target worker to steal from, still respond to other worker who has sent request to this worker
+            this->communicate();
         }
     }
 

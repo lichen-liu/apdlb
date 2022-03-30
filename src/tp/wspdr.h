@@ -23,7 +23,7 @@ namespace TP
             this->set_worker_list(std::move(workers));
         }
         void run();
-        void add_task(TASK task);
+        void add_task(TASK task); // Not thread-safe
         void request_terminate() { this->should_terminate_ = true; }
         bool try_send_request(int requester_worker_id);
 
@@ -41,7 +41,7 @@ namespace TP
     private:
         std::deque<TASK> tasks_;
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
-        std::optional<TASK> transfer_opt_;
+        std::optional<TASK> received_task_opt_;
         int worker_id_ = -1;
         std::atomic<int> request_ = NO_REQUEST;
         bool should_terminate_ = false;
