@@ -1,10 +1,16 @@
 #pragma once
 #include <cstdio>
 
-#define ENABLE_INFO
+#define MESSAGE_LEVEL 0
 
-#ifdef ENABLE_INFO
-#define info(...) printf(__VA_ARGS__)
+#if MESSAGE_LEVEL >= 0
+#define info(fmt, ...) printf("I-" fmt, __VA_ARGS__)
 #else
 #define info(...)
+#endif
+
+#if MESSAGE_LEVEL >= 1
+#define debug(fmt, ...) printf("D-" fmt, __VA_ARGS__)
+#else
+#define debug(...)
 #endif

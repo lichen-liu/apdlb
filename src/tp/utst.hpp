@@ -32,11 +32,13 @@ namespace CORE::UTST
             {
                 if (is_active)
                 {
+                    std::cout << "====================================\n";
                     std::cout << "Running test [" << f_name << "] ..\n\n";
                     f();
                 }
                 else
                 {
+                    std::cout << "====================================\n";
                     std::cout << "Not running test [" << f_name << "] ..\n\n";
                 }
             }
