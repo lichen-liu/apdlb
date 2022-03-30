@@ -5,7 +5,6 @@
 #include <functional>
 #include <deque>
 #include <atomic>
-#include "macros.hpp"
 
 /// work stealing private dequeue - receiver
 
@@ -25,7 +24,9 @@ namespace TP
         void run();
         void add_task(TASK task); // Not thread-safe
         void request_terminate() { this->should_terminate_ = true; }
-        bool try_send_request(int requester_worker_id);
+
+        bool try_send_steal_request(int requester_worker_id);
+        void distribute_task(TASK task);
 
     private:
         void set_worker_id(int worker_id) { this->worker_id_ = worker_id; }

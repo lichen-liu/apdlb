@@ -1,4 +1,5 @@
 #include "wspdr.h"
+#include "macros.hpp"
 #include <cstdlib>
 
 namespace TP
@@ -32,7 +33,7 @@ namespace TP
         this->update_status();
     }
 
-    bool WSPDR_WORKER::try_send_request(int requester_worker_id)
+    bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)
     {
         if (this->has_tasks_)
         {
@@ -43,8 +44,30 @@ namespace TP
         return false;
     }
 
+    void WSPDR_WORKER::distribute_task(TASK task)
+    {
+        ASSERT(!this->received_task_opt_.has_value());
+        this->received_task_opt_.emplace(std::move(task));
+    }
+
     void WSPDR_WORKER::communicate()
     {
+        int requester = this->request_;
+        if (requester != NO_REQUEST)
+        {
+            if (this->tasks_.empty())
+            {
+                this->workers_[requester]->distribute_task(nullptr);
+            }
+            else
+            {
+                TASK t = this->tasks_.front();
+                this->tasks_.pop_front();
+                this->workers_[requester]->distribute_task(std::move(t));
+            }
+            this->request_ = NO_REQUEST;
+            this->update_status();
+        }
     }
 
     void WSPDR_WORKER::acquire()
@@ -53,11 +76,12 @@ namespace TP
         {
             this->received_task_opt_.reset();
             int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
+            // Retry if target_worker is this worker
             if (target_worker_id == this->worker_id_)
             {
                 continue;
             }
-            if (this->workers_[target_worker_id]->try_send_request(this->worker_id_))
+            if (this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
             {
                 while (!this->received_task_opt_.has_value())
                 {
