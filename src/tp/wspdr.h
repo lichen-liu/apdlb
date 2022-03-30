@@ -24,7 +24,7 @@ namespace TP
         }
         void run();
         void add_task(TASK task); // Not thread-safe
-        void request_terminate() { this->should_terminate_ = true; }
+        void request_terminate();
 
     private:
         bool try_send_steal_request(int requester_worker_id);

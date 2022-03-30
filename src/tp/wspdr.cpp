@@ -1,5 +1,6 @@
 #include "wspdr.h"
 #include "macros.hpp"
+#include "message.hpp"
 #include <algorithm>
 #include <cstdlib>
 
@@ -7,7 +8,7 @@ namespace TP
 {
     void WSPDR_WORKER::run()
     {
-        this->should_terminate_ = false; // A fresh start
+        info("[Worker %d] running\n", this->worker_id_);
         // Worker event loop
         while (true)
         {
@@ -19,10 +20,13 @@ namespace TP
                     if (this->try_acquire_once())
                     {
                         // Exit acquire loop
+                        info("[Worker %d] acquired a task\n", this->worker_id_);
                         break;
                     }
                     else if (this->should_terminate_)
                     {
+                        info("[Worker %d] terminated\n", this->worker_id_);
+                        this->should_terminate_ = false; // reset
                         return;
                     }
                 }
@@ -34,6 +38,7 @@ namespace TP
                 this->update_status();
                 this->communicate();
                 t();
+                info("[Worker %d] finished executing a task, %lu tasks left in the deque\n", this->worker_id_, this->tasks_.size());
             }
         }
     }
@@ -42,6 +47,12 @@ namespace TP
     {
         this->tasks_.emplace_back(std::move(task));
         this->update_status();
+    }
+
+    void WSPDR_WORKER::request_terminate()
+    {
+        this->should_terminate_ = true;
+        info("[Worker %d] received request to terminate\n", this->worker_id_);
     }
 
     bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)
