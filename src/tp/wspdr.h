@@ -22,8 +22,9 @@ namespace TP
             this->set_worker_id(worker_id);
             this->set_worker_list(std::move(workers));
         }
-        void run();               // Running on a thread
-        void add_task(TASK task); // Not thread-safe
+        void run();                                  // Running on a thread
+        void add_task(TASK task);                    // Must not be used cross thread (with assert)
+        void send_task(TASK task, bool is_anchored); // Can be used cross thread, but only when task deque is empty (with assert)
         void terminate();
         void status() const;
         bool is_alive() const { return this->is_alive_; }
@@ -41,22 +42,23 @@ namespace TP
 
     private:
         static constexpr int NO_REQUEST = -1;
+        struct TASK_HOLDER
+        {
+            TASK task;
+            bool is_anchored;
+        };
 
     private:
-        // struct TASK_HOLDER {
-        //     TASK task;
-        //     bool no_move
-        // };
-    private:
-        std::deque<TASK> tasks_;
+        std::deque<TASK_HOLDER> tasks_;
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
         std::optional<TASK> received_task_opt_;
         std::thread::id thread_id_;
         int worker_id_ = -1;
         std::atomic<int> request_ = NO_REQUEST;
-        bool has_tasks_ = false;
-        bool should_terminate_ = false; // std::atomic?
-        bool is_alive_ = false;
+        std::atomic<bool> has_tasks_ = false;
+        std::atomic<bool> send_task_notify_ = false;
+        std::atomic<bool> terminate_notify_ = false;
+        std::atomic<bool> is_alive_ = false;
     };
 
     class WSPDR

@@ -22,13 +22,17 @@ namespace TP
                 {
                     if (this->try_acquire_once())
                     {
-                        // Exit acquire loop
-                        break;
+                        break; // Exit acquire loop
                     }
-                    else if (this->should_terminate_)
+                    else if (this->send_task_notify_)
+                    {
+                        this->send_task_notify_ = false; // Reset
+                        break;                           // Exit acquire loop
+                    }
+                    else if (this->terminate_notify_)
                     {
                         this->is_alive_ = false;
-                        this->should_terminate_ = false; // reset
+                        this->terminate_notify_ = false; // Reset
                         this->communicate();
                         info("[Worker %d] terminated\n", this->worker_id_);
                         return;
@@ -37,7 +41,7 @@ namespace TP
             }
             else
             {
-                TASK t = this->tasks_.back();
+                TASK t = this->tasks_.back().task;
                 this->tasks_.pop_back();
                 this->update_tasks_status();
                 this->communicate();
@@ -50,23 +54,33 @@ namespace TP
 
     void WSPDR_WORKER::add_task(TASK task)
     {
-        this->tasks_.emplace_back(std::move(task));
+        ASSERT(std::this_thread::get_id() == this->thread_id_);
+        this->tasks_.emplace_back(TASK_HOLDER{std::move(task), false});
         this->update_tasks_status();
+    }
+
+    void WSPDR_WORKER::send_task(TASK task, bool is_anchored)
+    {
+        ASSERT(this->tasks_.empty());
+        this->tasks_.emplace_back(TASK_HOLDER{std::move(task), is_anchored});
+        this->update_tasks_status();
+        this->send_task_notify_ = true;
     }
 
     void WSPDR_WORKER::terminate()
     {
-        this->should_terminate_ = true;
+        this->terminate_notify_ = true;
         debug("[Worker %d] terminate\n", this->worker_id_);
     }
 
     void WSPDR_WORKER::status() const
     {
-        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, should_terminate=%s, is_alive=%s\n",
+        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
              this->worker_id_,
              to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(),
              bool_to_cstr(this->received_task_opt_.has_value()), this->request_.load(),
-             bool_to_cstr(this->has_tasks_), bool_to_cstr(this->should_terminate_), bool_to_cstr(this->is_alive_));
+             bool_to_cstr(this->has_tasks_), bool_to_cstr(this->send_task_notify_),
+             bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
     }
 
     bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)
@@ -97,9 +111,16 @@ namespace TP
             }
             else
             {
-                TASK t = this->tasks_.front();
-                this->tasks_.pop_front();
-                this->workers_[requester]->distribute_task(std::move(t));
+                auto [t, is_anchored] = this->tasks_.front();
+                if (is_anchored)
+                {
+                    this->workers_[requester]->distribute_task(nullptr);
+                }
+                else
+                {
+                    this->tasks_.pop_front();
+                    this->workers_[requester]->distribute_task(std::move(t));
+                }
             }
             this->request_ = NO_REQUEST;
             this->update_tasks_status();
@@ -208,7 +229,7 @@ namespace TP
         synced_tasks.reserve(tasks.size());
         for (const auto &task : tasks)
         {
-            auto synced_task = [&task, &num_task_done]()
+            auto synced_task = [task, &num_task_done]()
             {
                 task();
                 warn("synced_task done @thread=%s, num_task_done(unupdated)=%d\n", to_string(std::this_thread::get_id()).c_str(), num_task_done.load());
@@ -219,7 +240,7 @@ namespace TP
 
         // Create a scheduler task to do worker->add_task
         WSPDR_WORKER *scheduler_worker = this->workers_.front().get();
-        auto scheduler_task = [scheduler_worker, &synced_tasks]()
+        auto scheduler_task = [scheduler_worker, synced_tasks = std::move(synced_tasks)]()
         {
             for (const auto &t : synced_tasks)
             {
@@ -227,7 +248,8 @@ namespace TP
             }
             warn("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), synced_tasks.size());
         };
-        scheduler_worker->add_task(scheduler_task);
+        // Scheduler task must be anchored to add_task to sheduler_worker
+        scheduler_worker->send_task(scheduler_task, true);
 
         // Wait for all tasks do be done
         while (num_task_done.load() != total_num_tasks)
