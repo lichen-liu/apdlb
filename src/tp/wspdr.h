@@ -12,7 +12,6 @@
 namespace TP
 {
     using TASK = std::function<void()>;
-    class WSPDR;
 
     class WSPDR_WORKER
     {
@@ -50,6 +49,7 @@ namespace TP
         std::optional<TASK> received_task_opt_;
         std::thread::id thread_id_;
         int worker_id_ = -1;
+        int num_tasks_done_ = 0;
         std::atomic<int> request_ = NO_REQUEST;
         std::atomic<bool> has_tasks_ = false;
         std::atomic<bool> send_task_notify_ = false;

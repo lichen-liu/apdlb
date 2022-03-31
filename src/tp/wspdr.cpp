@@ -47,6 +47,7 @@ namespace TP
                 this->communicate();
                 debug("[Worker %d] going to run task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
                 t();
+                this->num_tasks_done_++;
                 debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
             }
         }
@@ -79,9 +80,9 @@ namespace TP
 
     void WSPDR_WORKER::status() const
     {
-        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
+        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, tasks_done=%d, received_task=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
              this->worker_id_,
-             to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(),
+             to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(), this->num_tasks_done_,
              bool_to_cstr(this->received_task_opt_.has_value()), this->request_.load(),
              bool_to_cstr(this->has_tasks_), bool_to_cstr(this->send_task_notify_),
              bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
@@ -226,17 +227,17 @@ namespace TP
 
         // For synchronization
         int total_num_tasks = tasks.size();
-        std::atomic<int> num_task_done = 0;
+        std::atomic<int> num_tasks_done = 0;
 
         // Integrate synchronization into argument tasks
         std::vector<TASK> synced_tasks;
         synced_tasks.reserve(tasks.size());
         for (const auto &task : tasks)
         {
-            auto synced_task = [task, &num_task_done]()
+            auto synced_task = [task, &num_tasks_done]()
             {
                 task();
-                num_task_done++;
+                num_tasks_done++;
             };
             synced_tasks.emplace_back(std::move(synced_task));
         }
@@ -255,7 +256,7 @@ namespace TP
         scheduler_worker->send_task(scheduler_task, true);
 
         // Wait for all tasks do be done
-        while (num_task_done.load() != total_num_tasks)
+        while (num_tasks_done.load() != total_num_tasks)
         {
         }
     }
