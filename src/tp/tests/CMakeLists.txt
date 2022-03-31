@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(wspdr_tests wspdr_tests.cc)
 add_test(tp_wspdr_tests wspdr_tests)
 
+add_executable(wspdr_collatz_conjecture_tests wspdr_collatz_conjecture_tests.cc)
+add_test(tp_wspdr_collatz_conjecture_tests wspdr_collatz_conjecture_tests)
+
 # Add test executable here
 add_custom_target(tp_tests)
-add_dependencies(tp_tests wspdr_tests)
+add_dependencies(tp_tests wspdr_tests wspdr_collatz_conjecture_tests)

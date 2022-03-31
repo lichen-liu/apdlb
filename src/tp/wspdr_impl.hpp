@@ -87,7 +87,7 @@ namespace TP
             {
                 scheduler_worker->add_task(t);
             }
-            warn("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), synced_tasks.size());
+            info("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), synced_tasks.size());
         };
         // Scheduler task must be anchored to add_task to sheduler_worker
         scheduler_worker->send_task(scheduler_task, true);
