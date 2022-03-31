@@ -22,10 +22,11 @@ namespace TP
             this->set_worker_id(worker_id);
             this->set_worker_list(std::move(workers));
         }
-        void run();
+        void run();               // Running on a thread
         void add_task(TASK task); // Not thread-safe
         void terminate();
         void status() const;
+        bool is_alive() const { return this->is_alive_; }
 
     private:
         bool try_send_steal_request(int requester_worker_id);
@@ -42,13 +43,20 @@ namespace TP
         static constexpr int NO_REQUEST = -1;
 
     private:
+        // struct TASK_HOLDER {
+        //     TASK task;
+        //     bool no_move
+        // };
+    private:
         std::deque<TASK> tasks_;
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
         std::optional<TASK> received_task_opt_;
+        std::thread::id thread_id_;
         int worker_id_ = -1;
         std::atomic<int> request_ = NO_REQUEST;
         bool has_tasks_ = false;
-        bool should_terminate_ = false;
+        bool should_terminate_ = false; // std::atomic?
+        bool is_alive_ = false;
     };
 
     class WSPDR

@@ -4,7 +4,7 @@ include(CTest)
 
 find_package(Threads REQUIRED)
 
-add_compile_options(-Werror -Wall -Wno-missing-braces -O3)
+add_compile_options(-Werror -Wall -Wno-missing-braces -g)#-O3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 

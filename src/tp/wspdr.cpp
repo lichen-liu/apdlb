@@ -1,6 +1,7 @@
 #include "wspdr.h"
 #include "macros.hpp"
 #include "message.hpp"
+#include "utils.h"
 #include <algorithm>
 #include <cstdlib>
 
@@ -8,7 +9,9 @@ namespace TP
 {
     void WSPDR_WORKER::run()
     {
-        info("[Worker %d] running\n", this->worker_id_);
+        this->is_alive_ = true;
+        this->thread_id_ = std::this_thread::get_id();
+        info("[Worker %d] running @thread=%s\n", this->worker_id_, to_string(this->thread_id_).c_str());
         // Worker event loop
         while (true)
         {
@@ -24,8 +27,10 @@ namespace TP
                     }
                     else if (this->should_terminate_)
                     {
-                        info("[Worker %d] terminated\n", this->worker_id_);
+                        this->is_alive_ = false;
                         this->should_terminate_ = false; // reset
+                        this->communicate();
+                        info("[Worker %d] terminated\n", this->worker_id_);
                         return;
                     }
                 }
@@ -36,6 +41,7 @@ namespace TP
                 this->tasks_.pop_back();
                 this->update_tasks_status();
                 this->communicate();
+                debug("[Worker %d] going to run task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
                 t();
                 debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
             }
@@ -56,9 +62,11 @@ namespace TP
 
     void WSPDR_WORKER::status() const
     {
-        warn("[Worker %d] workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, should_terminate=%s\n", this->worker_id_,
-             this->workers_.size(), this->tasks_.size(), (this->received_task_opt_.has_value() ? "true" : "false"),
-             this->request_.load(), (this->has_tasks_ ? "true" : "false"), (this->should_terminate_ ? "true" : "false"));
+        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, received_task=%s, request=%d, has_tasks=%s, should_terminate=%s, is_alive=%s\n",
+             this->worker_id_,
+             to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(),
+             bool_to_cstr(this->received_task_opt_.has_value()), this->request_.load(),
+             bool_to_cstr(this->has_tasks_), bool_to_cstr(this->should_terminate_), bool_to_cstr(this->is_alive_));
     }
 
     bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)
@@ -105,7 +113,7 @@ namespace TP
         // Does not support self-steal
         if (target_worker_id != this->worker_id_)
         {
-            if (this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
+            if (this->workers_[target_worker_id]->is_alive() && this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
             {
                 // Request sent, now waiting for a response
                 while (!this->received_task_opt_.has_value())
@@ -180,6 +188,7 @@ namespace TP
         {
             executor.join();
         }
+        // Do not delete the workers
         this->executors_.clear();
     }
 
@@ -202,6 +211,7 @@ namespace TP
             auto synced_task = [&task, &num_task_done]()
             {
                 task();
+                warn("synced_task done @thread=%s, num_task_done(unupdated)=%d\n", to_string(std::this_thread::get_id()).c_str(), num_task_done.load());
                 num_task_done++;
             };
             synced_tasks.emplace_back(std::move(synced_task));
@@ -215,6 +225,7 @@ namespace TP
             {
                 scheduler_worker->add_task(t);
             }
+            warn("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), synced_tasks.size());
         };
         scheduler_worker->add_task(scheduler_task);
 
@@ -227,7 +238,7 @@ namespace TP
     void WSPDR::status() const
     {
         warn("===================\n");
-        warn("[WSPDR %lu executors]\n", this->executors_.size());
+        warn("[WSPDR] workers=%lu, executors=%lu]\n", this->workers_.size(), this->executors_.size());
         for (const auto &worker : this->workers_)
         {
             worker->status();

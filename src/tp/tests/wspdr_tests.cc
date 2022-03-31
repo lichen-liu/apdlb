@@ -41,7 +41,7 @@ UTST_TEST(simple_with_idle_worker)
 
 UTST_TEST(multi_session)
 {
-    int size = 8;
+    int size = 3;
     WSPDR pool(size);
     pool.start();
     for (int i = 1; i <= size; i++)
