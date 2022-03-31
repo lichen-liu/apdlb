@@ -178,7 +178,7 @@ namespace TP
         worker_ptrs.reserve(num_workers);
         std::transform(this->workers_.begin(), this->workers_.end(), std::back_inserter(worker_ptrs), [](const auto &p)
                        { return p.get(); });
-        for (int worker_id = 0; worker_id < num_workers; worker_id++)
+        for (size_t worker_id = 0; worker_id < num_workers; worker_id++)
         {
             this->workers_[worker_id]->init(worker_id, worker_ptrs);
         }
