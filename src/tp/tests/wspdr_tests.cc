@@ -20,10 +20,10 @@ namespace
     {
         std::vector<TASK> tasks;
         tasks.reserve(num_tasks);
-        for (int i = 0; i < num_tasks; i++)
+        for (size_t i = 0; i < num_tasks; i++)
         {
             tasks.emplace_back([i]()
-                               { printf("%d\n", i); });
+                               { printf("%zu\n", i); });
         }
         return tasks;
     }
