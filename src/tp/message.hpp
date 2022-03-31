@@ -3,7 +3,7 @@
 
 #define MESSAGE_LEVEL 3
 
-#if MESSAGE_LEVEL >= 3
+#if MESSAGE_LEVEL >= 1
 #define warn(fmt, ...) printf("W-" fmt, ##__VA_ARGS__)
 #else
 #define warn(...)

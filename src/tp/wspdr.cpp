@@ -62,6 +62,9 @@ namespace TP
     void WSPDR_WORKER::send_task(TASK task, bool is_anchored)
     {
         ASSERT(this->tasks_.empty());
+        info("[Worker %d] send_task from @thread=%s to @thread=%s with is_anchored=%s\n",
+             this->worker_id_, to_string(std::this_thread::get_id()).c_str(),
+             to_string(this->thread_id_).c_str(), bool_to_cstr(is_anchored));
         this->tasks_.emplace_back(TASK_HOLDER{std::move(task), is_anchored});
         this->update_tasks_status();
         this->send_task_notify_ = true;
@@ -69,8 +72,9 @@ namespace TP
 
     void WSPDR_WORKER::terminate()
     {
-        this->terminate_notify_ = true;
         debug("[Worker %d] terminate\n", this->worker_id_);
+
+        this->terminate_notify_ = true;
     }
 
     void WSPDR_WORKER::status() const
@@ -232,7 +236,6 @@ namespace TP
             auto synced_task = [task, &num_task_done]()
             {
                 task();
-                warn("synced_task done @thread=%s, num_task_done(unupdated)=%d\n", to_string(std::this_thread::get_id()).c_str(), num_task_done.load());
                 num_task_done++;
             };
             synced_tasks.emplace_back(std::move(synced_task));
