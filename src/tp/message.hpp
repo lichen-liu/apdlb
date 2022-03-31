@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cstdio>
 
 #define MESSAGE_LEVEL 3

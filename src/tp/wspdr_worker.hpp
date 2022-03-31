@@ -1,13 +1,13 @@
 #pragma once
+
 #include <thread>
 #include <optional>
 #include <vector>
 #include <functional>
 #include <deque>
 #include <atomic>
-#include <memory>
 
-/// work stealing private dequeue - receiver
+/// work stealing private deque worker - receiver initiated
 
 namespace TP
 {
@@ -56,21 +56,6 @@ namespace TP
         std::atomic<bool> terminate_notify_ = false;
         std::atomic<bool> is_alive_ = false;
     };
-
-    class WSPDR
-    {
-    public:
-        explicit WSPDR(size_t num_workers);
-        ~WSPDR();
-
-        void start();
-        void terminate();
-        // A single session of execution, blocking until completed
-        void execute(const std::vector<TASK> &tasks);
-        void status() const;
-
-    private:
-        std::vector<std::unique_ptr<WSPDR_WORKER>> workers_;
-        std::vector<std::thread> executors_;
-    };
 }
+
+#include "wspdr_worker_impl.hpp"
