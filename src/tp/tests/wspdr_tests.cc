@@ -23,7 +23,7 @@ namespace
         for (size_t i = 0; i < num_tasks; i++)
         {
             tasks.emplace_back([i]()
-                               { printf("%zu\n", i); });
+                               { printf("%lu\n", i); });
         }
         return tasks;
     }
