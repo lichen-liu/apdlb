@@ -17,7 +17,7 @@ namespace TP
 
     TASK to_task(RAW_TASK raw_task)
     {
-        return [raw_task](WORKER_PROXY &)
+        return [raw_task = std::move(raw_task)](WORKER_PROXY &)
         {
             raw_task();
         };
