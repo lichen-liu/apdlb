@@ -13,9 +13,13 @@ UTST_TEST(computation)
     // Collatz conjecture
     auto kernel = [](size_t lower, size_t upper)
     {
-        int step = 0;
-        for (size_t i = 1; i < upper; i++)
+        size_t step = 0;
+        for (size_t i = lower; i < upper; i++)
         {
+            if (i == 0)
+            {
+                continue;
+            }
             size_t num = i;
             while (num != 1)
             {
@@ -34,11 +38,11 @@ UTST_TEST(computation)
         return step;
     };
 
-    constexpr int num_steps = 1000;
+    constexpr int num_shards = 100000;
     constexpr int shard_size = 100;
     std::atomic<size_t> result = 0;
     std::vector<RAW_TASK> tasks;
-    for (int i = 0; i < num_steps; i++)
+    for (int i = 0; i < num_shards; i++)
     {
         auto modified_kernel = [i, &kernel, &result]
         {
@@ -51,14 +55,19 @@ UTST_TEST(computation)
     timer.elapsed_previous("init");
 
     // Serial execution result
+    size_t serial_result = kernel(0, num_shards * shard_size);
+    printf("serial total_num_steps=%lu for num_shards=%d shard_size=%d\n", serial_result, num_shards, shard_size);
+    timer.elapsed_previous("serial");
+
+    // Serial chunk execution result
     result = 0;
     for (const auto &task : tasks)
     {
         task();
     }
-    size_t expected_result = result;
-    printf("serial total_num_steps=%lu for num_steps=%d shard_size=%d\n", expected_result, num_steps, shard_size);
-    timer.elapsed_previous("serial");
+    size_t serial_chunk_result = result;
+    printf("serial chunk total_num_steps=%lu for num_shards=%d shard_size=%d\n", serial_chunk_result, num_shards, shard_size);
+    timer.elapsed_previous("serial_chunk");
 
     // Pool execution result
     result = 0;
@@ -66,10 +75,12 @@ UTST_TEST(computation)
     pool.start();
     timer.elapsed_previous("pool_init");
     pool.execute(tasks);
-    size_t actual_result = result;
-    printf("pool total_num_steps=%lu for num_steps=%d shard_size=%d\n", actual_result, num_steps, shard_size);
+    size_t pool_result = result;
+    printf("pool total_num_steps=%lu for num_shards=%d shard_size=%d\n", pool_result, num_shards, shard_size);
     timer.elapsed_previous("pool");
 
     pool.status();
-    UTST_ASSERT_EQUAL(expected_result, actual_result);
+
+    UTST_ASSERT_EQUAL(serial_result, serial_chunk_result);
+    UTST_ASSERT_EQUAL(serial_result, pool_result);
 }
