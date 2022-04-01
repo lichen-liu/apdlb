@@ -17,48 +17,46 @@ namespace TP
         // Worker event loop
         while (true)
         {
-            if (this->tasks_.empty())
+            // Acquire loop
+            while (this->tasks_.empty())
             {
-                // Acquire loop
-                while (true)
+                if (this->terminate_notify_)
                 {
-                    if (this->try_acquire_once())
+                    this->is_alive_ = false;
+                    this->terminate_notify_ = false; // Reset
+
+                    while (true)
                     {
-                        break; // Exit acquire loop
-                    }
-                    else if (this->send_task_notify_)
-                    {
-                        this->send_task_notify_ = false; // Reset
-                        break;                           // Exit acquire loop
-                    }
-                    else if (this->terminate_notify_)
-                    {
-                        this->is_alive_ = false;
-                        this->terminate_notify_ = false; // Reset
+                        int no_request = NO_REQUEST;
+                        if (this->request_.compare_exchange_strong(no_request, this->worker_id_))
+                        {
+                            break;
+                        }
                         this->communicate();
-                        info("[Worker %d] terminated\n", this->worker_id_);
-                        return;
                     }
+
+                    ASSERT(this->request_ == this->worker_id_);
+                    info("[Worker %d] terminated\n", this->worker_id_);
+                    return;
                 }
+                this->try_acquire_once();
             }
-            else
+
+            TASK t = this->tasks_.back().task;
+            this->tasks_.pop_back();
+            this->update_tasks_status();
+            this->communicate(); // wip
+            debug("[Worker %d] going to run task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
+
+            WORKER_PROXY worker_proxy;
+            t(worker_proxy);
+            for (const auto &new_task : worker_proxy.tasks)
             {
-                TASK t = this->tasks_.back().task;
-                this->tasks_.pop_back();
-                this->update_tasks_status();
-                this->communicate();
-                debug("[Worker %d] going to run task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
-
-                WORKER_PROXY worker_proxy;
-                t(worker_proxy);
-                for (const auto &new_task : worker_proxy.tasks)
-                {
-                    this->add_task(new_task);
-                }
-
-                this->num_tasks_done_++;
-                debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
+                this->add_task(new_task);
             }
+
+            this->num_tasks_done_++;
+            debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
         }
     }
 
@@ -70,7 +68,6 @@ namespace TP
              to_string(this->thread_id_).c_str(), bool_to_cstr(is_anchored));
         this->tasks_.emplace_back(TASK_HOLDER{std::move(task), is_anchored});
         this->update_tasks_status();
-        this->send_task_notify_ = true;
     }
 
     inline void WSPDR_WORKER::terminate()
@@ -82,13 +79,13 @@ namespace TP
 
     inline void WSPDR_WORKER::status() const
     {
-        std::string received_tasks_opt_str = this->received_tasks_opt_.has_value() ? std::to_string(this->received_tasks_opt_.value().size()) : "nullopt";
-        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, tasks_done=%d, received_tasks=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
+        std::string threda_id_str = to_string(this->thread_id_);
+        std::string received_tasks_str = this->received_tasks_notify_ ? std::to_string(this->received_tasks_.size()) : "nullopt";
+        warn("[Worker %d] @thread=%s, policy=%d, workers=%lu, tasks=%lu, tasks_done=%d, received_tasks=%s, request=%d, has_tasks=%s, terminate_notify=%s, is_alive=%s\n",
              this->worker_id_,
-             to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(), this->num_tasks_done_,
-             received_tasks_opt_str.c_str(), this->request_.load(),
-             bool_to_cstr(this->has_tasks_), bool_to_cstr(this->send_task_notify_),
-             bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
+             threda_id_str.c_str(), static_cast<int>(this->policy_), this->workers_.size(), this->tasks_.size(), this->num_tasks_done_,
+             received_tasks_str.c_str(), this->request_.load(),
+             bool_to_cstr(this->has_tasks_), bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
     }
 
     inline void WSPDR_WORKER::add_task(TASK task)
@@ -104,15 +101,17 @@ namespace TP
         {
             // https://en.cppreference.com/w/cpp/atomic/atomic_compare_exchange
             int no_request = NO_REQUEST;
-            return std::atomic_compare_exchange_strong(&this->request_, &no_request, requester_worker_id);
+            return this->request_.compare_exchange_strong(no_request, requester_worker_id);
         }
         return false;
     }
 
     inline void WSPDR_WORKER::distribute_task(std::vector<TASK> tasks)
     {
-        ASSERT(!this->received_tasks_opt_.has_value());
-        this->received_tasks_opt_.emplace(std::move(tasks));
+        ASSERT(!this->received_tasks_notify_);
+        ASSERT(this->received_tasks_.empty());
+        this->received_tasks_ = std::move(tasks);
+        this->received_tasks_notify_ = true;
     }
 
     inline void WSPDR_WORKER::communicate()
@@ -149,7 +148,6 @@ namespace TP
 
     inline bool WSPDR_WORKER::try_acquire_once()
     {
-        this->received_tasks_opt_.reset();
         int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
         // Does not support self-steal
         if (target_worker_id != this->worker_id_)
@@ -157,13 +155,14 @@ namespace TP
             if (this->workers_[target_worker_id]->is_alive() && this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
             {
                 // Request sent, now waiting for a response
-                while (!this->received_tasks_opt_.has_value())
+                while (!this->received_tasks_notify_)
                 {
                     // While waiting, still respond to other worker who has sent request to this worker
                     this->communicate();
                 }
-                std::vector<TASK> received_tasks = std::move(this->received_tasks_opt_).value();
-                this->received_tasks_opt_.reset();
+                std::vector<TASK> received_tasks = std::move(this->received_tasks_);
+                this->received_tasks_.clear();
+                this->received_tasks_notify_ = false;
                 // Check whether the target worker sent real tasks to this worker
                 if (!received_tasks.empty())
                 {
@@ -176,9 +175,9 @@ namespace TP
                     return true;
                 }
             }
-            // While looking for target worker to steal from, still respond to other worker who has sent request to this worker
-            this->communicate();
         }
+        // While looking for target worker to steal from, still respond to other worker who has sent request to this worker
+        this->communicate();
         return false;
     }
 
