@@ -34,8 +34,8 @@ UTST_TEST(computation)
         return step;
     };
 
-    constexpr int num_steps = 500;
-    constexpr int shard_size = 500;
+    constexpr int num_steps = 1000;
+    constexpr int shard_size = 100;
     std::atomic<size_t> result = 0;
     std::vector<RAW_TASK> tasks;
     for (int i = 0; i < num_steps; i++)
