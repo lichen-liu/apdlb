@@ -82,10 +82,11 @@ namespace TP
 
     inline void WSPDR_WORKER::status() const
     {
-        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, tasks_done=%d, received_task=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
+        std::string received_tasks_opt_str = this->received_tasks_opt_.has_value() ? std::to_string(this->received_tasks_opt_.value().size()) : "nullopt";
+        warn("[Worker %d] @thread=%s, workers=%lu, tasks=%lu, tasks_done=%d, received_tasks=%s, request=%d, has_tasks=%s, send_task_notify=%s, terminate_notify=%s, is_alive=%s\n",
              this->worker_id_,
              to_string(this->thread_id_).c_str(), this->workers_.size(), this->tasks_.size(), this->num_tasks_done_,
-             bool_to_cstr(this->received_task_opt_.has_value()), this->request_.load(),
+             received_tasks_opt_str.c_str(), this->request_.load(),
              bool_to_cstr(this->has_tasks_), bool_to_cstr(this->send_task_notify_),
              bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
     }
@@ -108,10 +109,10 @@ namespace TP
         return false;
     }
 
-    inline void WSPDR_WORKER::distribute_task(TASK task)
+    inline void WSPDR_WORKER::distribute_task(std::vector<TASK> tasks)
     {
-        ASSERT(!this->received_task_opt_.has_value());
-        this->received_task_opt_.emplace(std::move(task));
+        ASSERT(!this->received_tasks_opt_.has_value());
+        this->received_tasks_opt_.emplace(std::move(tasks));
     }
 
     inline void WSPDR_WORKER::communicate()
@@ -121,20 +122,25 @@ namespace TP
         {
             if (this->tasks_.empty())
             {
-                this->workers_[requester]->distribute_task(nullptr);
+                this->workers_[requester]->distribute_task({});
             }
             else
             {
-                auto [t, is_anchored] = this->tasks_.front();
-                if (is_anchored)
+                std::vector<TASK> tasks_to_send;
+                for (int itask = 0; itask < 1; itask++)
                 {
-                    this->workers_[requester]->distribute_task(nullptr);
+                    auto [t, is_anchored] = this->tasks_.front();
+                    if (is_anchored)
+                    {
+                        break; // Stop right at the anchored task
+                    }
+                    else
+                    {
+                        this->tasks_.pop_front();
+                        tasks_to_send.emplace_back(std::move(t));
+                    }
                 }
-                else
-                {
-                    this->tasks_.pop_front();
-                    this->workers_[requester]->distribute_task(std::move(t));
-                }
+                this->workers_[requester]->distribute_task(std::move(tasks_to_send));
             }
             this->request_ = NO_REQUEST;
             this->update_tasks_status();
@@ -143,7 +149,7 @@ namespace TP
 
     inline bool WSPDR_WORKER::try_acquire_once()
     {
-        this->received_task_opt_.reset();
+        this->received_tasks_opt_.reset();
         int target_worker_id = std::rand() / ((RAND_MAX + 1u) / this->workers_.size());
         // Does not support self-steal
         if (target_worker_id != this->worker_id_)
@@ -151,19 +157,22 @@ namespace TP
             if (this->workers_[target_worker_id]->is_alive() && this->workers_[target_worker_id]->try_send_steal_request(this->worker_id_))
             {
                 // Request sent, now waiting for a response
-                while (!this->received_task_opt_.has_value())
+                while (!this->received_tasks_opt_.has_value())
                 {
                     // While waiting, still respond to other worker who has sent request to this worker
                     this->communicate();
                 }
-                TASK received_task = this->received_task_opt_.value();
-                this->received_task_opt_.reset();
-                if (received_task)
+                std::vector<TASK> received_tasks = std::move(this->received_tasks_opt_).value();
+                this->received_tasks_opt_.reset();
+                // Check whether the target worker sent real tasks to this worker
+                if (!received_tasks.empty())
                 {
-                    // Check whether the target worker sent a real task to this worker
-                    this->add_task(received_task);
-                    debug("[Worker %d] acquired a task from worker %d, %lu tasks in the deque\n", this->worker_id_, target_worker_id, this->tasks_.size());
-                    // this->request_ = NO_REQUEST;
+                    for (const auto &received_task : received_tasks)
+                    {
+                        this->add_task(received_task);
+                    }
+                    debug("[Worker %d] acquired %lu task from worker %d, %lu tasks in the deque\n",
+                          this->worker_id_, received_tasks.size(), target_worker_id, this->tasks_.size());
                     return true;
                 }
             }

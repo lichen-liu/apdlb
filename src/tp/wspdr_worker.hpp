@@ -27,7 +27,7 @@ namespace TP
     private:
         void add_task(TASK task); // Must not be used cross thread (with assert)
         bool try_send_steal_request(int requester_worker_id);
-        void distribute_task(TASK task);
+        void distribute_task(std::vector<TASK> task);
         void communicate();
         bool try_acquire_once();
         void update_tasks_status();
@@ -44,7 +44,7 @@ namespace TP
     private:
         std::deque<TASK_HOLDER> tasks_;
         std::vector<WSPDR_WORKER *> workers_; // back when using by self, front when using by other
-        std::optional<TASK> received_task_opt_;
+        std::optional<std::vector<TASK>> received_tasks_opt_;
         std::thread::id thread_id_;
         int worker_id_ = -1;
         int num_tasks_done_ = 0;
