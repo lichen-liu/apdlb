@@ -3,16 +3,14 @@
 #include <thread>
 #include <optional>
 #include <vector>
-#include <functional>
 #include <deque>
 #include <atomic>
+#include "task.hpp"
 
 /// work stealing private deque worker - receiver initiated
 
 namespace TP
 {
-    using TASK = std::function<void()>;
-
     class WSPDR_WORKER
     {
     public:
@@ -22,12 +20,12 @@ namespace TP
             this->workers_ = std::move(workers);
         }
         void run();                                  // Running on a thread
-        void add_task(TASK task);                    // Must not be used cross thread (with assert)
         void send_task(TASK task, bool is_anchored); // Can be used cross thread, but only when task deque is empty (with assert)
         void terminate();
         void status() const;
 
     private:
+        void add_task(TASK task); // Must not be used cross thread (with assert)
         bool try_send_steal_request(int requester_worker_id);
         void distribute_task(TASK task);
         void communicate();

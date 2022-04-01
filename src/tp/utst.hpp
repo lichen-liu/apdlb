@@ -9,7 +9,7 @@
 
 /// Helpers
 
-namespace CORE::UTST
+namespace TP::UTST
 {
     class TEST_REGISTRY
     {
@@ -51,12 +51,12 @@ namespace CORE::UTST
 
 /// UTST Utilities
 
-#define UTST_MAIN()                                        \
-    static CORE::UTST::TEST_REGISTRY __utst_test_registry; \
-                                                           \
-    int main()                                             \
-    {                                                      \
-        __utst_test_registry.execute_functions();          \
+#define UTST_MAIN()                                      \
+    static TP::UTST::TEST_REGISTRY __utst_test_registry; \
+                                                         \
+    int main()                                           \
+    {                                                    \
+        __utst_test_registry.execute_functions();        \
     }
 
 #define UTST_TEST(test_name)                                                                                                 \

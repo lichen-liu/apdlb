@@ -55,7 +55,7 @@ namespace TP
         this->executors_.clear();
     }
 
-    inline void WSPDR::execute(const std::vector<TASK> &tasks)
+    inline void WSPDR::execute(const std::vector<RAW_TASK> &tasks)
     {
         ASSERT(!tasks.empty());
 
@@ -71,7 +71,7 @@ namespace TP
         synced_tasks.reserve(tasks.size());
         for (const auto &task : tasks)
         {
-            auto synced_task = [task, &num_tasks_done]()
+            auto synced_task = [task, &num_tasks_done](WORKER_PROXY &)
             {
                 task();
                 num_tasks_done++;
@@ -80,17 +80,13 @@ namespace TP
         }
 
         // Create a scheduler task to do worker->add_task
-        WSPDR_WORKER *scheduler_worker = this->workers_.front().get();
-        auto scheduler_task = [scheduler_worker, synced_tasks = std::move(synced_tasks)]()
+        auto scheduler_task = [synced_tasks = std::move(synced_tasks)](WORKER_PROXY &worker_proxy)
         {
-            for (const auto &t : synced_tasks)
-            {
-                scheduler_worker->add_task(t);
-            }
-            info("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), synced_tasks.size());
+            worker_proxy.tasks = std::move(synced_tasks);
+            info("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), worker_proxy.tasks.size());
         };
         // Scheduler task must be anchored to add_task to sheduler_worker
-        scheduler_worker->send_task(scheduler_task, true);
+        this->workers_.front()->send_task(scheduler_task, true);
 
         // Wait for all tasks do be done
         while (num_tasks_done.load() != total_num_tasks)

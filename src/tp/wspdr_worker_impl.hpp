@@ -48,18 +48,18 @@ namespace TP
                 this->update_tasks_status();
                 this->communicate();
                 debug("[Worker %d] going to run task, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
-                t();
+
+                WORKER_PROXY worker_proxy;
+                t(worker_proxy);
+                for (const auto &new_task : worker_proxy.tasks)
+                {
+                    this->add_task(new_task);
+                }
+
                 this->num_tasks_done_++;
                 debug("[Worker %d] task done, %lu tasks in the deque\n", this->worker_id_, this->tasks_.size());
             }
         }
-    }
-
-    inline void WSPDR_WORKER::add_task(TASK task)
-    {
-        ASSERT(std::this_thread::get_id() == this->thread_id_);
-        this->tasks_.emplace_back(TASK_HOLDER{std::move(task), false});
-        this->update_tasks_status();
     }
 
     inline void WSPDR_WORKER::send_task(TASK task, bool is_anchored)
@@ -88,6 +88,13 @@ namespace TP
              bool_to_cstr(this->received_task_opt_.has_value()), this->request_.load(),
              bool_to_cstr(this->has_tasks_), bool_to_cstr(this->send_task_notify_),
              bool_to_cstr(this->terminate_notify_), bool_to_cstr(this->is_alive_));
+    }
+
+    inline void WSPDR_WORKER::add_task(TASK task)
+    {
+        ASSERT(std::this_thread::get_id() == this->thread_id_);
+        this->tasks_.emplace_back(TASK_HOLDER{std::move(task), false});
+        this->update_tasks_status();
     }
 
     inline bool WSPDR_WORKER::try_send_steal_request(int requester_worker_id)

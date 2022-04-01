@@ -8,7 +8,7 @@ UTST_MAIN();
 
 namespace
 {
-    std::unique_ptr<WSPDR> quick_launch(size_t num_workers, const std::vector<TASK> &tasks)
+    std::unique_ptr<WSPDR> quick_launch(size_t num_workers, const std::vector<RAW_TASK> &tasks)
     {
         auto pool = std::make_unique<WSPDR>(num_workers);
         pool->start();
@@ -16,9 +16,9 @@ namespace
         return pool;
     }
 
-    std::vector<TASK> generate_simple_print_tasks(size_t num_tasks)
+    std::vector<RAW_TASK> generate_simple_print_tasks(size_t num_tasks)
     {
-        std::vector<TASK> tasks;
+        std::vector<RAW_TASK> tasks;
         tasks.reserve(num_tasks);
         for (size_t i = 0; i < num_tasks; i++)
         {

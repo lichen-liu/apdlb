@@ -37,7 +37,7 @@ UTST_TEST(computation)
     constexpr int num_steps = 500;
     constexpr int shard_size = 500;
     std::atomic<size_t> result = 0;
-    std::vector<TASK> tasks;
+    std::vector<RAW_TASK> tasks;
     for (int i = 0; i < num_steps; i++)
     {
         auto modified_kernel = [i, &kernel, &result]
