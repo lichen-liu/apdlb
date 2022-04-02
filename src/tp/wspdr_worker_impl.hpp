@@ -125,8 +125,14 @@ namespace TP
             }
             else
             {
+                size_t num_tasks_to_send = 1;
+                if (this->policy_ == WSPDR_POLICY::STEAL_HALF)
+                {
+                    num_tasks_to_send = this->tasks_.size() / 2;
+                }
                 std::vector<TASK> tasks_to_send;
-                for (int itask = 0; itask < 1; itask++)
+                tasks_to_send.reserve(num_tasks_to_send);
+                for (size_t itask = 0; itask < num_tasks_to_send; itask++)
                 {
                     auto [t, is_anchored] = this->tasks_.front();
                     if (is_anchored)
