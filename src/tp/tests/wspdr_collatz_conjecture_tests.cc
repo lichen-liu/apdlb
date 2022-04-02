@@ -2,16 +2,12 @@
 #include "wspdr.hpp"
 #include "timer.hpp"
 #include <cstdio>
+
 using namespace TP;
 
-UTST_MAIN();
-
-UTST_TEST(computation)
+namespace
 {
-    TIMER timer("computation");
-
-    // Collatz conjecture
-    auto kernel = [](size_t lower, size_t upper)
+    size_t collatz_conjecture_kernel(size_t lower, size_t upper)
     {
         size_t step = 0;
         for (size_t i = lower; i < upper; i++)
@@ -36,7 +32,14 @@ UTST_TEST(computation)
             }
         }
         return step;
-    };
+    }
+}
+
+UTST_MAIN();
+
+UTST_TEST(computation)
+{
+    TIMER timer("computation");
 
     constexpr int num_shards = 100000;
     constexpr int shard_size = 100;
@@ -44,9 +47,9 @@ UTST_TEST(computation)
     std::vector<RAW_TASK> tasks;
     for (int i = 0; i < num_shards; i++)
     {
-        auto modified_kernel = [i, &kernel, &result]
+        auto modified_kernel = [i, &result]
         {
-            result += kernel(i * shard_size, (i + 1) * shard_size);
+            result += collatz_conjecture_kernel(i * shard_size, (i + 1) * shard_size);
             // printf("step %d done\n", i);
         };
         tasks.emplace_back(modified_kernel);
@@ -55,7 +58,7 @@ UTST_TEST(computation)
     timer.elapsed_previous("init");
 
     // Serial execution result
-    size_t serial_result = kernel(0, num_shards * shard_size);
+    size_t serial_result = collatz_conjecture_kernel(0, num_shards * shard_size);
     printf("serial total_num_steps=%lu for num_shards=%d shard_size=%d\n", serial_result, num_shards, shard_size);
     timer.elapsed_previous("serial");
 
