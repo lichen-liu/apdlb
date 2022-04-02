@@ -63,12 +63,12 @@ namespace TP
         ASSERT(!this->executors_.empty());
 
         // For synchronization
-        int total_num_tasks = tasks.size();
-        std::atomic<int> num_tasks_done = 0;
+        const size_t total_num_tasks = tasks.size();
+        std::atomic<size_t> num_tasks_done = 0;
 
         // Integrate synchronization into argument tasks
         std::vector<TASK> synced_tasks;
-        synced_tasks.reserve(tasks.size());
+        synced_tasks.reserve(total_num_tasks);
         for (const auto &task : tasks)
         {
             auto synced_task = [task, &num_tasks_done](WORKER_PROXY &)
@@ -86,7 +86,7 @@ namespace TP
             info("scheduler_task done @thread=%s, num_tasks_added=%lu\n", to_string(std::this_thread::get_id()).c_str(), worker_proxy.tasks.size());
         };
         // Scheduler task must be anchored to add_task to sheduler_worker
-        this->workers_.front()->send_task(scheduler_task, true);
+        this->workers_.front()->send_task(std::move(scheduler_task), true);
 
         // Wait for all tasks do be done
         while (num_tasks_done.load() != total_num_tasks)
