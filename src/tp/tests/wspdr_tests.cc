@@ -1,7 +1,9 @@
-#include "utst.hpp"
-#include "wspdr.hpp"
-#include <cstdio>
 #include <algorithm>
+#include <cstdio>
+
+#include "utst.hpp"
+#include "wspdr_pool.hpp"
+
 using namespace TP;
 
 UTST_MAIN();
