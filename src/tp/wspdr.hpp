@@ -16,7 +16,7 @@ namespace TP
     class WSPDR : public POOL
     {
     public:
-        explicit WSPDR(size_t num_workers);
+        explicit WSPDR(size_t num_workers) : POOL(num_workers) {}
         virtual ~WSPDR();
 
         virtual void start() override;
@@ -33,24 +33,6 @@ namespace TP
 
 namespace TP
 {
-    inline WSPDR::WSPDR(size_t num_workers) : POOL(num_workers)
-    {
-        // Construct workers
-        this->workers_.reserve(num_workers);
-        std::generate_n(std::back_inserter(this->workers_), num_workers, []()
-                        { return std::make_unique<WSPDR_WORKER>(); });
-
-        // Initialize workers
-        std::vector<WSPDR_WORKER *> worker_ptrs;
-        worker_ptrs.reserve(num_workers);
-        std::transform(this->workers_.begin(), this->workers_.end(), std::back_inserter(worker_ptrs), [](const auto &p)
-                       { return p.get(); });
-        for (size_t worker_id = 0; worker_id < num_workers; worker_id++)
-        {
-            this->workers_[worker_id]->init(worker_id, worker_ptrs);
-        }
-    }
-
     inline WSPDR::~WSPDR()
     {
         this->terminate();
@@ -58,7 +40,27 @@ namespace TP
 
     inline void WSPDR::start()
     {
+        ASSERT(this->workers_.empty());
         ASSERT(this->executors_.empty());
+
+        const size_t n_workers = this->num_workers();
+
+        // Construct workers
+        this->workers_.reserve(n_workers);
+        std::generate_n(std::back_inserter(this->workers_), n_workers, []()
+                        { return std::make_unique<WSPDR_WORKER>(); });
+
+        // Initialize workers
+        std::vector<WSPDR_WORKER *> worker_ptrs;
+        worker_ptrs.reserve(n_workers);
+        std::transform(this->workers_.begin(), this->workers_.end(), std::back_inserter(worker_ptrs), [](const auto &p)
+                       { return p.get(); });
+        for (size_t worker_id = 0; worker_id < n_workers; worker_id++)
+        {
+            this->workers_[worker_id]->init(worker_id, worker_ptrs);
+        }
+
+        // Initialize executors
         this->executors_.reserve(this->workers_.size());
         for (const auto &worker : this->workers_)
         {
@@ -76,7 +78,7 @@ namespace TP
         {
             executor.join();
         }
-        // Do not delete the workers
+        this->workers_.clear();
         this->executors_.clear();
     }
 
@@ -84,7 +86,8 @@ namespace TP
     {
         ASSERT(!tasks.empty());
 
-        // Executors must be launched already
+        // Workers and executors must be launched already
+        ASSERT(!this->workers_.empty());
         ASSERT(!this->executors_.empty());
 
         // For synchronization

@@ -14,7 +14,7 @@ namespace TP
         virtual void terminate() = 0;
         // A single session of execution, blocking until completed
         virtual void execute(const std::vector<RAW_TASK> &tasks) = 0;
-        virtual void status() const = 0;
+        virtual void status() const {};
 
         size_t num_workers() const { return this->num_workers_; }
 
