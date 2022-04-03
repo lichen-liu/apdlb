@@ -13,17 +13,17 @@
 
 namespace TP
 {
-    class WSPDR
+    class WSPDR : public POOL
     {
     public:
         explicit WSPDR(size_t num_workers);
-        ~WSPDR();
+        virtual ~WSPDR();
 
-        void start();
-        void terminate();
+        virtual void start() override;
+        virtual void terminate() override;
         // A single session of execution, blocking until completed
-        void execute(const std::vector<RAW_TASK> &tasks);
-        void status() const;
+        virtual void execute(const std::vector<RAW_TASK> &tasks) override;
+        virtual void status() const override;
 
     private:
         std::vector<std::unique_ptr<WSPDR_WORKER>> workers_;
@@ -33,7 +33,7 @@ namespace TP
 
 namespace TP
 {
-    inline WSPDR::WSPDR(size_t num_workers)
+    inline WSPDR::WSPDR(size_t num_workers) : POOL(num_workers)
     {
         // Construct workers
         this->workers_.reserve(num_workers);
