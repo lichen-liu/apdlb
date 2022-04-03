@@ -156,34 +156,27 @@ python3 -m scripts.tussgui snapshot ./tmp/g/one_galaxy_138410*
 #### cpusim
 ```
 make run_cpusim ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 10000"
-# Base reference
+
+# BASIC, 1 thread
 make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t1 -V0"
-# Latest version
+# BASIC, 4 threads
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t4 -V0"
+# BASIC, 4 threads, threadpool
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t4 --thread_pool -V0"
+
+# SHARED_ACC
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t1 -V1"
+# SHARED_ACC, 4 threads
 make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t4 -V1"
-```
-```
-python3 -m scripts.benchmark cpu
+# SHARED_ACC, 4 threads, threadpool
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t4 --thread_pool -V1"
+
+# TP
+make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -t1 -V2"
 ```
 
-#### tus
 ```
-make run_tus ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 10000"
-# Base reference
-make run_tus ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -V0"
-# Latest version
-make run_tus ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n10 -v -V1"
-make run_tus ARGS="-i ./data/ic/s0_s112500.bin -d 0.001 -n10 -v -V1 -t32"
-make run_tus ARGS="-i ./data/ic/s0_s112500.bin -d 0.001 -n10 -v -V1 -t64"
-# Best performance
-make run_tus ARGS="-i ./data/ic/s0_s112500.bin -d 0.001 -n10 -b 100000 -v -V4 -t32 --len 1 --wid 256 --lur 1024"
-# Simple profilier
-nvprof ./build/tus/tus_exe -i ./data/ic/s0_s112500.bin -d 0.001 -n10 -b 100000 -v -V4 -t32 --len 1 --wid 256 --lur 1024
-```
-```
-# Deprecated
-python3 scripts/benchmark/cuda.py
-# Preferred
-python3 -m scripts.benchmark cuda
+python3 -m scripts.benchmark cpu
 ```
 
 ### Verification
@@ -194,20 +187,9 @@ make run_cpusim ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 500 --verify"
 make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n 2 -t 4 --verify"
 ```
 
-#### tus
-```
-make run_tus ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 500 --verify"
-make run_tus ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n 2 --verify"
-```
-
 ## CMake and Makefile
 
 ### Arg Passing to exe
 ```
 ARGS="<your_args>"
-```
-
-### Enable -ffast-math
-```
-CMAKE_ARGS="-DENABLE_FFAST_MATH=ON"
 ```

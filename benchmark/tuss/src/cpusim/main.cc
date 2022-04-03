@@ -10,6 +10,7 @@
 #include "core/utility.hpp"
 #include "basic_engine.h"
 #include "shared_acc_engine.h"
+#include "tp_engine.h"
 #include "reference.h"
 
 namespace
@@ -17,7 +18,9 @@ namespace
     enum class VERSION
     {
         BASIC = 0,
-        SHARED_ACC
+        SHARED_ACC = 1,
+        TP = 2,
+        DEFAULT = TP
     };
 }
 
@@ -38,7 +41,7 @@ auto parse_args(int argc, const char *argv[])
     option_group("t,num_threads", "num_threads for CPU", cxxopts::value<int>()->default_value("1"));
     option_group("thread_pool", "use thread pool for multithreading: optional (default off)");
     option_group("V,version", "version of optimization (0 - basic, 1 - shared acc edge): optional (default 1)",
-                 cxxopts::value<int>()->default_value(std::to_string(static_cast<int>(VERSION::SHARED_ACC))));
+                 cxxopts::value<int>()->default_value(std::to_string(static_cast<int>(VERSION::DEFAULT))));
     option_group("o,out", "system_state_log_dir: optional (default null)", cxxopts::value<std::string>());
     option_group("snapshot", "only dump out the final view, combined with --out: optional (default false)");
     option_group("verify", "verify 1 iteration result with reference algorithm: optional (default off)");
@@ -121,10 +124,14 @@ int main(int argc, const char *argv[])
         engine.reset(new CPUSIM::SHARED_ACC_ENGINE(
             system_state_ic, dt, n_thread, use_thread_pool, system_state_engine_log_dir_opt));
     }
-    else
+    else if (version == VERSION::BASIC)
     {
         engine.reset(new CPUSIM::BASIC_ENGINE(
             system_state_ic, dt, n_thread, use_thread_pool, system_state_engine_log_dir_opt));
+    }
+    else if (version == VERSION::TP)
+    {
+        engine.reset(new CPUSIM::TP_ENGINE(system_state_ic, dt, n_thread, system_state_engine_log_dir_opt));
     }
     timer.elapsed_previous("initializing_engine");
 
