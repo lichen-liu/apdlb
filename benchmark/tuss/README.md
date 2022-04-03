@@ -1,10 +1,5 @@
 # Tiny Universe Simulator System (TUSS)
 
-[![Build Status][actions-badge]][actions-url]
-
-[actions-badge]: https://github.com/qsnsidney/tuss/actions/workflows/makefile-src.yml/badge.svg
-[actions-url]: https://github.com/qsnsidney/tuss/actions?query=workflow%3Amakefile-src
-
 
 ## Algorithm
 Paper reference:  
@@ -15,19 +10,6 @@ Paper reference:
 ```
 # Compile all and run test_core
 make
-```
-
-### tus (main project)
-- Tiny Universe Simulator
-- The GPU simulator written in CUDA
-- Located in ./src/tus
-```
-# Compile only
-make tus
-# Compile and run
-make run_tus
-# Run with arguments
-make run_tus ARGS="any_args"
 ```
 
 ### cpusim
@@ -111,8 +93,6 @@ This format is the recommended format.
 ## Demo
 
 ### Visualization
-
-#### cpusim
 Solar System
 ```
 mkdir -p ./tmp/solar_sys_cpu_log
@@ -132,28 +112,7 @@ python3 -m scripts.tussgui snapshot ./tmp/s0_s112500_g100000_d100000*
 rm -rf ./tmp
 ```
 
-#### tus
-Solar System
-```
-mkdir -p ./tmp/solar_sys_tus_log
-make run_tus ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n10000 -o ./tmp/solar_sys_tus_log"
-python3 -m scripts.tussgui trajectory_still ./tmp/solar_sys_tus_log
-# Or, some animation
-python3 -m scripts.tussgui trajectory_live ./tmp/solar_sys_tus_log
-rm -rf ./tmp/solar_sys_tus_log
-```
-
-Galaxy
-```
-mkdir -p ./tmp/g
-make run_tus ARGS="-i ./data/ic/one_galaxy_138410.bin -d 0.001 -n10000 -o ./tmp/g --snapshot -V4 --len=1 --wid=512 --luf=1024"
-python3 -m scripts.tussgui snapshot ./data/ic/one_galaxy_138410.bin
-python3 -m scripts.tussgui snapshot ./tmp/g/one_galaxy_138410*
-```
-
 ### Performance
-
-#### cpusim
 ```
 make run_cpusim ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 10000"
 
@@ -180,8 +139,6 @@ python3 -m scripts.benchmark cpu
 ```
 
 ### Verification
-
-#### cpusim
 ```
 make run_cpusim ARGS="-i ./data/ic/solar_system.csv -d 0.05 -n 500 --verify"
 make run_cpusim ARGS="-i ./data/ic/benchmark_100000.bin -d 0.001 -n 2 -t 4 --verify"
