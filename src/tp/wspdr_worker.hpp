@@ -1,7 +1,6 @@
 #pragma once
 
 #include <thread>
-#include <optional>
 #include <vector>
 #include <deque>
 #include <atomic>
