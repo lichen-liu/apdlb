@@ -6,9 +6,10 @@
 #include "macros.hpp"
 #include "message.hpp"
 #include "utils.hpp"
+#include "pool.hpp"
 #include "wspdr_worker.hpp"
 
-/// work stealing private deque pool - receiver initiated
+/// Work Stealing Private Deque pool - Receiver initiated
 
 namespace TP
 {

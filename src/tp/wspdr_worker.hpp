@@ -11,7 +11,7 @@
 #include "message.hpp"
 #include "utils.hpp"
 
-/// work stealing private deque worker - receiver initiated
+/// Work Stealing Private Deque worker - Receiver initiated
 
 namespace TP
 {
