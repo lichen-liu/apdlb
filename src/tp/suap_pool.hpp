@@ -12,16 +12,16 @@
 #include "macros.hpp"
 #include "pool.hpp"
 
-/// Statically and Uniformly Assigned Private pool
+/// Statically and Uniformly Assigned Private POOL
 
 namespace TP
 {
     class SUAP_WORKER;
-    class SUAP : public POOL
+    class SUAP_POOL : public POOL
     {
     public:
-        explicit SUAP(size_t num_workers) : POOL(num_workers) {}
-        virtual ~SUAP();
+        explicit SUAP_POOL(size_t num_workers) : POOL(num_workers) {}
+        virtual ~SUAP_POOL();
 
         virtual void start() override;
         virtual void terminate() override;
@@ -82,12 +82,12 @@ namespace TP
 
 namespace TP
 {
-    inline SUAP::~SUAP()
+    inline SUAP_POOL::~SUAP_POOL()
     {
         this->terminate();
     }
 
-    inline void SUAP::start()
+    inline void SUAP_POOL::start()
     {
         ASSERT(this->workers_.empty());
         ASSERT(this->executors_.empty());
@@ -107,7 +107,7 @@ namespace TP
         }
     }
 
-    inline void SUAP::terminate()
+    inline void SUAP_POOL::terminate()
     {
         for (const auto &worker : this->workers_)
         {
@@ -121,7 +121,7 @@ namespace TP
         this->executors_.clear();
     }
 
-    inline void SUAP::execute(const std::vector<RAW_TASK> &tasks)
+    inline void SUAP_POOL::execute(const std::vector<RAW_TASK> &tasks)
     {
         ASSERT(!tasks.empty());
 

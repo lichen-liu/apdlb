@@ -20,7 +20,7 @@ UTST_TEST(sorting)
     timer.elapsed_previous("init_tasks");
 
     {
-        SUAP pool(num_workers);
+        SUAP_POOL pool(num_workers);
         pool.start();
         timer.elapsed_previous("init_suap");
 
@@ -30,7 +30,7 @@ UTST_TEST(sorting)
     timer.elapsed_previous("terminate_suap");
 
     {
-        WSPDR pool(num_workers);
+        WSPDR_POOL pool(num_workers);
         pool.start();
         timer.elapsed_previous("init_wspdr");
 

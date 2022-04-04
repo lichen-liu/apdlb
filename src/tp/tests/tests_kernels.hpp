@@ -21,6 +21,8 @@ namespace TESTS
     std::tuple<std::function<size_t()>, std::vector<TP::RAW_TASK>, std::unique_ptr<std::atomic<size_t>>>
     generate_collatz_conjecture_tasks();
 
+    void sorting_kernel(size_t lower, size_t upper);
+
     std::vector<TP::RAW_TASK> generate_sorting_tasks(size_t num_tasks);
 }
 
@@ -101,14 +103,13 @@ namespace TESTS
         return {std::move(single_task), std::move(tasks), std::move(result_ptr)};
     }
 
-    inline std::vector<TP::RAW_TASK> generate_sorting_tasks(size_t num_tasks)
+    inline void sorting_kernel(size_t lower, size_t upper)
     {
         constexpr size_t offset = 1;
         constexpr size_t scale = 30000;
-
-        auto task = [](size_t task_id)
+        for (size_t i = lower; i < upper; i++)
         {
-            size_t n = offset + task_id * scale;
+            size_t n = offset + i * scale;
 
             std::mt19937 mersenne_engine;
             std::uniform_real_distribution<float> dist{0, 1.0};
@@ -120,10 +121,13 @@ namespace TESTS
             std::generate(vec.begin(), vec.end(), gen);
 
             std::sort(vec.begin(), vec.end());
-            // printf("task=%lu size=%lu done\n", task_id, vec.size());
-        };
+            // printf("task=%lu size=%lu done\n", i, vec.size());
+        }
+    }
 
-        return generate_n_tasks(num_tasks, [task](size_t i)
-                                { task(i); });
+    inline std::vector<TP::RAW_TASK> generate_sorting_tasks(size_t num_tasks)
+    {
+        return generate_n_tasks(num_tasks, [](size_t i)
+                                { sorting_kernel(i, i + 1); });
     }
 }

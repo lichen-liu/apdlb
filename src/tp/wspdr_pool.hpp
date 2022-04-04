@@ -14,16 +14,16 @@
 #include "task.hpp"
 #include "utils.hpp"
 
-/// Work Stealing Private Deque pool - Receiver initiated
+/// Work Stealing Private Deque POOL - Receiver initiated
 
 namespace TP
 {
     class WSPDR_WORKER;
-    class WSPDR : public POOL
+    class WSPDR_POOL : public POOL
     {
     public:
-        explicit WSPDR(size_t num_workers) : POOL(num_workers) {}
-        virtual ~WSPDR();
+        explicit WSPDR_POOL(size_t num_workers) : POOL(num_workers) {}
+        virtual ~WSPDR_POOL();
 
         virtual void start() override;
         virtual void terminate() override;
@@ -92,12 +92,12 @@ namespace TP
 
 namespace TP
 {
-    inline WSPDR::~WSPDR()
+    inline WSPDR_POOL::~WSPDR_POOL()
     {
         this->terminate();
     }
 
-    inline void WSPDR::start()
+    inline void WSPDR_POOL::start()
     {
         ASSERT(this->workers_.empty());
         ASSERT(this->executors_.empty());
@@ -127,7 +127,7 @@ namespace TP
         }
     }
 
-    inline void WSPDR::terminate()
+    inline void WSPDR_POOL::terminate()
     {
         for (const auto &worker : this->workers_)
         {
@@ -141,7 +141,7 @@ namespace TP
         this->executors_.clear();
     }
 
-    inline void WSPDR::execute(const std::vector<RAW_TASK> &tasks)
+    inline void WSPDR_POOL::execute(const std::vector<RAW_TASK> &tasks)
     {
         ASSERT(!tasks.empty());
 
@@ -181,10 +181,10 @@ namespace TP
         }
     }
 
-    inline void WSPDR::status() const
+    inline void WSPDR_POOL::status() const
     {
         warn("===================\n");
-        warn("[WSPDR] workers=%lu, executors=%lu]\n", this->workers_.size(), this->executors_.size());
+        warn("[WSPDR_POOL] workers=%lu, executors=%lu]\n", this->workers_.size(), this->executors_.size());
         for (const auto &worker : this->workers_)
         {
             worker->status();

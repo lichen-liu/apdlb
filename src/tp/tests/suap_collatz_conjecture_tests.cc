@@ -35,7 +35,7 @@ UTST_TEST(computation)
 
     // Pool execution result
     *result_ptr = 0;
-    SUAP pool(4);
+    SUAP_POOL pool(4);
     pool.start();
     timer.elapsed_previous("pool_init");
     pool.execute(tasks);
