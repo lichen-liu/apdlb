@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdio>
 #include <string>
 #include <sys/time.h>
-#include "message.hpp"
 
 namespace TP
 {
@@ -40,7 +40,7 @@ namespace TP
 
     inline TIMER::TIMER(std::string profile_name) : start_time_(get_time_stamp()), previous_elapsing_time_(start_time_), profile_name_(std::move(profile_name))
     {
-        warn("TIMER: Starting profile (%s)\n", profile_name_.c_str());
+        printf("TIMER: Starting profile (%s)\n", profile_name_.c_str());
     }
 
     inline TIMER::~TIMER()
@@ -55,7 +55,7 @@ namespace TP
         double elapsed = current_time - previous_elapsing_time_;
 
         std::string elapsed_str = std::to_string(elapsed);
-        warn("TIMER: Subprofile [%s/%s]: %s seconds\n", profile_name_.c_str(), subprofile_name.c_str(), elapsed_str.c_str());
+        printf("TIMER: Subprofile [%s/%s]: %s seconds\n", profile_name_.c_str(), subprofile_name.c_str(), elapsed_str.c_str());
         previous_elapsing_time_ = current_time;
 
         return elapsed;
@@ -67,7 +67,7 @@ namespace TP
         double elapsed = current_time - start_time_;
 
         std::string elapsed_str = std::to_string(elapsed);
-        warn("TIMER: Profile [%s]: %s seconds\n", profile_name_.c_str(), elapsed_str.c_str());
+        printf("TIMER: Profile [%s]: %s seconds\n", profile_name_.c_str(), elapsed_str.c_str());
 
         return elapsed;
     }
