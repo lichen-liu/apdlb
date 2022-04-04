@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <functional>
 #include <memory>
@@ -94,8 +95,8 @@ namespace TESTS
         std::vector<TP::RAW_TASK> tasks =
             generate_n_tasks(num_shards,
                              [result = result_ptr.get()](size_t i)
-                             { (*result).fetch_add(
-                                   TESTS::collatz_conjecture_kernel(offset + i * shard_size, offset + (i + 1) * shard_size, num_attempts)); });
+                             { *result +=
+                                   TESTS::collatz_conjecture_kernel(offset + i * shard_size, offset + (i + 1) * shard_size, num_attempts); });
 
         return {std::move(single_task), std::move(tasks), std::move(result_ptr)};
     }
