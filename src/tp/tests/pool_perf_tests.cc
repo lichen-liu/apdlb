@@ -23,3 +23,15 @@ UTST_TEST(sorting)
     TESTS::quick_launch<SUAP_POOL>(num_workers, tasks);
     TESTS::quick_launch<WSPDR_POOL>(num_workers, tasks);
 }
+
+UTST_TEST(matvecp)
+{
+    constexpr size_t num_tasks = 100;
+    constexpr size_t num_workers = 4;
+
+    std::vector<RAW_TASK> tasks = TESTS::generate_matvecp_tasks(num_tasks);
+
+    // TESTS::quick_launch<SERIAL_POOL>(num_workers, tasks);
+    TESTS::quick_launch<SUAP_POOL>(num_workers, tasks);
+    TESTS::quick_launch<WSPDR_POOL>(num_workers, tasks);
+}
