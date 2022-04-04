@@ -18,4 +18,31 @@ namespace TESTS
         }
         return tasks;
     }
+
+    inline size_t collatz_conjecture_kernel(size_t lower, size_t upper)
+    {
+        size_t step = 0;
+        for (size_t i = lower; i < upper; i++)
+        {
+            if (i == 0)
+            {
+                continue;
+            }
+            size_t num = i;
+            while (num != 1)
+            {
+                if (num % 2 == 0)
+                {
+                    num /= 2;
+                }
+                else
+                {
+                    num *= 3;
+                    num++;
+                }
+                step++;
+            }
+        }
+        return step;
+    }
 }
