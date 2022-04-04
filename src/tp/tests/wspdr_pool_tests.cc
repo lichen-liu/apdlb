@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "serial_pool.hpp"
+#include "tests_helper.hpp"
 #include "tests_kernels.hpp"
 #include "timer.hpp"
 #include "utst.hpp"
@@ -12,25 +14,14 @@ using namespace TP;
 
 UTST_MAIN();
 
-namespace
-{
-    std::unique_ptr<WSPDR_POOL> quick_launch(size_t num_workers, const std::vector<RAW_TASK> &tasks)
-    {
-        auto pool = std::make_unique<WSPDR_POOL>(num_workers);
-        pool->start();
-        pool->execute(tasks);
-        return pool;
-    }
-}
-
 UTST_TEST(simple)
 {
-    quick_launch(2, TESTS::generate_simple_print_tasks(2));
+    TESTS::quick_launch<WSPDR_POOL>(2, TESTS::generate_simple_print_tasks(2));
 }
 
 UTST_TEST(simple_with_idle_worker)
 {
-    quick_launch(4, TESTS::generate_simple_print_tasks(2));
+    TESTS::quick_launch<WSPDR_POOL>(4, TESTS::generate_simple_print_tasks(2));
 }
 
 UTST_TEST(multi_session)
@@ -48,37 +39,25 @@ UTST_TEST(multi_session)
 
 UTST_TEST(collatz_conjecture)
 {
-    TIMER timer("collatz_conjecture");
-
     auto [serial_task, tasks, result_ptr] = TESTS::generate_collatz_conjecture_tasks();
-    timer.elapsed_previous("init");
 
     // Serial execution result
+    TIMER timer("serial");
     size_t serial_result = serial_task();
     printf("serial total_num_steps=%lu\n", serial_result);
-    timer.elapsed_previous("serial");
+    timer.elapsed_start();
 
     // Serial chunk execution result
     *result_ptr = 0;
-    for (const auto &task : tasks)
-    {
-        task();
-    }
+    TESTS::quick_launch<SERIAL_POOL>(1, tasks);
     size_t serial_chunk_result = *result_ptr;
     printf("serial chunk total_num_steps=%lu\n", serial_chunk_result);
-    timer.elapsed_previous("serial_chunk");
 
     // Pool execution result
     *result_ptr = 0;
-    WSPDR_POOL pool(4);
-    pool.start();
-    timer.elapsed_previous("pool_init");
-    pool.execute(tasks);
+    TESTS::quick_launch<WSPDR_POOL>(4, tasks);
     size_t pool_result = *result_ptr;
     printf("pool total_num_steps=%lu\n", pool_result);
-    timer.elapsed_previous("pool");
-
-    pool.status();
 
     UTST_ASSERT_EQUAL(serial_result, serial_chunk_result);
     UTST_ASSERT_EQUAL(serial_result, pool_result);

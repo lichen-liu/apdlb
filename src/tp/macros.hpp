@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 /*
  * Concatenate preprocessor tokens A and B without expanding macro definitions
