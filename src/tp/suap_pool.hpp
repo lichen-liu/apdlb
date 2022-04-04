@@ -1,10 +1,11 @@
 #pragma once
 
-#include <vector>
-#include <thread>
+#include <algorithm>
+#include <atomic>
 #include <memory>
 #include <optional>
-#include <atomic>
+#include <thread>
+#include <vector>
 
 #include "macros.hpp"
 #include "pool.hpp"
@@ -13,6 +14,23 @@
 
 namespace TP
 {
+    class SUAP_WORKER;
+    class SUAP : public POOL
+    {
+    public:
+        explicit SUAP(size_t num_workers) : POOL(num_workers) {}
+        virtual ~SUAP();
+
+        virtual void start() override;
+        virtual void terminate() override;
+        // A single session of execution, blocking until completed
+        virtual void execute(const std::vector<RAW_TASK> &tasks) override;
+
+    private:
+        std::vector<std::unique_ptr<SUAP_WORKER>> workers_;
+        std::vector<std::thread> executors_;
+    };
+
     /// A channel with capacity 1 that supports backpressure.
     /// 1. The channel has a capacity of 1, i.e., no buffering.
     /// 2. A send call fulfills the channel, and holds the content until
@@ -46,31 +64,106 @@ namespace TP
         std::unique_ptr<STATE> state_ptr_;
     };
 
-    class SUAP : public POOL
+    class SUAP_WORKER
     {
     public:
-        explicit SUAP(size_t num_workers) : POOL(num_workers) {}
-        virtual ~SUAP();
-
-        virtual void start() override;
-        virtual void terminate() override;
-        // A single session of execution, blocking until completed
-        virtual void execute(const std::vector<RAW_TASK> &tasks) override;
-
-        // Function signature: void(size_t thread_id)
-        template <typename Function>
-        void run(Function &&f);
+        void run(); // Running on a thread
+        void send_task(RAW_TASK task);
+        void terminate();
 
     private:
-        using thread_event_type = std::function<bool()>; // true to continue thread event loop; false to terminate
-        using thread_event_launch_channel = CHANNEL_LITE<thread_event_type>;
-        std::vector<std::thread> threads_;
-        std::vector<thread_event_launch_channel> threads_launch_channel_;
+        using thread_task_type = std::function<bool()>; // true to continue thread event loop; false to terminate
+        CHANNEL_LITE<thread_task_type> task_launch_channel_;
     };
+
 }
 
 namespace TP
 {
+    inline SUAP::~SUAP()
+    {
+        this->terminate();
+    }
+
+    inline void SUAP::start()
+    {
+        ASSERT(this->workers_.empty());
+        ASSERT(this->executors_.empty());
+
+        const size_t n_workers = this->num_workers();
+
+        // Consruct workers
+        this->workers_.reserve(n_workers);
+        std::generate_n(std::back_inserter(this->workers_), n_workers, []()
+                        { return std::make_unique<SUAP_WORKER>(); });
+
+        // Initialize executors
+        this->executors_.reserve(n_workers);
+        for (const auto &worker : this->workers_)
+        {
+            this->executors_.emplace_back(&SUAP_WORKER::run, worker.get());
+        }
+    }
+
+    inline void SUAP::terminate()
+    {
+        for (const auto &worker : this->workers_)
+        {
+            worker->terminate();
+        }
+        for (auto &executor : this->executors_)
+        {
+            executor.join();
+        }
+        this->workers_.clear();
+        this->executors_.clear();
+    }
+
+    inline void SUAP::execute(const std::vector<RAW_TASK> &tasks)
+    {
+        ASSERT(!tasks.empty());
+
+        // Workers and executors must be launched already
+        ASSERT(!this->workers_.empty());
+        ASSERT(!this->executors_.empty());
+
+        const size_t num_tasks = tasks.size();
+        const size_t n_workers = this->num_workers();
+        size_t num_tasks_per_thread = (num_tasks - 1) / n_workers + 1;
+        std::atomic<size_t> n_workers_done = 0;
+
+        // Launch
+        size_t num_tasks_added = 0;
+        for (size_t worker_id = 0; worker_id < n_workers; worker_id++)
+        {
+            if (num_tasks_added >= num_tasks)
+            {
+                continue;
+            }
+            const size_t num_tasks_for_current_thread = std::min(num_tasks_per_thread, num_tasks - num_tasks_added);
+            num_tasks_added += num_tasks_for_current_thread;
+
+            std::vector<RAW_TASK> thread_tasks(
+                tasks.begin() + num_tasks_added - num_tasks_for_current_thread,
+                tasks.begin() + num_tasks_added);
+
+            auto thread_master_task = [thread_tasks = std::move(thread_tasks), &n_workers_done]()
+            {
+                for (const auto &task : thread_tasks)
+                {
+                    task();
+                }
+                n_workers_done++;
+            };
+            this->workers_[worker_id]->send_task(std::move(thread_master_task));
+        }
+
+        // Synchronize
+        while (n_workers_done.load() != n_workers)
+        {
+        }
+    }
+
     template <typename T>
     bool CHANNEL_LITE<T>::try_send(T data)
     {
@@ -99,94 +192,35 @@ namespace TP
         return data;
     }
 
-    inline SUAP::~SUAP()
+    inline void SUAP_WORKER::run()
     {
-        this->terminate();
-    }
-
-    inline void SUAP::start()
-    {
-        ASSERT(this->threads_.empty());
-        ASSERT(this->threads_launch_channel_.empty());
-
-        const size_t num_threads = this->num_workers();
-        this->threads_launch_channel_.resize(num_threads);
-        this->threads_.reserve(num_threads);
-        for (size_t thread_id = 0; thread_id < num_threads; thread_id++)
+        while (true)
         {
-            auto thread_worker = [&ch = threads_launch_channel_[thread_id]]()
+            thread_task_type task = this->task_launch_channel_.receive(); // Blocking wait
+            bool should_continue = task();
+            if (!should_continue)
             {
-                while (true)
-                {
-                    thread_event_type event = ch.receive(); // Blocking wait
-                    bool should_continue = event();
-                    if (!should_continue)
-                    {
-                        break;
-                    }
-                }
-            };
-            this->threads_.emplace_back(std::move(thread_worker));
-        }
-        ASSERT(this->threads_launch_channel_.size() == this->threads_.size());
-    }
-
-    inline void SUAP::terminate()
-    {
-        auto thread_quit_event = []()
-        { return false; };
-
-        for (auto &ch : this->threads_launch_channel_)
-        {
-            bool is_sent = ch.try_send(thread_quit_event);
-            ASSERT(is_sent);
-        }
-        for (auto &thread : this->threads_)
-        {
-            thread.join();
-        }
-        this->threads_.clear();
-        this->threads_launch_channel_.clear();
-    }
-
-    inline void SUAP::execute(const std::vector<RAW_TASK> &tasks)
-    {
-        const size_t num_tasks = tasks.size();
-        const size_t num_threads = this->num_workers();
-        size_t num_tasks_per_thread = (num_tasks - 1) / num_threads + 1;
-        std::atomic<size_t> num_threads_done = 0;
-
-        // Launch
-        size_t num_tasks_added = 0;
-        for (size_t thread_id = 0; thread_id < num_threads; thread_id++)
-        {
-            if (num_tasks_added >= num_tasks)
-            {
-                continue;
+                break;
             }
-            const size_t num_tasks_for_current_thread = std::min(num_tasks_per_thread, num_tasks - num_tasks_added);
-            num_tasks_added += num_tasks_for_current_thread;
-
-            std::vector<RAW_TASK> thread_tasks(
-                tasks.begin() + num_tasks_added - num_tasks_for_current_thread,
-                tasks.begin() + num_tasks_added);
-
-            auto thread_master_task = [thread_tasks = std::move(thread_tasks), &num_threads_done]()
-            {
-                for (const auto &task : thread_tasks)
-                {
-                    task();
-                }
-                num_threads_done++;
-                return true;
-            };
-            bool is_sent = this->threads_launch_channel_[thread_id].try_send(std::move(thread_master_task));
-            ASSERT(is_sent);
         }
+    }
 
-        // Synchronize
-        while (num_threads_done != num_threads)
+    inline void SUAP_WORKER::send_task(RAW_TASK task)
+    {
+        auto thread_task = [task = std::move(task)]
         {
-        }
+            task();
+            return true;
+        };
+        bool is_sent = this->task_launch_channel_.try_send(std::move(thread_task));
+        ASSERT(is_sent);
+    }
+
+    inline void SUAP_WORKER::terminate()
+    {
+        static const auto thread_quit_task = []()
+        { return false; };
+        bool is_sent = this->task_launch_channel_.try_send(thread_quit_task);
+        ASSERT(is_sent);
     }
 }
