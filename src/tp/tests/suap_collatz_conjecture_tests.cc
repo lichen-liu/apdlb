@@ -1,11 +1,11 @@
-#define MESSAGE_LEVEL 1
+#define MESSAGE_LEVEL 0
 
 #include <cstdio>
 
+#include "suap_pool.hpp"
 #include "tests_kernels.hpp"
 #include "timer.hpp"
 #include "utst.hpp"
-#include "wspdr_pool.hpp"
 
 using namespace TP;
 
@@ -48,7 +48,7 @@ UTST_TEST(computation)
 
     // Pool execution result
     result = 0;
-    WSPDR pool(4);
+    SUAP pool(4);
     pool.start();
     timer.elapsed_previous("pool_init");
     pool.execute(tasks);
