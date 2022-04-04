@@ -130,9 +130,10 @@ namespace TP
         const size_t num_tasks = tasks.size();
         const size_t n_workers = this->num_workers();
         size_t num_tasks_per_thread = (num_tasks - 1) / n_workers + 1;
-        std::atomic<size_t> n_workers_done = 0;
 
-        // Launch
+        // Prepare thread master task
+        std::vector<RAW_TASK> thread_master_tasks;
+        std::atomic<size_t> n_workers_done = 0;
         size_t num_tasks_added = 0;
         for (size_t worker_id = 0; worker_id < n_workers; worker_id++)
         {
@@ -155,11 +156,18 @@ namespace TP
                 }
                 n_workers_done++;
             };
-            this->workers_[worker_id]->send_task(std::move(thread_master_task));
+            thread_master_tasks.emplace_back(std::move(thread_master_task));
+        }
+
+        // Launch
+        const size_t n_workers_launched = thread_master_tasks.size();
+        for (size_t worker_id = 0; worker_id < n_workers_launched; worker_id++)
+        {
+            this->workers_[worker_id]->send_task(thread_master_tasks[worker_id]);
         }
 
         // Synchronize
-        while (n_workers_done.load() != n_workers)
+        while (n_workers_done.load() != n_workers_launched)
         {
         }
     }
