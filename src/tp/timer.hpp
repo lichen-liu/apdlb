@@ -50,11 +50,10 @@ namespace TP
 
     inline double TIMER::elapsed_previous(const std::string &subprofile_name)
     {
+        const double current_time = get_time_stamp();
+        const double elapsed = current_time - previous_elapsing_time_;
 
-        double current_time = get_time_stamp();
-        double elapsed = current_time - previous_elapsing_time_;
-
-        std::string elapsed_str = std::to_string(elapsed);
+        const std::string elapsed_str = std::to_string(elapsed);
         printf("TIMER: Subprofile [%s/%s]: %s seconds\n", profile_name_.c_str(), subprofile_name.c_str(), elapsed_str.c_str());
         previous_elapsing_time_ = current_time;
 
@@ -63,10 +62,10 @@ namespace TP
 
     inline double TIMER::elapsed_start() const
     {
-        double current_time = get_time_stamp();
-        double elapsed = current_time - start_time_;
+        const double current_time = get_time_stamp();
+        const double elapsed = current_time - start_time_;
 
-        std::string elapsed_str = std::to_string(elapsed);
+        const std::string elapsed_str = std::to_string(elapsed);
         printf("TIMER: Profile [%s]: %s seconds\n", profile_name_.c_str(), elapsed_str.c_str());
 
         return elapsed;
