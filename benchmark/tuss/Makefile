@@ -11,7 +11,8 @@ clean:
 
 # CMAKE_ARGS="-DENABLE_FFAST_MATH=ON"
 prepare:
-	cmake ${CMAKE_ARGS} -B build
+	mkdir -p build
+	cd build && cmake ${CMAKE_ARGS} ../
 	@echo [=== cmake is successfully prepared ===]
 	@echo 
 .PHONY: prepare
