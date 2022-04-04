@@ -1,3 +1,5 @@
+#define MESSAGE_LEVEL 0
+
 #include <algorithm>
 #include <cstdio>
 

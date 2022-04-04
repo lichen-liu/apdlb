@@ -2,7 +2,10 @@
 
 #include <cstdio>
 
+// Set a default MESSAGE_LEVEL if undefined
+#ifndef MESSAGE_LEVEL
 #define MESSAGE_LEVEL 2
+#endif
 
 #if MESSAGE_LEVEL >= 1
 #define warn(fmt, ...) printf("W-" fmt, ##__VA_ARGS__)
