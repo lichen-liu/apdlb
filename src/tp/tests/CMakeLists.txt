@@ -19,10 +19,14 @@ add_test(tp_suap_simple_print_tests suap_simple_print_tests)
 add_executable(suap_collatz_conjecture_tests suap_collatz_conjecture_tests.cc)
 add_test(tp_suap_collatz_conjecture_tests suap_collatz_conjecture_tests)
 
+add_executable(pool_perf_tests pool_perf_tests.cc)
+add_test(tp_pool_perf_tests pool_perf_tests)
+
 # Add test executable here
 add_custom_target(tp_tests)
 add_dependencies(tp_tests
     wspdr_simple_print_tests
     wspdr_collatz_conjecture_tests
     suap_simple_print_tests
-    suap_collatz_conjecture_tests)
+    suap_collatz_conjecture_tests
+    pool_perf_tests)

@@ -101,15 +101,15 @@ namespace TESTS
 
     inline std::vector<TP::RAW_TASK> generate_sorting_tasks(size_t num_tasks)
     {
-        constexpr size_t offset = 1000000;
-        constexpr size_t scale = 1000;
+        constexpr size_t offset = 1;
+        constexpr size_t scale = 30000;
 
         auto task = [](size_t task_id)
         {
             size_t n = offset + task_id * scale;
 
             std::mt19937 mersenne_engine;
-            std::uniform_int_distribution<float> dist{0, 1.0};
+            std::uniform_real_distribution<float> dist{0, 1.0};
             auto gen = [&dist, &mersenne_engine]()
             {
                 return dist(mersenne_engine);
@@ -118,6 +118,7 @@ namespace TESTS
             std::generate(vec.begin(), vec.end(), gen);
 
             std::sort(vec.begin(), vec.end());
+            // printf("task=%lu size=%lu done\n", task_id, vec.size());
         };
 
         return generate_n_tasks(num_tasks, [task](size_t i)
