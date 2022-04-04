@@ -1,11 +1,13 @@
 #pragma once
 
-#include "macros.hpp"
-#include <sstream>
 #include <functional>
-#include <vector>
 #include <iostream>
+#include <sstream>
 #include <tuple>
+#include <vector>
+
+#include "macros.hpp"
+#include "timer.hpp"
 
 /// Helpers
 
@@ -33,13 +35,18 @@ namespace TP::UTST
                 if (is_active)
                 {
                     std::cout << "====================================\n";
-                    std::cout << "Running test [" << f_name << "] ..\n\n";
+                    std::cout << "... Running test [" << f_name << "]\n\n";
+                    const double start_time = get_time_stamp();
                     f();
+                    const double end_time = get_time_stamp();
+                    const double elapsed = end_time - start_time;
+                    const std::string elapsed_str = std::to_string(elapsed);
+                    std::cout << "... DONE    test [" << f_name << "] in " << elapsed_str << "seconds\n";
                 }
                 else
                 {
                     std::cout << "====================================\n";
-                    std::cout << "Not running test [" << f_name << "] ..\n\n";
+                    std::cout << "... Not running test [" << f_name << "]\n\n";
                 }
             }
         }

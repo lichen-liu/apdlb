@@ -4,6 +4,7 @@ project(tp_tests)
 include_directories(..)
 link_libraries(tp)
 
+add_compile_options(-Werror -Wall -Wno-missing-braces -O3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
