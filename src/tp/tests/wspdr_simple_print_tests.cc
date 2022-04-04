@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "tests_kernels.hpp"
 #include "utst.hpp"
 #include "wspdr_pool.hpp"
 
@@ -17,28 +18,16 @@ namespace
         pool->execute(tasks);
         return pool;
     }
-
-    std::vector<RAW_TASK> generate_simple_print_tasks(size_t num_tasks)
-    {
-        std::vector<RAW_TASK> tasks;
-        tasks.reserve(num_tasks);
-        for (size_t i = 0; i < num_tasks; i++)
-        {
-            tasks.emplace_back([i]()
-                               { printf("%lu\n", i); });
-        }
-        return tasks;
-    }
 }
 
 UTST_TEST(simple)
 {
-    quick_launch(2, generate_simple_print_tasks(2));
+    quick_launch(2, TESTS::generate_simple_print_tasks(2));
 }
 
 UTST_TEST(simple_with_idle_worker)
 {
-    quick_launch(4, generate_simple_print_tasks(2));
+    quick_launch(4, TESTS::generate_simple_print_tasks(2));
 }
 
 UTST_TEST(multi_session)
@@ -49,7 +38,7 @@ UTST_TEST(multi_session)
     for (int i = 1; i <= size; i++)
     {
         printf("generate_simple_print_tasks(%d)\n", i);
-        pool.execute(generate_simple_print_tasks(i));
+        pool.execute(TESTS::generate_simple_print_tasks(i));
         pool.status();
     }
 }
