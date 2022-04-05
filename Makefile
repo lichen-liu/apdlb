@@ -35,7 +35,7 @@ test_tp: tp
 # rc
 ifdef ROSE_PATH # ROSE Compiler exists
 rc: prepare
-	$(MAKE) -C build rc
+	$(MAKE) -C build rc_all
 	@echo [=== rc is successfully built ===]
 	@echo 
 .PHONY: rc

@@ -2,9 +2,22 @@ cmake_minimum_required(VERSION 3.0.0)
 project(rc VERSION 0.1.0)
 include(CTest)
 
-add_compile_options(-Werror -Wall -Wno-missing-braces -O3)
+if(DEFINED ENV{ROSE_PATH})
+    set(ROSE_INSTALL_DIR $ENV{ROSE_PATH})
+else()
+    message(FATAL_ERROR "ROSE_PATH env is not defined for rc")
+endif()
+
+add_compile_options(-Wall -Wno-missing-braces -O3) #-Werror
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(ROSE_INCLUDE_DIR ${ROSE_INSTALL_DIR}/include)
+message(INFO ${ROSE_INCLUDE_DIR})
+include_directories(${ROSE_INCLUDE_DIR} ${ROSE_INCLUDE_DIR}/rose)
+
+set(ROSE_LIB_DIR ${ROSE_INSTALL_DIR}/lib)
+link_libraries(${ROSE_LIB_DIR}/librose.la)
 
 file(GLOB_RECURSE rc_lib_SRC
     "*.cpp"
