@@ -12,19 +12,22 @@ add_compile_options(-Wall -Wno-missing-braces -O3) #-Werror
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Set up ROSE
 set(ROSE_INCLUDE_DIR ${ROSE_INSTALL_DIR}/include)
 include_directories(${ROSE_INCLUDE_DIR} ${ROSE_INCLUDE_DIR}/rose)
 
 set(ROSE_LIB_DIR ${ROSE_INSTALL_DIR}/lib)
 link_directories(${ROSE_LIB_DIR})
 message(INFO ${ROSE_LIB_DIR})
-link_libraries(librose.so)
+
+# Set up Boost
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 file(GLOB_RECURSE rc_lib_SRC
     "*.cpp"
 )
 add_library(rc ${rc_lib_SRC})
-target_link_libraries(rc)
+target_link_libraries(rc librose.so ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 add_executable(rc_exe main.cc)
 target_link_libraries(rc_exe rc)
