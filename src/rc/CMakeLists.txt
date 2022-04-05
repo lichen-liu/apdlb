@@ -8,7 +8,7 @@ else()
     message(FATAL_ERROR "ROSE_PATH env is not defined for rc")
 endif()
 
-add_compile_options(-Wall -Wno-missing-braces -O3) #-Werror
+add_compile_options(-Werror -Wall -Wno-misleading-indentation -Wno-missing-braces -O3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
