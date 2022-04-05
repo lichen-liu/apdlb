@@ -9,7 +9,7 @@ See `src/tp`
 ## Auto Parallelization with Rose Compiler
 
 ### (Optional) Rose Compiler Installation via Docker
-[link](https://github.com/rose-compiler/rose/wiki/Install-ROSE-with-Clang-as-frontend#full-version)
+[ROSE Installation link](https://github.com/rose-compiler/rose/wiki/Install-ROSE-with-Clang-as-frontend#full-version)
 ```bash
 docker pull ouankou/rose:clang-develop
 ```
