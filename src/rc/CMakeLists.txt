@@ -17,7 +17,8 @@ include_directories(${ROSE_INCLUDE_DIR} ${ROSE_INCLUDE_DIR}/rose)
 
 set(ROSE_LIB_DIR ${ROSE_INSTALL_DIR}/lib)
 link_directories(${ROSE_LIB_DIR})
-link_libraries(librose)
+message(INFO ${ROSE_LIB_DIR})
+link_libraries(librose.so)
 
 file(GLOB_RECURSE rc_lib_SRC
     "*.cpp"
