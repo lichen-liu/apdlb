@@ -13,11 +13,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(ROSE_INCLUDE_DIR ${ROSE_INSTALL_DIR}/include)
-message(INFO ${ROSE_INCLUDE_DIR})
 include_directories(${ROSE_INCLUDE_DIR} ${ROSE_INCLUDE_DIR}/rose)
 
 set(ROSE_LIB_DIR ${ROSE_INSTALL_DIR}/lib)
-link_libraries(${ROSE_LIB_DIR}/librose.la)
+link_directories(${ROSE_LIB_DIR})
+link_libraries(librose)
 
 file(GLOB_RECURSE rc_lib_SRC
     "*.cpp"
