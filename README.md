@@ -8,15 +8,22 @@ See `src/tp`
 
 ## Auto Parallelization with Rose Compiler
 
-### Installation
-Install Rose Compiler from Docker: [link](https://github.com/rose-compiler/rose/wiki/Install-ROSE-with-Clang-as-frontend#full-version)
+### (Optional) Rose Compiler Installation via Docker
+[link](https://github.com/rose-compiler/rose/wiki/Install-ROSE-with-Clang-as-frontend#full-version)
 ```bash
 docker pull ouankou/rose:clang-develop
 ```
 
 ### Running
-Enter Docker container
+(Optional) Enter Docker container
 ```bash
 # cd project_root
 docker run -v "$(pwd)":/apdlb -w="/apdlb" -it ouankou/rose:clang-develop bash
+```
+Build
+```bash
+# If ROSE_PATH env is set
+make rc
+# Or set ROSE_PATH env by yourself
+ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make rc
 ```
