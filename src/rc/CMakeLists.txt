@@ -15,11 +15,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set up ROSE
 set(ROSE_INCLUDE_DIR ${ROSE_INSTALL_DIR}/include)
 include_directories(${ROSE_INCLUDE_DIR} ${ROSE_INCLUDE_DIR}/rose)
-message(INFO "ROSE include = ${ROSE_INCLUDE_DIR}")
+message(STATUS "ROSE include = ${ROSE_INCLUDE_DIR}")
 
 set(ROSE_LIB_DIR ${ROSE_INSTALL_DIR}/lib)
 link_directories(${ROSE_LIB_DIR})
-message(INFO "ROSE lib = ${ROSE_LIB_DIR}")
+message(STATUS "ROSE lib = ${ROSE_LIB_DIR}")
 
 # Set up Boost
 find_package(Boost COMPONENTS system filesystem REQUIRED)
