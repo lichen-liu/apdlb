@@ -38,5 +38,5 @@ size_t collatz_conjecture_kernel(size_t lower, size_t upper)
 
 int main()
 {
-    collatz_conjecture_kernel(800000, 8000000);
+    collatz_conjecture_kernel(1000000, 10000000);
 }

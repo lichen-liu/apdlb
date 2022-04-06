@@ -17,7 +17,11 @@ add_test(kernels_collatz_conjecture_bm collatz_conjecture_bm)
 add_executable(matvecp_bm matvecp_bm.cpp)
 add_test(kernels_matvecp_bm matvecp_bm)
 
+add_executable(sorting_bm sorting_bm.cpp)
+add_test(kernels_sorting_bm sorting_bm)
+
 # Add test executable here
 add_custom_target(kernels_bm DEPENDS
     collatz_conjecture_bm
-    matvecp_bm)
+    matvecp_bm
+    sorting_bm)
