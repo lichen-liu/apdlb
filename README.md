@@ -19,7 +19,7 @@ docker build . --platform x86_64 --tag rose_build
 (Optional) Enter Docker container
 ```bash
 # cd project_root
-docker run -v "$(pwd)":/apdlb -w="/apdlb" -it rose_build bash
+docker run -v "$(pwd)":/apdlb -w="/apert" -it rose_build bash
 ```
 
 Build
