@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <random>
 #include <vector>
 
 void sorting_kernel(size_t lower, size_t upper)
@@ -10,11 +9,10 @@ void sorting_kernel(size_t lower, size_t upper)
     {
         const size_t n = offset + i * scale;
 
-        std::mt19937 mersenne_engine;
-        std::uniform_real_distribution<float> dist{0, 1.0};
-        auto gen = [&dist, &mersenne_engine]()
+        auto gen = []()
         {
-            return dist(mersenne_engine);
+            float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+            return r;
         };
         std::vector<float> vec(n);
         std::generate(vec.begin(), vec.end(), gen);
