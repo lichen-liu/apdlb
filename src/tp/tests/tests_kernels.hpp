@@ -94,8 +94,8 @@ namespace TESTS
     {
         constexpr size_t num_attempts = 1;
         constexpr size_t offset = 0;
-        constexpr size_t num_shards = 40000;
-        constexpr size_t shard_size = 200;
+        constexpr size_t num_shards = 30000;
+        constexpr size_t shard_size = 150;
 
         auto single_task = []()
         {
@@ -115,7 +115,7 @@ namespace TESTS
     inline void sorting_kernel(size_t i)
     {
         constexpr size_t offset = 1;
-        constexpr size_t scale = 15000;
+        constexpr size_t scale = 5000;
         const size_t n = offset + i * scale;
 
         std::mt19937 mersenne_engine;
@@ -134,7 +134,7 @@ namespace TESTS
     inline void matvecp_kernel(size_t i)
     {
         constexpr size_t offset = 1;
-        constexpr size_t scale = 50;
+        constexpr size_t scale = 15;
         const size_t n = offset + i * scale;
 
         std::mt19937 mersenne_engine;
