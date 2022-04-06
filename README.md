@@ -1,5 +1,5 @@
-# aptp
-Auto-Parallelization Thread Pool
+# apert
+Auto-Parallelization Execution Run Time
 
 [![main-ci-actions-badge](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml/badge.svg)](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml)
 
