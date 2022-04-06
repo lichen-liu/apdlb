@@ -14,6 +14,10 @@ include_directories(tp)
 add_executable(collatz_conjecture_bm collatz_conjecture_bm.cpp)
 add_test(kernels_collatz_conjecture_bm collatz_conjecture_bm)
 
+add_executable(matvecp_bm matvecp_bm.cpp)
+add_test(kernels_matvecp_bm matvecp_bm)
+
 # Add test executable here
 add_custom_target(kernels_bm DEPENDS
-    collatz_conjecture_bm)
+    collatz_conjecture_bm
+    matvecp_bm)
