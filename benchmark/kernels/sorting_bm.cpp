@@ -1,3 +1,4 @@
+#include <cstdlib>
 
 void sorting_kernel(size_t lower, size_t upper)
 {
