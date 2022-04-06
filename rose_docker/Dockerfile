@@ -66,7 +66,7 @@ RUN mkdir -p $ROSE_PATH && \
     $ROSE_SRC/configure --prefix=$ROSE_PATH --with-boost=/usr --with-boost-libdir=/usr/lib/x86_64-linux-gnu/ --enable-languages=c,c++,fortran --disable-projects-directory --disable-tests-directory --disable-tutorial-directory --with-gomp_omp_runtime_library=/usr/lib/gcc/x86_64-linux-gnu/7
 # Compile ROSE
 RUN cd $ROSE_BUILD && \
-    make core -j4
+    make core -j8
 # Compile ROSE
 RUN cd $ROSE_BUILD && \
     make install-core && \
