@@ -2,7 +2,7 @@
 .SHELLFLAGS += -e
 
 # Default target executed when no arguments are given to make.
-default_target: test_tp
+default_target: tp
 .PHONY: default_target
 
 clean:
@@ -19,12 +19,12 @@ prepare:
 
 # tp
 
-test_tp: prepare
+tp: prepare
 	$(MAKE) -C build tp_tests
 	$(MAKE) -C build test ARGS="-R '^tp_.*_tests'"
 	@echo [=== tp is successfully tested ===]
 	@echo 
-.PHONY: test_tp
+.PHONY: tp
 
 # rc
 ifdef ROSE_PATH # ROSE Compiler exists
@@ -49,5 +49,5 @@ endif
 
 # all
 
-all: rc test_tp
+all: rc tp
 .PHONY: all
