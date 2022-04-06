@@ -3,7 +3,7 @@
 size_t collatz_conjecture_kernel(size_t lower, size_t upper)
 {
     const size_t n = upper - lower;
-    std::vector<size_t> steps(n, 0);
+    size_t *steps = new size_t[n];
     for (size_t i = lower; i < upper; i++)
     {
         size_t step = 0;
@@ -33,6 +33,8 @@ size_t collatz_conjecture_kernel(size_t lower, size_t upper)
     {
         total_step += steps[i];
     }
+
+    delete[] steps;
     return total_step;
 }
 
