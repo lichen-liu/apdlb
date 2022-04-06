@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <vector>
 
 void sorting_kernel(size_t lower, size_t upper)
 {
