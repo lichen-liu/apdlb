@@ -19,13 +19,7 @@ prepare:
 
 # tp
 
-tp: prepare
-	$(MAKE) -C build tp
-	@echo [=== tp is successfully built ===]
-	@echo 
-.PHONY: tp
-
-test_tp: tp
+test_tp: prepare
 	$(MAKE) -C build tp_tests
 	$(MAKE) -C build test ARGS="-R '^tp_.*_tests'"
 	@echo [=== tp is successfully tested ===]

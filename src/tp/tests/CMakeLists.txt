@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.7.0)
 project(tp_tests)
 
+find_package(Threads REQUIRED)
+
 include_directories(..)
-link_libraries(tp)
 
 add_compile_options(-Werror -Wall -Wno-missing-braces -O3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+link_libraries(Threads::Threads)
 
 add_executable(wspdr_pool_tests wspdr_pool_tests.cc)
 add_test(tp_wspdr_pool_tests wspdr_pool_tests)
