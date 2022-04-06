@@ -2,7 +2,7 @@
 
 #include "rose.h"
 
-namespace rc
+namespace RC
 {
     void process_function_body(SgFunctionDefinition *defn, bool debug = false);
 }

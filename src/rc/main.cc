@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
             if (defn->get_file_info()->get_filename() != sageFile->get_file_info()->get_filename())
                 continue;
 
-            rc::process_function_body(defn, debug);
+            RC::process_function_body(defn, debug);
         } // end for-loop for declarations
     }     // end for-loop for files
 

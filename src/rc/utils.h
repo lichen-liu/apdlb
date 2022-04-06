@@ -4,7 +4,7 @@
 
 #include "rose.h"
 
-namespace rc
+namespace RC
 {
     std::string to_string(SgNode *node);
 

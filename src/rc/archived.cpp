@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include "utils.h"
 
-namespace rc
+namespace RC
 {
     // data dependence testing pair
     struct RawDDTP
