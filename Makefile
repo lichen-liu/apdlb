@@ -2,7 +2,7 @@
 .SHELLFLAGS += -e
 
 # Default target executed when no arguments are given to make.
-default_target: tp
+default_target: all
 .PHONY: default_target
 
 clean:
@@ -47,7 +47,15 @@ run_rc: rc
 .PHONY: run_rc
 endif
 
+# kbm
+kbm: prepare
+	$(MAKE) -C build kernels_bm
+	$(MAKE) -C build test ARGS="-R '^kernels_.*_bm'"
+	@echo [=== kernels is successfully tested ===]
+	@echo 
+.PHONY: kbm
+
 # all
 
-all: rc tp
+all: rc tp kbm
 .PHONY: all

@@ -11,3 +11,5 @@ if(DEFINED ENV{ROSE_PATH})
 else()
     message(WARNING "ROSE Compiler is not found! Skipping rc")
 endif()
+
+add_subdirectory(benchmark)
