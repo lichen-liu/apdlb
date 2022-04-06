@@ -5,7 +5,7 @@
 void matvecp_kernel(size_t lower, size_t upper)
 {
     constexpr size_t offset = 1;
-    constexpr size_t scale = 50;
+    constexpr size_t scale = 10;
 
     for (size_t i = lower; i < upper; i++)
     {
@@ -43,5 +43,5 @@ void matvecp_kernel(size_t lower, size_t upper)
 
 int main()
 {
-    matvecp_kernel(1, 100);
+    matvecp_kernel(1, 200);
 }
