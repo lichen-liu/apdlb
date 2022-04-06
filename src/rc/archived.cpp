@@ -68,14 +68,14 @@ namespace RC
 
         if (debug)
         {
-            const std::string indent_str = rc::get_indent(indent);
-            const std::string inner_indent_str = rc::get_indent(1 + indent);
-            std::cout << indent_str << "array_name: " << rc::to_string(array_name) << std::endl;
-            std::cout << indent_str << "array: " << rc::to_string(array_name_exp) << std::endl;
+            const std::string indent_str = RC::get_indent(indent);
+            const std::string inner_indent_str = RC::get_indent(1 + indent);
+            std::cout << indent_str << "array_name: " << RC::to_string(array_name) << std::endl;
+            std::cout << indent_str << "array: " << RC::to_string(array_name_exp) << std::endl;
             std::cout << indent_str << "subscript:" << std::endl;
             for (SgExpression *s : *array_ref_subscripts)
             {
-                std::cout << inner_indent_str << rc::to_string(s) << std::endl;
+                std::cout << inner_indent_str << RC::to_string(s) << std::endl;
             }
         }
         return array_name;
@@ -87,14 +87,14 @@ namespace RC
         ROSE_ASSERT(end);
         if (debug)
         {
-            std::cout << "ancestor traversal: " << rc::to_string(from) << std::endl;
+            std::cout << "ancestor traversal: " << RC::to_string(from) << std::endl;
         }
         SgStatement *cur_node = from;
         while (cur_node != end)
         {
             if (debug)
             {
-                std::cout << "  " << rc::to_string(cur_node) << std::endl;
+                std::cout << "  " << RC::to_string(cur_node) << std::endl;
             }
 
             if (SgScopeStatement *enclosing_loop_stmt = SageInterface::findEnclosingLoop(cur_node))
@@ -192,7 +192,7 @@ namespace RC
 
         if (debug)
         {
-            std::cout << rc::to_string(for_loop_node) << std::endl;
+            std::cout << RC::to_string(for_loop_node) << std::endl;
             std::cout << for_loop_node->unparseToString() << std::endl;
         }
 
@@ -213,7 +213,7 @@ namespace RC
 
         if (debug)
         {
-            const std::string indent = rc::get_indent(1);
+            const std::string indent = RC::get_indent(1);
             std::cout << indent << "var:" << std::endl;
             SageInterface::printAST(ivar);
 
@@ -234,7 +234,7 @@ namespace RC
         {
             if (debug)
             {
-                std::cout << rc::get_indent(1) << "is_canonical=True" << std::endl;
+                std::cout << RC::get_indent(1) << "is_canonical=True" << std::endl;
             }
 
             // We want to check whether increment step c is a compile time constant.
@@ -247,7 +247,7 @@ namespace RC
             {
                 if (debug)
                 {
-                    const std::string indent = rc::get_indent(2);
+                    const std::string indent = RC::get_indent(2);
                     std::cout << indent << "is_increment_step_constexpr=True, step_value=" << step_value->get_value() << std::endl;
 
                     if (verbose)
@@ -264,7 +264,7 @@ namespace RC
                 SageInterface::collectReadWriteVariables(body, read_vars, write_vars);
                 if (debug)
                 {
-                    const std::string indent = rc::get_indent(2);
+                    const std::string indent = RC::get_indent(2);
                     if (verbose)
                     {
                         std::cout << indent << "body read:" << std::endl;
@@ -285,16 +285,16 @@ namespace RC
                 {
                     if (debug)
                     {
-                        std::cout << rc::get_indent(3) << "is_induction_variable_unmodified=true" << std::endl;
+                        std::cout << RC::get_indent(3) << "is_induction_variable_unmodified=true" << std::endl;
                     }
 
-                    std::cout << "Analyzable! " << rc::to_string(for_loop_node) << " with " << rc::to_string(ivar) << std::endl;
+                    std::cout << "Analyzable! " << RC::to_string(for_loop_node) << " with " << RC::to_string(ivar) << std::endl;
                     return ivar;
                 }
             }
         }
 
-        std::cout << "Not analyzable! " << rc::to_string(for_loop_node) << std::endl;
+        std::cout << "Not analyzable! " << RC::to_string(for_loop_node) << std::endl;
         return nullptr;
     }
 
@@ -341,7 +341,7 @@ namespace RC
         }
         if (debug)
         {
-            std::cout << rc::get_indent(indent + 1) << "Name Matching.." << std::endl;
+            std::cout << RC::get_indent(indent + 1) << "Name Matching.." << std::endl;
         }
 
         // Check target_array_ref is inside a for loop
@@ -357,18 +357,18 @@ namespace RC
         SgForStatement *ancestor_for_stmt = find_common_ancestor_for_stmt(w_array_ref_enclosing_for_stmt, target_array_ref_enclosing_for_stmt, scope_stmt);
         if (debug)
         {
-            std::cout << rc::get_indent(indent + 1) << "Common Ancestor.." << std::endl;
-            std::cout << rc::get_indent(indent + 2) << rc::to_string(ancestor_for_stmt) << std::endl;
+            std::cout << RC::get_indent(indent + 1) << "Common Ancestor.." << std::endl;
+            std::cout << RC::get_indent(indent + 2) << RC::to_string(ancestor_for_stmt) << std::endl;
         }
 
         // Find all outer loops
         std::vector<SgForStatement *> outer_for_stmts = get_outer_for_stmts(ancestor_for_stmt, scope_stmt);
         if (debug)
         {
-            std::cout << rc::get_indent(indent + 1) << "Outer for_stmts=" << outer_for_stmts.size() << ".." << std::endl;
+            std::cout << RC::get_indent(indent + 1) << "Outer for_stmts=" << outer_for_stmts.size() << ".." << std::endl;
             for (SgForStatement *for_stmt : outer_for_stmts)
             {
-                std::cout << rc::get_indent(indent + 2) << rc::to_string(for_stmt) << std::endl;
+                std::cout << RC::get_indent(indent + 2) << RC::to_string(for_stmt) << std::endl;
             }
         }
 
@@ -406,7 +406,7 @@ namespace RC
         {
             std::cout << std::endl;
             print_ast(scope_stmt);
-            std::cout << "In scope: " << rc::to_string(scope_stmt) << std::endl;
+            std::cout << "In scope: " << RC::to_string(scope_stmt) << std::endl;
             std::cout << "read_array_refs:" << std::endl;
             for (auto r : read_array_refs)
             {
@@ -425,7 +425,7 @@ namespace RC
             SgPntrArrRefExp *w_array_ref = *w_array_ref_it;
             if (debug)
             {
-                std::cout << "Analyzing Write " << rc::to_string(w_array_ref) << std::endl;
+                std::cout << "Analyzing Write " << RC::to_string(w_array_ref) << std::endl;
                 get_array_name_from_ref(w_array_ref, true, 1);
             }
 
@@ -439,7 +439,7 @@ namespace RC
                 SgPntrArrRefExp *target_w_array_ref = *target_w_array_ref_it;
                 if (debug)
                 {
-                    std::cout << rc::get_indent(1) << "Write Target " << rc::to_string(target_w_array_ref) << std::endl;
+                    std::cout << RC::get_indent(1) << "Write Target " << RC::to_string(target_w_array_ref) << std::endl;
                 }
 
                 if (std::optional<RawDDTP> res = is_potential_dependence_target_pair(w_array_ref, target_w_array_ref, scope_stmt, debug, 2))
@@ -448,7 +448,7 @@ namespace RC
                     {
                         if (debug)
                         {
-                            std::cout << rc::get_indent(1) << *ddtp_opt << std::endl;
+                            std::cout << RC::get_indent(1) << *ddtp_opt << std::endl;
                         }
                         ww_ddtps.emplace_back(std::move(*ddtp_opt));
                     }
@@ -460,7 +460,7 @@ namespace RC
             {
                 if (debug)
                 {
-                    std::cout << rc::get_indent(1) << "Read Target " << rc::to_string(target_r_array_ref) << std::endl;
+                    std::cout << RC::get_indent(1) << "Read Target " << RC::to_string(target_r_array_ref) << std::endl;
                 }
 
                 if (std::optional<RawDDTP> res = is_potential_dependence_target_pair(w_array_ref, target_r_array_ref, scope_stmt, debug, 2))
@@ -469,7 +469,7 @@ namespace RC
                     {
                         if (debug)
                         {
-                            std::cout << rc::get_indent(1) << *ddtp_opt << std::endl;
+                            std::cout << RC::get_indent(1) << *ddtp_opt << std::endl;
                         }
                         wr_ddtps.emplace_back(std::move(*ddtp_opt));
                     }
@@ -513,7 +513,7 @@ namespace RC
         DDTPCollection ddtpc = determine_potential_dependence_targets_of_scope(body, analyzable_loops, debug);
         std::cout << std::endl;
         std::cout << "========================== BEGIN ========================" << std::endl;
-        std::cout << rc::to_string(defn) << std::endl;
+        std::cout << RC::to_string(defn) << std::endl;
         std::cout << "Data Dependence Testing Pair Collection" << std::endl;
         std::cout << ddtpc;
         std::cout << "==========================  END  ========================" << std::endl;
