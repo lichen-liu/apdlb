@@ -8,15 +8,13 @@ void sorting_kernel(size_t lower, size_t upper)
     for (size_t i = lower; i < upper; i++)
     {
         const size_t n = offset + i * scale;
-
-        std::vector<float> vec;
+        float *vec = new float[n];
         for (size_t i = 0; i < n; i++)
         {
-            float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-            vec.push_back(r);
+            vec[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         }
-
-        //std::sort(vec.begin(), vec.end());
+        delete[] vec;
+        // std::sort(vec.begin(), vec.end());
     }
 }
 
