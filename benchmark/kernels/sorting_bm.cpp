@@ -14,8 +14,11 @@ void sorting_kernel(size_t lower, size_t upper)
             float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
             return r;
         };
-        std::vector<float> vec(n);
-        std::generate(vec.begin(), vec.end(), gen);
+        std::vector<float> vec;
+        for (size_t i = 0; i < n; i++)
+        {
+            vec.push_back(gen());
+        }
 
         std::sort(vec.begin(), vec.end());
     }
