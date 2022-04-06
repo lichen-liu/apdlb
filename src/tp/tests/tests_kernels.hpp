@@ -80,7 +80,7 @@ namespace TESTS
                         num *= 3;
                         num++;
                     }
-                    step++;
+                    local_step++;
                 }
             }
             step += local_step;
