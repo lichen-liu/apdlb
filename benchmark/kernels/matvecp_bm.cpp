@@ -1,7 +1,10 @@
 #include <algorithm>
-#include <random>
 #include <vector>
-
+//  int ms_rand(int& seed)
+// {
+//   seed = seed*0x343fd+0x269EC3;  // a=214013, b=2531011
+//   return (seed >> 0x10) & 0x7FFF;
+// }
 void matvecp_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
@@ -11,11 +14,10 @@ void matvecp_kernel(size_t lower, size_t upper)
     {
         const size_t n = offset + i * scale;
 
-        std::mt19937 mersenne_engine;
-        std::uniform_real_distribution<float> dist{0, 1.0};
-        auto gen = [&dist, &mersenne_engine]()
+        auto gen = []()
         {
-            return dist(mersenne_engine);
+            float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+            return r;
         };
 
         // Input
