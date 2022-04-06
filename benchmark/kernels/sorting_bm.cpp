@@ -1,5 +1,5 @@
 #include <cstdlib>
-
+#include <vector>
 void sorting_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
@@ -13,6 +13,12 @@ void sorting_kernel(size_t lower, size_t upper)
             vec[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         }
         delete[] vec;
+
+        std::vector<float> vvec;
+        for (size_t i = 0; i < n; i++)
+        {
+            vvec.push_back(static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
+        }
         // std::sort(vec.begin(), vec.end());
     }
 }
