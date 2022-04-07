@@ -6,12 +6,12 @@ inline int rand_r(int &seed)
     return (seed >> 0x10) & 0x7FFF;
 }
 
-inline void swap(float &x, float &y)
-{
-    float temp = x;
-    x = y;
-    y = temp;
-}
+#define swap_f(x, y)    \
+    {                   \
+        float temp = x; \
+        x = y;          \
+        y = temp;       \
+    }
 
 inline int qs_partition(float *arr, int start, int end)
 {
@@ -85,7 +85,7 @@ inline void bubble_sort(float *arr, int n)
         {
             if (arr[j] > arr[j + 1])
             {
-                swap(arr[j], arr[j + 1]);
+                swap_f(arr[j], arr[j + 1]);
             }
         }
     }
