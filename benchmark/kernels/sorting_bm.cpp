@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include "utils.h"
+#include "utils.hpp"
 
 void sorting_kernel(size_t lower, size_t upper)
 {
@@ -16,7 +16,7 @@ void sorting_kernel(size_t lower, size_t upper)
             vec[i] = static_cast<float>(KBM::rand_r(seed)) / static_cast<float>(RAND_MAX);
         }
 
-        qsort(vec, n, sizeof(float), KBM::fcomp);
+        KBM::quick_sort(vec, n);
         delete[] vec;
     }
 }
