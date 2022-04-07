@@ -1,7 +1,7 @@
 #include <cstdlib>
 namespace KBM
 {
-    inline int rand_r(int &seed)
+    int rand_r(int &seed)
     {
         seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
         return (seed >> 0x10) & 0x7FFF;
@@ -14,6 +14,8 @@ namespace KBM
         x = y;
         y = temp;
     }
+
+    template void swap(float &x, float &y);
 
     template <typename T>
     void bubble_sort(T *arr, int n)
@@ -73,6 +75,8 @@ namespace KBM
 
         return pivotIndex;
     }
+    template <>
+    int qs_partition(float *arr, int start, int end);
 
     template <typename T>
     void qs_helper(T *arr, int start, int end)
@@ -92,11 +96,17 @@ namespace KBM
         qs_helper(arr, p + 1, end);
     }
 
+    template <>
+    void qs_helper(float *arr, int start, int end);
+
     template <typename T>
     void quick_sort(T *arr, int n)
     {
         qs_helper(arr, 0, n - 1);
     }
+
+    template <>
+    void quick_sort(float *arr, int n);
 }
 
 void sorting_kernel(size_t lower, size_t upper)
