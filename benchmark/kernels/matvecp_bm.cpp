@@ -22,7 +22,7 @@ void matvecp_kernel(size_t lower, size_t upper)
             for (size_t j = 0; j < n; j++)
             {
                 seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
-                float rand_val = (seed >> 0x10) & 0x7FFF;
+                float rand_val = (seed / 65536) & 0x7FFF;
                 mat[i][j] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
             }
         }
@@ -32,7 +32,7 @@ void matvecp_kernel(size_t lower, size_t upper)
         for (size_t i = 0; i < n; i++)
         {
             seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
-            float rand_val = (seed >> 0x10) & 0x7FFF;
+            float rand_val = (seed / 65536) & 0x7FFF;
             vec[i] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
         }
 
