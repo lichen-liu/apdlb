@@ -20,10 +20,10 @@ void sorting_kernel(size_t lower, size_t upper)
         }
 
         // Bubble sort
-        for (int i = 0; i < n - 1; i++)
+        for (size_t i = 0; i < n - 1; i++)
         {
             // Last i elements are already in place
-            for (int j = 0; j < n - i - 1; j++)
+            for (size_t j = 0; j < n - i - 1; j++)
             {
                 if (vec[j] > vec[j + 1])
                 {
