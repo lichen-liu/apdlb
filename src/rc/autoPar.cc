@@ -28,9 +28,7 @@
 static const char *purpose = "This tool automatically inserts OpenMP directives into sequential codes.";
 static const char *description =
     "This tool is an implementation of automatic parallelization using OpenMP. "
-    "It can automatically insert OpenMP directives into input serial C/C++ codes. "
-    "For input programs with existing OpenMP directives, the tool will double check "
-    "the correctness when requested with an option --enable_diff ";
+    "It can automatically insert OpenMP directives into input serial C/C++ codes. ";
 
 using namespace std;
 using namespace AutoParallelization;
@@ -185,10 +183,6 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
                         .intrinsicValue(true, AutoParallelization::b_unique_indirect_index)
                         .doc("Assuming all arrays used as indirect indices have unique elements (no overlapping)"));
 
-    switches.insert(Switch("enable_diff")
-                        .intrinsicValue(true, AutoParallelization::enable_diff)
-                        .doc("Compare user defined OpenMP pragmas to auto parallelization generated ones."));
-
     switches.insert(Switch("enable_modeling")
                         .intrinsicValue(true, AutoParallelization::enable_modeling)
                         .doc("Enabling cost modeling of loops to guide parallelization."));
@@ -264,19 +258,6 @@ static std::vector<std::string> commandline_processing(std::vector<std::string> 
     return remainingArgs;
 }
 
-// different OpenMP flags for backend compilers
-#if !defined(_MSC_VER) && \
-    defined(BACKEND_CXX_IS_GNU_COMPILER)
-
-#endif
-
-// Detect which backend compiler is being used and return the corresponding OpenMP flag
-// Expecting GCC, Intel, and Clang compilers as backend
-string getOpenMPFlag()
-{
-    return "-fopenmp";
-}
-
 int main(int argc, char *argv[])
 {
     ROSE_INITIALIZE;
@@ -285,13 +266,6 @@ int main(int argc, char *argv[])
     // Processing debugging and annotation options
     //   autopar_command_processing(argvList);
     argvList = commandline_processing(argvList);
-    // enable parsing user-defined pragma if enable_diff is true
-    // -rose:openmp:parse_only
-    if (enable_diff)
-    {
-        argvList.push_back("-rose:openmp:parse_only");
-        argvList.push_back(getOpenMPFlag());
-    }
     SgProject *project = frontend(argvList);
     ROSE_ASSERT(project != NULL);
 
@@ -423,15 +397,12 @@ int main(int argc, char *argv[])
             }     // end for-loop for declarations
 
             // insert omp.h if needed
-            if (hasOpenMP && !enable_diff)
+            if (hasOpenMP)
             {
                 SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
                 if (enable_patch)
                     generatePatchFile(sfile);
             }
-            // compare user-defined and compiler-generated OmpAttributes
-            if (enable_diff)
-                diffUserDefinedAndCompilerGeneratedOpenMP(sfile);
         } // end for-loop of files
 
         // undo loop normalization

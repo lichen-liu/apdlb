@@ -47,7 +47,6 @@ namespace AutoParallelization
     extern bool enable_verbose;          // verbose mode, print out loop info. for successful or failed parallelization attempts . Default is true
     extern bool no_aliasing;             // assuming aliasing or not
     extern bool enable_patch;            // an option to control the generation of patch files
-    extern bool enable_diff;             // an option to compare user-defined OpenMP pragmas to compiler generated ones.
     extern bool enable_modeling;         // an experimental flag to turn on cost modeling being developed.
     extern bool b_unique_indirect_index; // assume all arrays used as indirect indices has unique elements(no overlapping)
     extern bool enable_distance;         // print out absolute dependence distance for a dependence relation preventing from parallelization
@@ -162,9 +161,6 @@ namespace AutoParallelization
 
     //! Generate patch files for the introduced OpenMP pragmas (represented as OmpAttribute)
     void generatePatchFile(SgSourceFile *sfile);
-
-    //! Output the difference between user-defined OpenMP and compiler-generated OpenMP
-    void diffUserDefinedAndCompilerGeneratedOpenMP(SgSourceFile *sfile);
 
     //! Check if two expressions access different memory locations. If in double, return false
     // This is helpful to exclude some dependence relations involving two obvious different memory location accesses
