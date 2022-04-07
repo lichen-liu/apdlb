@@ -1,112 +1,39 @@
 #include <cstdlib>
 
-inline int rand_r(int &seed)
-{
-    seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
-    return (seed >> 0x10) & 0x7FFF;
-}
-
-#define swap_f(x, y)    \
-    {                   \
-        float temp = x; \
-        x = y;          \
-        y = temp;       \
-    }
-
-inline int qs_partition(float *arr, int start, int end)
-{
-
-    float pivot = arr[start];
-
-    int count = 0;
-    for (int i = start + 1; i <= end; i++)
-    {
-        if (arr[i] <= pivot)
-            count++;
-    }
-
-    // Giving pivot element its correct position
-    int pivotIndex = start + count;
-    swap_f(arr[pivotIndex], arr[start]);
-
-    // Sorting left and right parts of the pivot element
-    int i = start, j = end;
-
-    while (i < pivotIndex && j > pivotIndex)
-    {
-
-        while (arr[i] <= pivot)
-        {
-            i++;
-        }
-
-        while (arr[j] > pivot)
-        {
-            j--;
-        }
-
-        if (i < pivotIndex && j > pivotIndex)
-        {
-            swap_f(arr[i++], arr[j--]);
-        }
-    }
-
-    return pivotIndex;
-}
-
-inline void qs_helper(float *arr, int start, int end)
-{
-    // base case
-    if (start >= end)
-        return;
-
-    // partitioning the array
-    int p = qs_partition(arr, start, end);
-
-    // Sorting the left part
-    qs_helper(arr, start, p - 1);
-
-    // Sorting the right part
-    qs_helper(arr, p + 1, end);
-}
-
-inline void quick_sort(float *arr, int n)
-{
-    qs_helper(arr, 0, n - 1);
-}
-
-inline void bubble_sort(float *arr, int n)
-{
-    int i, j;
-    for (i = 0; i < n - 1; i++)
-    {
-        // Last i elements are already in place
-        for (j = 0; j < n - i - 1; j++)
-        {
-            if (arr[j] > arr[j + 1])
-            {
-                swap_f(arr[j], arr[j + 1]);
-            }
-        }
-    }
-}
-
 void sorting_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
-    const size_t scale = 1500;
+    const size_t scale = 50;
     for (size_t i = lower; i < upper; i++)
     {
         const size_t n = offset + i * scale;
+
         float *vec = new float[n];
 
+        // Generate random data
         int seed = static_cast<int>(i);
         for (size_t i = 0; i < n; i++)
         {
-            vec[i] = static_cast<float>(rand_r(seed)) / static_cast<float>(RAND_MAX);
+            seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
+            float rand_val = (seed >> 0x10) & 0x7FFF;
+            vec[i] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
         }
 
-        bubble_sort(vec, n);
+        // Bubble sort
+        for (int i = 0; i < n - 1; i++)
+        {
+            // Last i elements are already in place
+            for (int j = 0; j < n - i - 1; j++)
+            {
+                if (vec[j] > vec[j + 1])
+                {
+                    const float temp = vec[j];
+                    vec[j] = vec[j + 1];
+                    vec[j + 1] = temp;
+                }
+            }
+        }
+
         delete[] vec;
     }
 }
