@@ -75,6 +75,22 @@ inline void quick_sort(float *arr, int n)
     qs_helper(arr, 0, n - 1);
 }
 
+inline void bubble_sort(float *arr, int n)
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++)
+    {
+        // Last i elements are already in place
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (arr[j] > arr[j + 1])
+            {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+
 void sorting_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
@@ -90,7 +106,7 @@ void sorting_kernel(size_t lower, size_t upper)
             vec[i] = static_cast<float>(rand_r(seed)) / static_cast<float>(RAND_MAX);
         }
 
-        quick_sort(vec, n);
+        bubble_sort(vec, n);
         delete[] vec;
     }
 }
