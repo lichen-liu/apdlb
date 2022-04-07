@@ -3,37 +3,37 @@
 void matvecp_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
-    const size_t scale = 15;
+    const size_t scale = 20;
 
-    for (size_t i = lower; i < upper; i++)
+    for (size_t iteration = lower; iteration < upper; iteration++)
     {
-        const size_t n = offset + i * scale;
+        const size_t n = offset + iteration * scale;
 
         // Input mat
         float **mat = new float *[n];
-        for (size_t ii = 0; ii < n; ii++)
+        for (size_t i = 0; i < n; i++)
         {
-            mat[ii] = new float[n];
+            mat[i] = new float[n];
         }
         // Generate random data
-        int seed = static_cast<int>(i);
-        for (size_t ii = 0; ii < n; ii++)
+        int seed = static_cast<int>(iteration);
+        for (size_t i = 0; i < n; i++)
         {
-            for (size_t jj = 0; jj < n; jj++)
+            for (size_t j = 0; j < n; j++)
             {
                 seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
                 float rand_val = (seed >> 0x10) & 0x7FFF;
-                mat[ii][jj] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
+                mat[i][j] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
             }
         }
 
         // Input vec
         float *vec = new float[n];
-        for (size_t ii = 0; ii < n; ii++)
+        for (size_t i = 0; i < n; i++)
         {
             seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
             float rand_val = (seed >> 0x10) & 0x7FFF;
-            vec[ii] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
+            vec[i] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
         }
 
         // Output
@@ -58,9 +58,9 @@ void matvecp_kernel(size_t lower, size_t upper)
         delete[] vec;
 
         // Input mat
-        for (size_t ii = 0; ii < n; ii++)
+        for (size_t i = 0; i < n; i++)
         {
-            delete[] mat[ii];
+            delete[] mat[i];
         }
         delete[] mat;
     }

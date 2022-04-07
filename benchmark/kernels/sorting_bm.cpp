@@ -4,14 +4,14 @@ void sorting_kernel(size_t lower, size_t upper)
 {
     const size_t offset = 1;
     const size_t scale = 50;
-    for (size_t i = lower; i < upper; i++)
+    for (size_t iteration = lower; iteration < upper; iteration++)
     {
-        const size_t n = offset + i * scale;
+        const size_t n = offset + iteration * scale;
 
         float *vec = new float[n];
 
         // Generate random data
-        int seed = static_cast<int>(i);
+        int seed = static_cast<int>(iteration);
         for (size_t i = 0; i < n; i++)
         {
             seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
