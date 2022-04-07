@@ -58,32 +58,6 @@ namespace AutoParallelization
     bool initialize_analysis(SgProject *project = NULL, bool debug = false);
 
     //------------ this section supports modeling of loop execution cost
-    // software information for the loop
-    typedef struct loopInfo Loop_Info;
-    typedef struct hardwareInfo Hardware_Info;
-    struct loopInfo
-    {
-        // arithmetic intensity: flops per byte
-        float arithmetic_intensity;
-        // How many loop iterations estimated for this loop
-        int iteration_count;
-        int flops_per_iteration; // floating point operations per iteration TODO double vs. single
-    };
-
-    // hardware info. generic for both CPUs and GPUs so far
-    struct hardwareInfo
-    {
-        float main_mem_bandwidth;          // theoretical peak bandwidth GBytes/second by default
-        float main_mem_bandwidth_measured; // measured peak bandwidth through some microbenchmarks
-        float peak_flops_sp;               // theoretical single precision peak, GFlops/second by default
-        float peak_flops_sp_measured;      // GFlops/second by default, measured peak flops through some microbenchmarks
-        float peak_flops_dp;               // theoretical double precision peak, GFlops/second by default
-        float peak_flops_dp_measured;      // GFlops/second by default, measured peak flops through some microbenchmarks
-    };
-
-    // A baseline roofline model
-    //! Using software and hardware information to estimate execution time in seconds
-    double rooflineModeling(Loop_Info *l, Hardware_Info *h);
 
     class CSVReader // Reading CSV file into vector of vectors
     {
