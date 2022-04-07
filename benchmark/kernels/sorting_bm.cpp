@@ -1,19 +1,19 @@
 #include <cstdlib>
 
-int rand_r(int &seed)
+inline int rand_r(int &seed)
 {
     seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
     return (seed >> 0x10) & 0x7FFF;
 }
 
-void swap(float &x, float &y)
+inline void swap(float &x, float &y)
 {
     T temp = x;
     x = y;
     y = temp;
 }
 
-int qs_partition(flaot *arr, int start, int end)
+inline int qs_partition(flaot *arr, int start, int end)
 {
 
     float pivot = arr[start];
@@ -54,9 +54,8 @@ int qs_partition(flaot *arr, int start, int end)
     return pivotIndex;
 }
 
-void qs_helper(float *arr, int start, int end)
+inline void qs_helper(float *arr, int start, int end)
 {
-
     // base case
     if (start >= end)
         return;
@@ -71,7 +70,7 @@ void qs_helper(float *arr, int start, int end)
     qs_helper(arr, p + 1, end);
 }
 
-void quick_sort(float *arr, int n)
+inline void quick_sort(float *arr, int n)
 {
     qs_helper(arr, 0, n - 1);
 }
@@ -88,10 +87,10 @@ void sorting_kernel(size_t lower, size_t upper)
         int seed = static_cast<int>(i);
         for (size_t i = 0; i < n; i++)
         {
-            vec[i] = static_cast<float>(KBM::rand_r(seed)) / static_cast<float>(RAND_MAX);
+            vec[i] = static_cast<float>(rand_r(seed)) / static_cast<float>(RAND_MAX);
         }
 
-        KBM::quick_sort(vec, n);
+        quick_sort(vec, n);
         delete[] vec;
     }
 }
