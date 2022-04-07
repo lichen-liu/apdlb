@@ -59,5 +59,5 @@ int main(int argc, char *argv[])
     std::cout << "Done ..." << std::endl;
 
     // Generate the source code
-    return backend(project);
+    // return backend(project);
 }
