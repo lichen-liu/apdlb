@@ -21,12 +21,6 @@
 // all kinds of analyses needed
 #include "autoParSupport.h"
 #include <string>
-#include <Rose/CommandLine.h>
-#include <Sawyer/CommandLine.h>
-static const char *purpose = "This tool automatically inserts OpenMP directives into sequential codes.";
-static const char *description =
-    "This tool is an implementation of automatic parallelization using OpenMP. "
-    "It can automatically insert OpenMP directives into input serial C/C++ codes. ";
 
 using namespace std;
 using namespace AutoParallelization;
@@ -126,87 +120,10 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
     }     // end for all function defs
 }
 
-//! Initialize the switch group and its switches.
-[[maybe_unused]] static Sawyer::CommandLine::SwitchGroup commandLineSwitches()
-{
-    using namespace Sawyer::CommandLine;
-
-    SwitchGroup switches("autoPar's switches");
-    switches.doc("These switches control the autoPar tool. ");
-    switches.name("rose:autopar");
-
-    switches.insert(Switch("no_aliasing")
-                        .intrinsicValue(true, Config::get().no_aliasing)
-                        .doc("Assuming no pointer aliasing exists."));
-
-    switches.insert(Switch("unique_indirect_index")
-                        .intrinsicValue(true, Config::get().b_unique_indirect_index)
-                        .doc("Assuming all arrays used as indirect indices have unique elements (no overlapping)"));
-
-    switches.insert(Switch("annot")
-                        .argument("string", anyParser(Config::get().annot_filenames))
-                        //      .shortPrefix("-") // this option allows short prefix
-                        .whichValue(SAVE_ALL) // if switch appears more than once, save all values not just last
-                        .doc("Specify semantics annotation file for standard or user-defined abstractions"));
-
-    return switches;
-}
-
-// New version of command line processing using Sawyer library
-[[maybe_unused]] static std::vector<std::string> commandline_processing(std::vector<std::string> &argvList)
-{
-    using namespace Sawyer::CommandLine;
-    Parser p = Rose::CommandLine::createEmptyParserStage(purpose, description);
-    p.doc("Synopsis", "@prop{programName} @v{switches} @v{files}...");
-    p.longPrefix("-");
-
-    // initialize generic Sawyer switches: assertion, logging, threads, etc.
-    p.with(Rose::CommandLine::genericSwitches());
-
-    // initialize this tool's switches
-    p.with(commandLineSwitches());
-
-    // --rose:help for more ROSE switches
-    SwitchGroup tool("ROSE builtin switches");
-    bool showRoseHelp = false;
-    tool.insert(Switch("rose:help")
-                    .longPrefix("-")
-                    .intrinsicValue(true, showRoseHelp)
-                    .doc("Show the old-style ROSE help."));
-    p.with(tool);
-
-    std::vector<std::string> remainingArgs = p.parse(argvList).apply().unparsedArgs(true);
-
-    // add back -annot file TODO: how about multiple appearances?
-    for (size_t i = 0; i < Config::get().annot_filenames.size(); i++)
-    {
-        remainingArgs.push_back("-annot");
-        remainingArgs.push_back(Config::get().annot_filenames[i]);
-    }
-
-    // AFTER parse the command-line, you can do this:
-    if (showRoseHelp)
-        SgFile::usage(0);
-
-    // work with the parser of the ArrayAbstraction module
-    // Read in annotation files after -annot
-    CmdOptions::GetInstance()->SetOptions(remainingArgs);
-    ArrayAnnotation *annot = ArrayAnnotation::get_inst();
-    annot->register_annot();
-    ReadAnnotation::get_inst()->read();
-
-    // Strip off custom options and their values to enable backend compiler
-    CommandlineProcessing::removeArgsWithParameters(remainingArgs, "-annot");
-
-    return remainingArgs;
-}
-
 int main(int argc, char *argv[])
 {
     ROSE_INITIALIZE;
 
-    // vector<string> argvList(argv, argv + argc);
-    // argvList = commandline_processing(argvList);
     SgProject *project = frontend(argc, argv);
     ROSE_ASSERT(project != NULL);
 
