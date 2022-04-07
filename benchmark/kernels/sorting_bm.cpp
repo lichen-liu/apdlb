@@ -2,21 +2,28 @@
 
 void sorting_kernel(size_t lower, size_t upper)
 {
-    const size_t offset = 1;
     const size_t scale = 50;
-    for (size_t iteration = lower; iteration < upper; iteration++)
-    {
-        const size_t n = offset + iteration * scale;
+    const size_t offset = 1;
+    const size_t range = upper - lower;
 
-        float *vec = new float[n];
+    float **vecs = (float **)malloc(range * sizeof(float *));
+    for (size_t iteration = 0; iteration < range; iteration++)
+    {
+        const size_t n = offset + (iteration + lower) * scale;
+        vecs[iteration] = (float *)malloc(n * sizeof(float));
+    }
+
+    for (size_t iteration = 0; iteration < range; iteration++)
+    {
+        const size_t n = offset + (iteration + lower) * scale;
 
         // Generate random data
-        int seed = static_cast<int>(iteration);
+        int seed = static_cast<int>(iteration + lower);
         for (size_t i = 0; i < n; i++)
         {
             seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
             float rand_val = (seed / 65536) & 0x7FFF;
-            vec[i] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
+            vecs[iteration][i] = static_cast<float>(rand_val) / static_cast<float>(RAND_MAX);
         }
 
         // Bubble sort
@@ -25,17 +32,21 @@ void sorting_kernel(size_t lower, size_t upper)
             // Last i elements are already in place
             for (size_t j = 0; j < n - i - 1; j++)
             {
-                if (vec[j] > vec[j + 1])
+                if (vecs[iteration][j] > vecs[iteration][j + 1])
                 {
-                    const float temp = vec[j];
-                    vec[j] = vec[j + 1];
-                    vec[j + 1] = temp;
+                    const float temp = vecs[iteration][j];
+                    vecs[iteration][j] = vecs[iteration][j + 1];
+                    vecs[iteration][j + 1] = temp;
                 }
             }
         }
-
-        delete[] vec;
     }
+
+    for (size_t iteration = 0; iteration < range; iteration++)
+    {
+        free(vecs[iteration]);
+    }
+    free(vecs);
 }
 
 int main()
