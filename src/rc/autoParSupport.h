@@ -47,7 +47,6 @@ namespace AutoParallelization
     extern bool enable_verbose;          // verbose mode, print out loop info. for successful or failed parallelization attempts . Default is true
     extern bool no_aliasing;             // assuming aliasing or not
     extern bool enable_patch;            // an option to control the generation of patch files
-    extern bool enable_modeling;         // an experimental flag to turn on cost modeling being developed.
     extern bool b_unique_indirect_index; // assume all arrays used as indirect indices has unique elements(no overlapping)
     extern bool enable_distance;         // print out absolute dependence distance for a dependence relation preventing from parallelization
     extern bool dump_annot_file;         // print out annotation file's content
@@ -56,41 +55,6 @@ namespace AutoParallelization
     extern bool keep_c99_loop_init; // avoid normalize C99 style loop init statement: for (int i=0; ...)
     // Conduct necessary analyses on the project, can be called multiple times during program transformations.
     bool initialize_analysis(SgProject *project = NULL, bool debug = false);
-
-    //------------ this section supports modeling of loop execution cost
-
-    class CSVReader // Reading CSV file into vector of vectors
-    {
-        // public interface
-    public:
-        // Parse the input file and store data internally.
-        CSVReader(std::string fname);
-
-        std::vector<std::vector<std::string>> getResult()
-        {
-            return csv_table;
-        }
-
-        void prettyPrintResult();
-        // Using hardware model number, store map of key-value pairs
-        // All types of values are stored as strings. Users have to interprete them to different types (int, string, float, etc.) based on meanings of keys.
-        static std::map<std::string, std::map<std::string, std::string>> hardwareDataBase;
-
-    private:
-        std::string file_name;
-        std::vector<std::vector<std::string>> csv_table;
-        // Read and parse a line of a CSV stream
-        // Store cells into a vector of strings:
-        // std::vector<std::string> readNextRow(std::istream istr)
-        std::istream &readNextRow(std::istream &istr, std::vector<std::string> &result);
-        // keep track of the cell number for each row.
-        static int cell_counter;
-        static void outputVectorElement(std::string s);
-        static void outputVector(std::vector<std::string> str_vec);
-
-        // read one entire CSV file, return vector of vectors of strings.
-        std::vector<std::vector<std::string>> readCSVFile(std::string filename);
-    };
 
     //----------------------end of the cost modeling section ------------------------
     // Release the resources for analyses

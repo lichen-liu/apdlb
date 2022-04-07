@@ -183,10 +183,6 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
                         .intrinsicValue(true, AutoParallelization::b_unique_indirect_index)
                         .doc("Assuming all arrays used as indirect indices have unique elements (no overlapping)"));
 
-    switches.insert(Switch("enable_modeling")
-                        .intrinsicValue(true, AutoParallelization::enable_modeling)
-                        .doc("Enabling cost modeling of loops to guide parallelization."));
-
     switches.insert(Switch("enable_distance")
                         .intrinsicValue(true, AutoParallelization::enable_distance)
                         .doc("Report the absolute dependence distance of each dependence relation preventing parallelization."));

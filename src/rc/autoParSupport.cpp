@@ -22,7 +22,6 @@ namespace AutoParallelization
     bool enable_verbose;
     bool enable_patch;
     bool keep_going;
-    bool enable_modeling = false;
     bool b_unique_indirect_index;
     bool enable_distance;
     bool no_aliasing = false;        // assuming no pointer aliasing
@@ -37,20 +36,6 @@ namespace AutoParallelization
     {
         if (project == NULL)
             project = SageInterface::getProject();
-
-        if (enable_modeling)
-        {
-            // Prepare for cost modeling analysis, loading hardware feature file first
-            // TODO: support installed path of hardware file
-            string src_path(ROSE_SOURCE_TREE_PATH);
-            string install_path(ROSE_INSTALLATION_PATH);
-
-            // TODO: support user specified file?
-            CSVReader reader1(src_path + "/projects/autoParallelization/annot/GPU-hardware-features.csv");
-            std::vector<std::vector<std::string>> csv_table = reader1.getResult();
-            cout << "degug: loaded hardware csv file..." << endl;
-            // reader1.prettyPrintResult();
-        }
 
         // Prepare def-use analysis
         if (defuse == NULL)
@@ -1689,120 +1674,4 @@ namespace AutoParallelization
         }
         return retval;
     }
-
-    //------------------------ this section supports cost modeling of loops
-
-    // implement the functions for CSVReader
-    // Read and parse a line of a CSV stream
-    // Store cells into a vector of strings:
-    // std::vector<std::string> readNextRow(std::istream istr)
-    std::istream &CSVReader::readNextRow(std::istream &istr, std::vector<std::string> &result)
-    {
-        std::string line;
-        std::string cell;
-
-        result.clear(); // Must clear result each time this function is called.
-        // extract a line from the input stream
-        std::getline(istr, line);
-
-        // Process the line
-        std::stringstream lineStream(line);
-
-        // extract comma separated fields
-        while (std::getline(lineStream, cell, ','))
-        {
-            result.push_back(cell);
-        }
-
-        // This checks for a trailing comma with no data after it: add an empty element
-        if (!lineStream && cell.empty())
-        {
-            result.push_back("");
-        }
-
-        return istr;
-    }
-
-    void CSVReader::outputVectorElement(std::string s)
-    {
-        if (cell_counter != 0)
-            std::cout << "," << s;
-        else // first cell? no leading ,
-        {
-            std::cout << s;
-            cell_counter++;
-        }
-    }
-
-    void CSVReader::outputVector(std::vector<std::string> str_vec)
-    {
-        cell_counter = 0; // reset the cell counter for each row
-        for_each(str_vec.begin(), str_vec.end(), outputVectorElement);
-        cout << endl;
-    }
-
-    CSVReader::CSVReader(std::string fname) : file_name(fname)
-    {
-        csv_table = readCSVFile(file_name);
-        // fill in the table model_name-> key-> value
-        /*
-           we assume a format for the hardware features
-           CSV file: https://docs.google.com/spreadsheets/d/1tDwUiJVXsBmoXri4T8fpY9Adt0oPiBR8-099F6cGPqs/edit#gid=0
-           Name  Measurement Units       Tesla K40m      Tesla P100-SXM2-16GB
-           Cluster Name    text    Surface Ray
-           Compute Capability      float   3.5
-           Shared Memory Bandwidth, GB/s,  3360
-           */
-        int model_count = csv_table[0].size() - 2; // how many gpus are represented in the table
-        // for each model
-        for (int i = 0; i < model_count; i++)
-        {
-            string model_name = csv_table[0][2 + i]; // first row: starting from 3rd column, stores gpu model names
-            //     cout<<"debug: store info. for the gpu model_name "<< model_name <<endl;
-            // skip the first row: it stores the captions for all columns
-            for (size_t j = 1; j < csv_table.size(); j++)
-            {
-                std::vector<std::string> row = csv_table[j];
-                // some rows are section names only, with only one column
-                if (row.size() >= 2)
-                {
-                    //         cout<<"debug: store key:"<< row[0] << ": value: " << row[2+i] <<endl;
-                    // Must trim leading and trailing spaces to avoid ambiguity
-                    boost::trim(model_name);
-                    string key = row[0];
-                    boost::trim(key);
-                    string value = row[2 + i];
-                    boost::trim(value);
-                    // hardwareDataBase[model_name][row[0]]= row[2+i];
-                    hardwareDataBase[model_name][key] = value;
-                }
-            }
-        }
-    }
-
-    void CSVReader::prettyPrintResult()
-    {
-        std::cout << "csv file line count=" << csv_table.size() << std::endl;
-        for_each(csv_table.begin(), csv_table.end(), outputVector);
-    }
-
-    // read one entire CSV file, return vector of vectors of strings.
-    std::vector<std::vector<std::string>> CSVReader::readCSVFile(std::string filename)
-    {
-        std::vector<std::vector<std::string>> all_results;
-        std::ifstream ifile(filename.c_str());
-        // error checking
-        std::vector<std::string> row_result;
-        while (readNextRow(ifile, row_result))
-        {
-            all_results.push_back(row_result);
-        }
-        return all_results;
-    }
-
-    int CSVReader::cell_counter;
-    std::map<std::string, std::map<std::string, string>> CSVReader::hardwareDataBase;
-
-    //-----------------------------end of cost modeling cost -----------------------
-
 } // end namespace
