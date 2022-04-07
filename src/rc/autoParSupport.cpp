@@ -1336,39 +1336,6 @@ namespace AutoParallelization
 
         int dep_dist = 999999; // the minimum dependence distance of all dependence relations for a loop.
 
-        // tentatively connect the cost model here
-        // TODO: better integration to guide conditional CPU vs. GPU selection
-        // a flag to control the debugging info.
-        // hardware info. has already been loaded by initialize_analysis()
-        if (enable_modeling)
-        {
-            // Which GPU to target? we pick Pascal P100 as the default target GPU
-            // TODO: enable users to pick a target GPU later
-            Hardware_Info *hinfo = new Hardware_Info();
-            string peak_dp = AutoParallelization::CSVReader::hardwareDataBase["Tesla P100-SXM2-16GB"]["Peak FP64 (DP)"];
-            hinfo->peak_flops_dp = atof(peak_dp.c_str());
-
-            string peak_band_str = AutoParallelization::CSVReader::hardwareDataBase["Tesla P100-SXM2-16GB"]["Peak Global Memory Bandwidth specified"];
-            string peak_band_measured_str = AutoParallelization::CSVReader::hardwareDataBase["Tesla P100-SXM2-16GB"]["Peak Global Memory Bandwidth measured cuda-stream"];
-            hinfo->main_mem_bandwidth = atof(peak_band_str.c_str());
-            hinfo->main_mem_bandwidth_measured = atof(peak_band_measured_str.c_str());
-            // ROSE_ASSERT (fabs(hinfo->main_mem_bandwidth -732.16)/732.16 <0.01) ;
-            ROSE_ASSERT(hinfo->main_mem_bandwidth != 0.0);
-            ROSE_ASSERT(hinfo->peak_flops_dp != 0.0);
-
-            // TODO: add CPU hardware info. later
-            //
-            // call loop analysis to extract loop information
-            SgStatement *lbody = isSgForStatement(loop)->get_loop_body();
-            FPCounters *fp_counters = calculateArithmeticIntensity(lbody);
-            //        cout<< fp_counters->toString() <<endl;
-            Loop_Info *linfo = new Loop_Info();
-            linfo->arithmetic_intensity = fp_counters->getIntensity();
-            linfo->iteration_count = 200 * 200; // TODO: better way to obtain iteration count, through profiling??
-            linfo->flops_per_iteration = fp_counters->getTotalCount();
-            cout << "debug: estimated execution time in seconds:" << rooflineModeling(linfo, hinfo) << endl;
-        }
-
         // collect array references with indirect indexing within a loop, save the result in a lookup table
         // This work is context sensitive (depending on the outer loops), so we declare the table for each loop.
         std::map<SgNode *, bool> indirect_array_table;
@@ -1889,24 +1856,6 @@ namespace AutoParallelization
     }
 
     //------------------------ this section supports cost modeling of loops
-    /* baseline roofline modeling
-     *
-     */
-    double rooflineModeling(Loop_Info *l, Hardware_Info *h)
-    {
-        double ret = 0.0;
-        ROSE_ASSERT(l != NULL);
-        ROSE_ASSERT(h != NULL);
-
-        // we use the theoretical peak for now. TODO: Measured peak is a better choice.
-        float peak_loop_gflops = min(h->peak_flops_dp, l->arithmetic_intensity * h->main_mem_bandwidth);
-        cout << "\tdebug: peak_flops_dp:" << h->peak_flops_dp << endl;
-        cout << "\tdebug: arithmetic intensity:" << l->arithmetic_intensity << endl;
-        cout << "\tdebug: mem bandwidth:" << h->main_mem_bandwidth << endl;
-
-        ret = ((double)(l->iteration_count * l->flops_per_iteration)) / ((double)(peak_loop_gflops * 1000000000));
-        return ret;
-    }
 
     // implement the functions for CSVReader
     // Read and parse a line of a CSV stream
