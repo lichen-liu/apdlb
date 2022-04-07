@@ -1,112 +1,79 @@
 #include <cstdlib>
-namespace KBM
+
+int rand_r(int &seed)
 {
-    int rand_r(int &seed)
+    seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
+    return (seed >> 0x10) & 0x7FFF;
+}
+
+void swap(float &x, float &y)
+{
+    T temp = x;
+    x = y;
+    y = temp;
+}
+
+int qs_partition(flaot *arr, int start, int end)
+{
+
+    float pivot = arr[start];
+
+    int count = 0;
+    for (int i = start + 1; i <= end; i++)
     {
-        seed = seed * 0x343fd + 0x269EC3; // a=214013, b=2531011
-        return (seed >> 0x10) & 0x7FFF;
+        if (arr[i] <= pivot)
+            count++;
     }
 
-    template <typename T>
-    void swap(T &x, T &y)
-    {
-        T temp = x;
-        x = y;
-        y = temp;
-    }
+    // Giving pivot element its correct position
+    int pivotIndex = start + count;
+    swap(arr[pivotIndex], arr[start]);
 
-    template void swap(float &x, float &y);
+    // Sorting left and right parts of the pivot element
+    int i = start, j = end;
 
-    template <typename T>
-    void bubble_sort(T *arr, int n)
+    while (i < pivotIndex && j > pivotIndex)
     {
-        int i, j;
-        for (i = 0; i < n - 1; i++)
+
+        while (arr[i] <= pivot)
         {
-            // Last i elements are already in place
-            for (j = 0; j < n - i - 1; j++)
-            {
-                if (arr[j] > arr[j + 1])
-                {
-                    swap(arr[j], arr[j + 1]);
-                }
-            }
+            i++;
+        }
+
+        while (arr[j] > pivot)
+        {
+            j--;
+        }
+
+        if (i < pivotIndex && j > pivotIndex)
+        {
+            swap(arr[i++], arr[j--]);
         }
     }
 
-    template <typename T>
-    int qs_partition(T *arr, int start, int end)
-    {
+    return pivotIndex;
+}
 
-        T pivot = arr[start];
+void qs_helper(float *arr, int start, int end)
+{
 
-        int count = 0;
-        for (int i = start + 1; i <= end; i++)
-        {
-            if (arr[i] <= pivot)
-                count++;
-        }
+    // base case
+    if (start >= end)
+        return;
 
-        // Giving pivot element its correct position
-        int pivotIndex = start + count;
-        swap(arr[pivotIndex], arr[start]);
+    // partitioning the array
+    int p = qs_partition(arr, start, end);
 
-        // Sorting left and right parts of the pivot element
-        int i = start, j = end;
+    // Sorting the left part
+    qs_helper(arr, start, p - 1);
 
-        while (i < pivotIndex && j > pivotIndex)
-        {
+    // Sorting the right part
+    qs_helper(arr, p + 1, end);
+}
 
-            while (arr[i] <= pivot)
-            {
-                i++;
-            }
-
-            while (arr[j] > pivot)
-            {
-                j--;
-            }
-
-            if (i < pivotIndex && j > pivotIndex)
-            {
-                swap(arr[i++], arr[j--]);
-            }
-        }
-
-        return pivotIndex;
-    }
-    template <>
-    int qs_partition(float *arr, int start, int end);
-
-    template <typename T>
-    void qs_helper(T *arr, int start, int end)
-    {
-
-        // base case
-        if (start >= end)
-            return;
-
-        // partitioning the array
-        int p = qs_partition(arr, start, end);
-
-        // Sorting the left part
-        qs_helper(arr, start, p - 1);
-
-        // Sorting the right part
-        qs_helper(arr, p + 1, end);
-    }
-
-    template <>
-    void qs_helper(float *arr, int start, int end);
-
-    template <typename T>
-    void quick_sort(T *arr, int n)
-    {
-        qs_helper(arr, 0, n - 1);
-    }
-
-    template <>
-    void quick_sort(float *arr, int n);
+void quick_sort(float *arr, int n)
+{
+    qs_helper(arr, 0, n - 1);
 }
 
 void sorting_kernel(size_t lower, size_t upper)
