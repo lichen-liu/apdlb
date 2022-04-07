@@ -33,5 +33,10 @@ target_link_libraries(rc librose.so ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_L
 add_executable(rc_exe main.cc)
 target_link_libraries(rc_exe rc)
 
-add_custom_target(rc_all)
-add_dependencies(rc_all rc rc_exe)
+add_executable(autoPar autoPar.cc)
+target_link_libraries(autoPar rc)
+
+add_custom_target(rc_all DEPENDS
+    rc
+    rc_exe
+    autoPar)
