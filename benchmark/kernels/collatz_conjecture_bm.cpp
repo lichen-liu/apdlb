@@ -1,5 +1,4 @@
-#include <cstdio>
-#include <vector>
+#include <cstdlib>
 
 size_t collatz_conjecture_kernel(size_t lower, size_t upper)
 {
@@ -41,6 +40,6 @@ size_t collatz_conjecture_kernel(size_t lower, size_t upper)
 
 int main()
 {
-    size_t result = collatz_conjecture_kernel(1000000, 10000000);
-    printf("result=%lu\n", result);
+    collatz_conjecture_kernel(1000000, 10000000);
+    // printf("result=%lu\n", result);
 }
