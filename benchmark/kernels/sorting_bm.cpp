@@ -13,7 +13,7 @@ inline void swap(float &x, float &y)
     y = temp;
 }
 
-inline int qs_partition(flaot *arr, int start, int end)
+inline int qs_partition(float *arr, int start, int end)
 {
 
     float pivot = arr[start];
