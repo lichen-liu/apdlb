@@ -13,6 +13,7 @@ void sorting_kernel(size_t lower, size_t upper)
         vecs[iteration] = new float[n];
     }
 
+    // Main computation loop
     for (size_t iteration = 0; iteration < range; iteration++)
     {
         const size_t n = offset + (iteration + lower) * scale;
