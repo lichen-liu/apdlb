@@ -302,7 +302,8 @@ int main(int argc, char *argv[])
             SgGlobal *root = sfile->get_globalScope();
 
             Rose_STL_Container<SgNode *> defList = NodeQuery::querySubTree(sfile, V_SgFunctionDefinition);
-            bool hasOpenMP = false; // flag to indicate if there is at least one loop is parallelized. also if omp.h is needed in this file
+            // flag to indicate if there is at least one loop is parallelized. Also means execution runtime headers are needed
+            bool hasERT = false;
 
             // For each function body in the scope
             // for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p)
@@ -379,21 +380,21 @@ int main(int argc, char *argv[])
                     if (invarname != NULL)
                     {
                         bool ret = ParallelizeOutermostLoop(current_loop, &array_interface, annot);
-                        if (ret) // if at least one loop is parallelized, we set hasOpenMP to be true for the entire file.
-                            hasOpenMP = true;
+                        if (ret) // if at least one loop is parallelized, we set hasERT to be true for the entire file.
+                            hasERT = true;
                     }
                     else // cannot grab loop index from a non-conforming loop, skip parallelization
                     {
                         if (enable_debug)
                             cout << "Skipping a non-canonical loop at line:" << current_loop->get_file_info()->get_line() << "..." << endl;
                         // We should not reset it to false. The last loop may not be parallelizable. But a previous one may be.
-                        // hasOpenMP = false;
+                        // hasERT = false;
                     }
                 } // end for loops
             }     // end for-loop for declarations
 
-            // insert omp.h if needed
-            if (hasOpenMP)
+            // insert ERT-related files if needed
+            if (hasERT)
             {
                 SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
                 if (enable_patch)

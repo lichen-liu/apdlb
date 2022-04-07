@@ -12,7 +12,6 @@
 
 #include <iostream>
 
-#include "loop_candidate.h"
 #include "utils.h"
 #include "archived.h"
 #include "rose.h"
