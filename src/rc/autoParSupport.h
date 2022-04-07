@@ -42,13 +42,20 @@ namespace AutoParallelization
     // Required analysis and their initialization
     extern DFAnalysis *defuse;
     extern LivenessAnalysis *liv;
-    extern bool enable_debug; // maximum debugging output to the screen
-    extern bool enable_verbose;          // verbose mode, print out loop info. for successful or failed parallelization attempts . Default is true
-    extern bool no_aliasing;             // assuming aliasing or not
-    extern bool enable_patch;            // an option to control the generation of patch files
-    extern bool b_unique_indirect_index; // assume all arrays used as indirect indices has unique elements(no overlapping)
-    extern bool dump_annot_file;         // print out annotation file's content
-    extern std::vector<std::string> annot_filenames;
+
+    struct Config
+    {
+        bool enable_debug = true;            // maximum debugging output to the screen
+        bool no_aliasing = false;            // assuming aliasing or not
+        bool b_unique_indirect_index = true; // assume all arrays used as indirect indices has unique elements(no overlapping)
+        std::vector<std::string> annot_filenames;
+
+        static Config &get()
+        {
+            static Config conf;
+            return conf;
+        }
+    };
 
     // Conduct necessary analyses on the project, can be called multiple times during program transformations.
     bool initialize_analysis(SgProject *project = NULL, bool debug = false);

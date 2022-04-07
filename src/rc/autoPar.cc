@@ -18,8 +18,6 @@
  * Nov 3, 2008
  */
 #include "rose.h"
-//#include "rose_config.h" // obtain macros defining backend compiler names, etc.
-#include "keep_going.h" // enable logging files which cannot be processed by AutoPar due to various reasons
 // all kinds of analyses needed
 #include "autoParSupport.h"
 #include <string>
@@ -47,7 +45,7 @@ void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunction
         ROSE_ASSERT(sfile);
         //    SgGlobal *root = sfile->get_globalScope();
 
-        if (enable_debug)
+        if (Config::get().enable_debug)
             cout << "Processing each function within the files " << sfile->get_file_info()->get_filename() << endl;
         //      cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<endl;
 
@@ -67,12 +65,12 @@ void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunction
             SgFunctionDeclaration *func = defn->get_declaration();
             ROSE_ASSERT(func != NULL);
 
-            if (enable_debug)
+            if (Config::get().enable_debug)
                 cout << "\t considering function " << func->get_name() << " at " << func->get_file_info()->get_line() << endl;
             // ignore functions in system headers, Can keep them to test robustness
             if (defn->get_file_info()->get_filename() != sageFile->get_file_info()->get_filename())
             {
-                if (enable_debug)
+                if (Config::get().enable_debug)
                     cout << "\t Skipped since the function's associated file name does not match current file being considered. Mostly from a header. " << endl;
                 continue;
             }
@@ -93,7 +91,7 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
         VariantVector vv(V_SgForStatement);
         Rose_STL_Container<SgNode *> loops = NodeQuery::querySubTree(funcDef, vv);
 
-        if (enable_debug)
+        if (Config::get().enable_debug)
             cout << "Normalize loops queried from memory pool ...." << endl;
 
         // normalize C99 style for (int i= x, ...) to C89 style: int i;  (i=x, ...)
@@ -104,14 +102,14 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
             SgForStatement *cur_loop = isSgForStatement(*iter);
             ROSE_ASSERT(cur_loop);
 
-            if (enable_debug)
+            if (Config::get().enable_debug)
                 cout << "\t loop at:" << cur_loop->get_file_info()->get_line() << endl;
             // skip for (;;) , SgForStatement::get_test_expr() has a buggy assertion.
             SgStatement *test_stmt = cur_loop->get_test();
             if (test_stmt != NULL &&
                 isSgNullStatement(test_stmt))
             {
-                if (enable_debug)
+                if (Config::get().enable_debug)
                     cout << "\t skipped due to empty loop header like for (;;)" << endl;
                 continue;
             }
@@ -119,7 +117,7 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
             // skip system header
             if (insideSystemHeader(cur_loop))
             {
-                if (enable_debug)
+                if (Config::get().enable_debug)
                     cout << "\t skipped since the loop is inside a system header " << endl;
                 continue;
             }
@@ -133,56 +131,23 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
 {
     using namespace Sawyer::CommandLine;
 
-    // Default log files for keep_going option
-    // There is no home directory if called by a web server account.
-    const char *logdir = "/tmp";
-    char *hdir = getenv("HOME");
-    if (hdir != NULL)
-    {
-        logdir = hdir;
-    }
-    ROSE_ASSERT(logdir != NULL);
-    string log_path = boost::filesystem::path(logdir).native();
-    Rose::KeepGoing::report_filename__fail = log_path + "/autoPar-failed-files.txt";
-    Rose::KeepGoing::report_filename__pass = log_path + "/autoPar-passed-files.txt";
-
     SwitchGroup switches("autoPar's switches");
     switches.doc("These switches control the autoPar tool. ");
     switches.name("rose:autopar");
 
-    switches.insert(Switch("enable_verbose")
-                        .intrinsicValue(true, AutoParallelization::enable_verbose)
-                        .doc("Enable the verbose mode to print out parallelization results for loops."));
-
-    switches.insert(Switch("enable_debug")
-                        .intrinsicValue(true, AutoParallelization::enable_debug)
-                        .doc("Enable the debugging mode to print out lots of information of internal processing."));
-
-    switches.insert(Switch("failure_report")
-                        .argument("string", anyParser(Rose::KeepGoing::report_filename__fail))
-                        .doc("Specify the report file for logging files autoPar cannot fully process when keep_going option is turned on. \n Default file is $HOME/autoPar-failed-files.txt"));
-
-    switches.insert(Switch("success_report")
-                        .argument("string", anyParser(Rose::KeepGoing::report_filename__pass))
-                        .doc("Specify the report file for logging files autoPar can fully process when keep_going option is turned on. \n Default file is $HOME/autoPar-passed-files.txt"));
-
     switches.insert(Switch("no_aliasing")
-                        .intrinsicValue(true, AutoParallelization::no_aliasing)
+                        .intrinsicValue(true, Config::get().no_aliasing)
                         .doc("Assuming no pointer aliasing exists."));
 
     switches.insert(Switch("unique_indirect_index")
-                        .intrinsicValue(true, AutoParallelization::b_unique_indirect_index)
+                        .intrinsicValue(true, Config::get().b_unique_indirect_index)
                         .doc("Assuming all arrays used as indirect indices have unique elements (no overlapping)"));
 
     switches.insert(Switch("annot")
-                        .argument("string", anyParser(AutoParallelization::annot_filenames))
+                        .argument("string", anyParser(Config::get().annot_filenames))
                         //      .shortPrefix("-") // this option allows short prefix
                         .whichValue(SAVE_ALL) // if switch appears more than once, save all values not just last
                         .doc("Specify semantics annotation file for standard or user-defined abstractions"));
-
-    switches.insert(Switch("dumpannot")
-                        .intrinsicValue(true, AutoParallelization::dump_annot_file)
-                        .doc("Dump annotation file content for debugging purposes."));
 
     return switches;
 }
@@ -213,10 +178,10 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
     std::vector<std::string> remainingArgs = p.parse(argvList).apply().unparsedArgs(true);
 
     // add back -annot file TODO: how about multiple appearances?
-    for (size_t i = 0; i < AutoParallelization::annot_filenames.size(); i++)
+    for (size_t i = 0; i < Config::get().annot_filenames.size(); i++)
     {
         remainingArgs.push_back("-annot");
-        remainingArgs.push_back(AutoParallelization::annot_filenames[i]);
+        remainingArgs.push_back(Config::get().annot_filenames[i]);
     }
 
     // AFTER parse the command-line, you can do this:
@@ -229,8 +194,6 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
     ArrayAnnotation *annot = ArrayAnnotation::get_inst();
     annot->register_annot();
     ReadAnnotation::get_inst()->read();
-    if (AutoParallelization::dump_annot_file)
-        annot->Dump();
 
     // Strip off custom options and their values to enable backend compiler
     CommandlineProcessing::removeArgsWithParameters(remainingArgs, "-annot");
@@ -247,18 +210,6 @@ int main(int argc, char *argv[])
     SgProject *project = frontend(argc, argv);
     ROSE_ASSERT(project != NULL);
 
-    // register midend signal handling function
-    if (KEEP_GOING_CAUGHT_MIDEND_SIGNAL)
-    {
-        std::cout
-            << "[WARN] "
-            << "Configured to keep going after catching a "
-            << "signal in AutoPar"
-            << std::endl;
-        Rose::KeepGoing::setMidendErrorCode(project, 100);
-        goto label_end;
-    }
-
     // create a block to avoid jump crosses initialization of candidateFuncDefs etc.
     {
         std::vector<SgFunctionDefinition *> candidateFuncDefs;
@@ -266,8 +217,6 @@ int main(int argc, char *argv[])
         normalizeLoops(candidateFuncDefs);
 
         // Prepare liveness analysis etc.
-        // Too much output for analysis debugging info.
-        // initialize_analysis (project,enable_debug);
         initialize_analysis(project, false);
 
         // This is a bit redundant with findCandidateFunctionDefinitions ()
@@ -311,7 +260,7 @@ int main(int argc, char *argv[])
                 Rose_STL_Container<SgNode *> loops = NodeQuery::querySubTree(defn, V_SgForStatement);
                 if (loops.size() == 0)
                 {
-                    if (enable_debug)
+                    if (Config::get().enable_debug)
                         cout << "\t skipped since no for loops are found in this function" << endl;
                     continue;
                 }
@@ -340,7 +289,7 @@ int main(int argc, char *argv[])
                 {
                     SgNode *current_loop = *iter;
 
-                    if (enable_debug)
+                    if (Config::get().enable_debug)
                     {
                         SgForStatement *fl = isSgForStatement(current_loop);
                         cout << "\t\t Considering loop at " << fl->get_file_info()->get_line() << endl;
@@ -353,8 +302,8 @@ int main(int argc, char *argv[])
                     VariantT blackConstruct;
                     if (useUnsupportedLanguageFeatures(current_loop, &blackConstruct))
                     {
-                        if (enable_debug)
-                            cout << "Skipping a loop at line:" << current_loop->get_file_info()->get_line() << " due to unsupported language construct" << blackConstruct << "..." << endl;
+                        if (Config::get().enable_debug)
+                            cout << "Skipping a loop at line:" << current_loop->get_file_info()->get_line() << " due to unsupported language construct " << blackConstruct << "..." << endl;
                         continue;
                     }
 
@@ -367,7 +316,7 @@ int main(int argc, char *argv[])
                     }
                     else // cannot grab loop index from a non-conforming loop, skip parallelization
                     {
-                        if (enable_debug)
+                        if (Config::get().enable_debug)
                             cout << "Skipping a non-canonical loop at line:" << current_loop->get_file_info()->get_line() << "..." << endl;
                         // We should not reset it to false. The last loop may not be parallelizable. But a previous one may be.
                         // hasERT = false;
@@ -396,7 +345,6 @@ int main(int argc, char *argv[])
         release_analysis();
     }
 
-label_end:
     // Report errors
     int status = backend(project);
     // we always write to log files by default now
