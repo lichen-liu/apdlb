@@ -27,7 +27,7 @@ inline int qs_partition(float *arr, int start, int end)
 
     // Giving pivot element its correct position
     int pivotIndex = start + count;
-    swap(arr[pivotIndex], arr[start]);
+    swap_f(arr[pivotIndex], arr[start]);
 
     // Sorting left and right parts of the pivot element
     int i = start, j = end;
@@ -47,7 +47,7 @@ inline int qs_partition(float *arr, int start, int end)
 
         if (i < pivotIndex && j > pivotIndex)
         {
-            swap(arr[i++], arr[j--]);
+            swap_f(arr[i++], arr[j--]);
         }
     }
 
