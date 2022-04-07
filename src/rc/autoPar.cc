@@ -328,6 +328,8 @@ int main(int argc, char *argv[])
             if (hasERT)
             {
                 SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
+                cout << endl;
+                cout << "Successfully found parallelizable loops and added Execution Runtime for parallelization!" << endl;
             }
         } // end for-loop of files
 

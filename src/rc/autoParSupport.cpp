@@ -1360,10 +1360,8 @@ namespace AutoParallelization
                 constexpr bool enable_distance = true;
                 cout << "=====================================================" << endl;
                 cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to the following dependencies:" << endl;
-                for (vector<DepInfo>::iterator iter = remainingDependences.begin();
-                     iter != remainingDependences.end(); iter++)
+                for (const auto &di : remainingDependences)
                 {
-                    DepInfo di = *iter;
                     cout << di.toString() << endl;
                     if (enable_distance)
                     {
@@ -1426,8 +1424,6 @@ namespace AutoParallelization
         std::set<VariantT> blackListDict;
         blackListDict.insert(V_SgRshiftOp);
         blackListDict.insert(V_SgLshiftOp);
-        cout << "V_SgRshiftOp" << V_SgRshiftOp << endl;
-        cout << "V_SgLshiftOp" << V_SgLshiftOp << endl;
 
         // build a dictionary of language constructs shown up in the loop, then query it
         RoseAst ast(loop);
