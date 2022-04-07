@@ -43,16 +43,13 @@ namespace AutoParallelization
     extern DFAnalysis *defuse;
     extern LivenessAnalysis *liv;
     extern bool enable_debug; // maximum debugging output to the screen
-    extern bool keep_going;
     extern bool enable_verbose;          // verbose mode, print out loop info. for successful or failed parallelization attempts . Default is true
     extern bool no_aliasing;             // assuming aliasing or not
     extern bool enable_patch;            // an option to control the generation of patch files
     extern bool b_unique_indirect_index; // assume all arrays used as indirect indices has unique elements(no overlapping)
-    extern bool enable_distance;         // print out absolute dependence distance for a dependence relation preventing from parallelization
     extern bool dump_annot_file;         // print out annotation file's content
     extern std::vector<std::string> annot_filenames;
 
-    extern bool keep_c99_loop_init; // avoid normalize C99 style loop init statement: for (int i=0; ...)
     // Conduct necessary analyses on the project, can be called multiple times during program transformations.
     bool initialize_analysis(SgProject *project = NULL, bool debug = false);
 
@@ -96,9 +93,6 @@ namespace AutoParallelization
 
     // Parallelize an input loop at its outermost loop level, return true if successful
     bool ParallelizeOutermostLoop(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot);
-
-    //! Generate patch files for the introduced OpenMP pragmas (represented as OmpAttribute)
-    void generatePatchFile(SgSourceFile *sfile);
 
     //! Check if two expressions access different memory locations. If in double, return false
     // This is helpful to exclude some dependence relations involving two obvious different memory location accesses

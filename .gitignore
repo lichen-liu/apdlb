@@ -33,3 +33,5 @@
 
 .vscode
 build
+
+rose_*.*

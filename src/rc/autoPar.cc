@@ -129,7 +129,7 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
 }
 
 //! Initialize the switch group and its switches.
-Sawyer::CommandLine::SwitchGroup commandLineSwitches()
+[[maybe_unused]] static Sawyer::CommandLine::SwitchGroup commandLineSwitches()
 {
     using namespace Sawyer::CommandLine;
 
@@ -158,11 +158,6 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
                         .intrinsicValue(true, AutoParallelization::enable_debug)
                         .doc("Enable the debugging mode to print out lots of information of internal processing."));
 
-    // Keep going option of autoPar
-    switches.insert(Switch("keep_going")
-                        .intrinsicValue(true, AutoParallelization::keep_going)
-                        .doc("Allow auto parallelization to keep going if errors happen. \n Errors are stored in a failure report file. See the option failsure_report for details. "));
-
     switches.insert(Switch("failure_report")
                         .argument("string", anyParser(Rose::KeepGoing::report_filename__fail))
                         .doc("Specify the report file for logging files autoPar cannot fully process when keep_going option is turned on. \n Default file is $HOME/autoPar-failed-files.txt"));
@@ -171,10 +166,6 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
                         .argument("string", anyParser(Rose::KeepGoing::report_filename__pass))
                         .doc("Specify the report file for logging files autoPar can fully process when keep_going option is turned on. \n Default file is $HOME/autoPar-passed-files.txt"));
 
-    switches.insert(Switch("enable_patch")
-                        .intrinsicValue(true, AutoParallelization::enable_patch)
-                        .doc("Enable generating patch files to represent auto parallelization, instead of directly changing input files"));
-
     switches.insert(Switch("no_aliasing")
                         .intrinsicValue(true, AutoParallelization::no_aliasing)
                         .doc("Assuming no pointer aliasing exists."));
@@ -182,10 +173,6 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
     switches.insert(Switch("unique_indirect_index")
                         .intrinsicValue(true, AutoParallelization::b_unique_indirect_index)
                         .doc("Assuming all arrays used as indirect indices have unique elements (no overlapping)"));
-
-    switches.insert(Switch("enable_distance")
-                        .intrinsicValue(true, AutoParallelization::enable_distance)
-                        .doc("Report the absolute dependence distance of each dependence relation preventing parallelization."));
 
     switches.insert(Switch("annot")
                         .argument("string", anyParser(AutoParallelization::annot_filenames))
@@ -201,7 +188,7 @@ Sawyer::CommandLine::SwitchGroup commandLineSwitches()
 }
 
 // New version of command line processing using Sawyer library
-static std::vector<std::string> commandline_processing(std::vector<std::string> &argvList)
+[[maybe_unused]] static std::vector<std::string> commandline_processing(std::vector<std::string> &argvList)
 {
     using namespace Sawyer::CommandLine;
     Parser p = Rose::CommandLine::createEmptyParserStage(purpose, description);
@@ -232,9 +219,6 @@ static std::vector<std::string> commandline_processing(std::vector<std::string> 
         remainingArgs.push_back(AutoParallelization::annot_filenames[i]);
     }
 
-    if (AutoParallelization::keep_going)
-        remainingArgs.push_back("-rose:keep_going");
-
     // AFTER parse the command-line, you can do this:
     if (showRoseHelp)
         SgFile::usage(0);
@@ -258,11 +242,9 @@ int main(int argc, char *argv[])
 {
     ROSE_INITIALIZE;
 
-    vector<string> argvList(argv, argv + argc);
-    // Processing debugging and annotation options
-    //   autopar_command_processing(argvList);
-    argvList = commandline_processing(argvList);
-    SgProject *project = frontend(argvList);
+    // vector<string> argvList(argv, argv + argc);
+    // argvList = commandline_processing(argvList);
+    SgProject *project = frontend(argc, argv);
     ROSE_ASSERT(project != NULL);
 
     // register midend signal handling function
@@ -397,8 +379,6 @@ int main(int argc, char *argv[])
             if (hasERT)
             {
                 SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
-                if (enable_patch)
-                    generatePatchFile(sfile);
             }
         } // end for-loop of files
 
@@ -420,10 +400,5 @@ label_end:
     // Report errors
     int status = backend(project);
     // we always write to log files by default now
-    if (keep_going)
-    {
-        std::vector<std::string> orig_rose_cmdline(argv, argv + argc);
-        Rose::KeepGoing::generate_reports(project, orig_rose_cmdline);
-    }
     return status;
 }
