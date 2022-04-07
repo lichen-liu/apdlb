@@ -6,11 +6,11 @@ void sorting_kernel(size_t lower, size_t upper)
     const size_t offset = 1;
     const size_t range = upper - lower;
 
-    float **vecs = (float **)malloc(range * sizeof(float *));
+    float **vecs = new float *[range];
     for (size_t iteration = 0; iteration < range; iteration++)
     {
         const size_t n = offset + (iteration + lower) * scale;
-        vecs[iteration] = (float *)malloc(n * sizeof(float));
+        vecs[iteration] = new float[n];
     }
 
     for (size_t iteration = 0; iteration < range; iteration++)
@@ -44,9 +44,9 @@ void sorting_kernel(size_t lower, size_t upper)
 
     for (size_t iteration = 0; iteration < range; iteration++)
     {
-        free(vecs[iteration]);
+        delete[] vecs[iteration];
     }
-    free(vecs);
+    delete[] vecs;
 }
 
 int main()
