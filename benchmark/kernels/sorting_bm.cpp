@@ -8,7 +8,7 @@ inline int rand_r(int &seed)
 
 inline void swap(float &x, float &y)
 {
-    T temp = x;
+    float temp = x;
     x = y;
     y = temp;
 }
