@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include "RoseAst.h"
+#include "utils.h"
 
 using namespace Rose;
 using namespace OmpSupport;
@@ -201,7 +202,7 @@ namespace AutoParallelization
                         liveIns.push_back(name);
                         //          remove1.push_back(*iter);
                         if (Config::get().enable_debug)
-                            std::cout << name->get_qualified_name().getString() << std::endl;
+                            std::cout << "  " << name->get_qualified_name().getString() << std::endl;
                     }
                 }
             }
@@ -217,7 +218,7 @@ namespace AutoParallelization
                     if ((SageInterface::isScalarType(name->get_type())) && (name != invarname))
                     {
                         if (Config::get().enable_debug)
-                            std::cout << name->get_qualified_name().getString() << std::endl;
+                            std::cout << "  " << name->get_qualified_name().getString() << std::endl;
                         liveOuts.push_back(name);
                         //          remove2.push_back(*iter);
                     }
@@ -235,12 +236,12 @@ namespace AutoParallelization
             std::cout << "Final Live-in variables for loop:" << std::endl;
             for (auto name : liveIns)
             {
-                std::cout << name->get_qualified_name().getString() << std::endl;
+                std::cout << "  " << name->get_qualified_name().getString() << std::endl;
             }
             std::cout << "Final Live-out variables for loop:" << std::endl;
             for (auto name : liveOuts)
             {
-                std::cout << name->get_qualified_name().getString() << std::endl;
+                std::cout << "  " << name->get_qualified_name().getString() << std::endl;
             }
         }
 
@@ -311,12 +312,12 @@ namespace AutoParallelization
         }
 
         // Remove duplicated items
-        sort(resultVars.begin(), resultVars.end());
-        std::vector<SgInitializedName *>::iterator new_end = unique(resultVars.begin(), resultVars.end());
+        std::sort(resultVars.begin(), resultVars.end());
+        std::vector<SgInitializedName *>::iterator new_end = std::unique(resultVars.begin(), resultVars.end());
         resultVars.erase(new_end, resultVars.end());
 
-        sort(invariantVars.begin(), invariantVars.end());
-        new_end = unique(invariantVars.begin(), invariantVars.end());
+        std::sort(invariantVars.begin(), invariantVars.end());
+        new_end = std::unique(invariantVars.begin(), invariantVars.end());
         invariantVars.erase(new_end, invariantVars.end());
     }
 
@@ -399,8 +400,8 @@ namespace AutoParallelization
             }     // end if has edge
         }         // end of iterate dependence graph
         // remove duplicated items
-        sort(resultVars.begin(), resultVars.end());
-        resultVars.erase(unique(resultVars.begin(), resultVars.end()), resultVars.end());
+        std::sort(resultVars.begin(), resultVars.end());
+        resultVars.erase(std::unique(resultVars.begin(), resultVars.end()), resultVars.end());
     }
 
     // Variable classification for a loop node based on liveness analysis
@@ -435,54 +436,54 @@ namespace AutoParallelization
         SgForStatement *for_stmt = isSgForStatement(sg_node);
         ROSE_ASSERT(for_stmt != nullptr);
 
-        remove(liveIns0.begin(), liveIns0.end(), invarname);
-        remove(liveOuts0.begin(), liveOuts0.end(), invarname);
+        std::remove(liveIns0.begin(), liveIns0.end(), invarname);
+        std::remove(liveOuts0.begin(), liveOuts0.end(), invarname);
 
         std::vector<SgInitializedName *> allVars, depVars, invariantVars, privateVars, lastprivateVars,
             firstprivateVars, reductionVars; // reductionResults;
         // Only consider scalars for now
         CollectVisibleVaribles(sg_node, allVars, invariantVars, true);
-        sort(allVars.begin(), allVars.end());
+        std::sort(allVars.begin(), allVars.end());
         CollectVariablesWithDependence(sg_node, depgraph, depVars, true);
         if (Config::get().enable_debug)
         {
             std::cout << "Debug after CollectVisibleVaribles ():" << std::endl;
             for (auto name : allVars)
             {
-                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
+                std::cout << "  " << RC::to_string(name) << std::endl;
             }
 
             std::cout << "Debug after CollectVariablesWithDependence():" << std::endl;
             for (auto name : depVars)
             {
-                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
+                std::cout << "  " << RC::to_string(name) << std::endl;
             }
         }
-        sort(liveIns0.begin(), liveIns0.end());
-        sort(liveOuts0.begin(), liveOuts0.end());
+        std::sort(liveIns0.begin(), liveIns0.end());
+        std::sort(liveOuts0.begin(), liveOuts0.end());
 
         // We concern about variables with some kind of dependences
         // Since private and reduction variables cause some kind of dependencies ,
         // which otherwise prevent parallelization
         // liveVars intersection depVars
         // Remove the live variables which have no relevant dependencies
-        set_intersection(liveIns0.begin(), liveIns0.end(), depVars.begin(), depVars.end(),
-                         inserter(liveIns, liveIns.begin()));
-        set_intersection(liveOuts0.begin(), liveOuts0.end(), depVars.begin(), depVars.end(),
-                         inserter(liveOuts, liveOuts.begin()));
+        std::set_intersection(liveIns0.begin(), liveIns0.end(), depVars.begin(), depVars.end(),
+                              std::inserter(liveIns, liveIns.begin()));
+        std::set_intersection(liveOuts0.begin(), liveOuts0.end(), depVars.begin(), depVars.end(),
+                              std::inserter(liveOuts, liveOuts.begin()));
 
-        sort(liveIns.begin(), liveIns.end());
-        sort(liveOuts.begin(), liveOuts.end());
+        std::sort(liveIns.begin(), liveIns.end());
+        std::sort(liveOuts.begin(), liveOuts.end());
         // shared: scalars for now: allVars - depVars,
 
         // private:
         //---------------------------------------------
         // depVars- liveIns - liveOuts
         std::vector<SgInitializedName *> temp;
-        set_difference(depVars.begin(), depVars.end(), liveIns.begin(), liveIns.end(),
-                       inserter(temp, temp.begin()));
-        set_difference(temp.begin(), temp.end(), liveOuts.begin(), liveOuts.end(),
-                       inserter(privateVars, privateVars.end()));
+        std::set_difference(depVars.begin(), depVars.end(), liveIns.begin(), liveIns.end(),
+                            std::inserter(temp, temp.begin()));
+        std::set_difference(temp.begin(), temp.end(), liveOuts.begin(), liveOuts.end(),
+                            std::inserter(privateVars, privateVars.end()));
         // loop invariants are private
         // insert all loops, including nested ones' visible invariants
         for (auto name : invariantVars)
@@ -528,7 +529,9 @@ namespace AutoParallelization
                 attribute->addVariable(OmpSupport::e_private, var_name, name);
 
                 if (Config::get().enable_debug)
-                    std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
+                {
+                    std::cout << "  " << RC::to_string(name) << std::endl;
+                }
             }
         }
 
@@ -537,8 +540,8 @@ namespace AutoParallelization
         //  Must not be Livein to ensure correct semantics: private for each iteration, not getting value from previous iteration.
         //   e.g.  for ()   {  a = 1; }  = a;
         //---------------------------------------------
-        set_difference(liveOuts.begin(), liveOuts.end(), liveIns0.begin(), liveIns0.end(),
-                       inserter(lastprivateVars, lastprivateVars.begin()));
+        std::set_difference(liveOuts.begin(), liveOuts.end(), liveIns0.begin(), liveIns0.end(),
+                            std::inserter(lastprivateVars, lastprivateVars.begin()));
 
         if (Config::get().enable_debug)
             std::cout << "Debug dump lastprivate:" << std::endl;
@@ -546,7 +549,9 @@ namespace AutoParallelization
         {
             attribute->addVariable(OmpSupport::e_lastprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
-                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
+            {
+                std::cout << "  " << RC::to_string(name) << std::endl;
+            }
         }
         // reduction recognition
         //---------------------------------------------
@@ -563,7 +568,9 @@ namespace AutoParallelization
         {
             attribute->addVariable(optype, iname->get_name().getString(), iname);
             if (Config::get().enable_debug)
-                std::cout << iname->get_qualified_name().getString() << std::endl;
+            {
+                std::cout << "  " << RC::to_string(iname) << std::endl;
+            }
         }
 
         // Liao 5/28/2010: firstprivate variables should not cause any dependencies, equal to should be be written in the loop
@@ -577,21 +584,23 @@ namespace AutoParallelization
             std::cout << "Debug dump firstprivate:" << std::endl;
 
         std::vector<SgInitializedName *> temp2, temp3;
-        set_difference(liveIns0.begin(), liveIns0.end(), liveOuts0.begin(), liveOuts0.end(),
-                       inserter(temp2, temp2.begin()));
-        set_difference(temp2.begin(), temp2.end(), depVars.begin(), depVars.end(),
-                       // inserter(firstprivateVars, firstprivateVars.begin()));
-                       inserter(temp3, temp3.begin()));
+        std::set_difference(liveIns0.begin(), liveIns0.end(), liveOuts0.begin(), liveOuts0.end(),
+                            std::inserter(temp2, temp2.begin()));
+        std::set_difference(temp2.begin(), temp2.end(), depVars.begin(), depVars.end(),
+                            // std::inserter(firstprivateVars, firstprivateVars.begin()));
+                            std::inserter(temp3, temp3.begin()));
         // Liao 6/27/2014
         // LiveIn only means may be used, not must be used, in the future.
         // some liveIn variables may not show up at all in the loop body we concern about
         // So we have to intersect with visible variables to make sure we only put used variables into the firstprivate clause
-        set_intersection(temp3.begin(), temp3.end(), allVars.begin(), allVars.end(), inserter(firstprivateVars, firstprivateVars.begin()));
+        std::set_intersection(temp3.begin(), temp3.end(), allVars.begin(), allVars.end(), std::inserter(firstprivateVars, firstprivateVars.begin()));
         for (auto name : firstprivateVars)
         {
             attribute->addVariable(OmpSupport::e_firstprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
-                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
+            {
+                std::cout << "  " << RC::to_string(name) << std::endl;
+            }
         }
     } // end AutoScoping()
 
@@ -616,8 +625,8 @@ namespace AutoParallelization
             result.push_back(initname);
         }
         // avoid duplicated items
-        sort(result.begin(), result.end());
-        result.erase(unique(result.begin(), result.end()), result.end());
+        std::sort(result.begin(), result.end());
+        result.erase(std::unique(result.begin(), result.end()), result.end());
         return result;
     }
 
@@ -643,8 +652,8 @@ namespace AutoParallelization
             result.push_back(initname);
         }
         // avoid duplicated items
-        sort(result.begin(), result.end());
-        result.erase(unique(result.begin(), result.end()), result.end());
+        std::sort(result.begin(), result.end());
+        result.erase(std::unique(result.begin(), result.end()), result.end());
         return result;
     }
 
@@ -696,7 +705,6 @@ namespace AutoParallelization
         if (Config::get().enable_debug)
         {
             std::cout << "Entering DependenceElimination ()" << std::endl;
-            std::cout << "----------------------------------" << std::endl;
         }
         // For each node
         for (; !nodes.ReachEnd(); ++nodes)
@@ -1025,7 +1033,6 @@ namespace AutoParallelization
         if (Config::get().enable_debug)
         {
             std::cout << "Exiting DependenceElimination ()" << std::endl;
-            std::cout << "----------------------------------" << std::endl;
         }
 
     } // end DependenceElimination()
@@ -1338,7 +1345,7 @@ namespace AutoParallelization
                 std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to scoped variables of unallowed types:" << std::endl;
                 for (auto name : unallowed_scoped_variables)
                 {
-                    std::cout << name->get_qualified_name().getString() << std::endl;
+                    std::cout << "  " << name->get_qualified_name().getString() << std::endl;
                 }
             }
         }

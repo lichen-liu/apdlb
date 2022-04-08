@@ -201,7 +201,10 @@ int main(int argc, char *argv[])
                     if (Config::get().enable_debug)
                     {
                         SgForStatement *fl = isSgForStatement(current_loop);
-                        std::cout << "\t\t Considering loop at " << fl->get_file_info()->get_line() << std::endl;
+                        std::cout << std::endl;
+                        std::cout << "\t\t ------------------------------" << std::endl;
+                        std::cout << "\t\t | Considering loop at " << fl->get_file_info()->get_line() << std::endl;
+                        std::cout << "\t\t ------------------------------" << std::endl;
                     }
                     // X. Parallelize loop one by one
                     //  getLoopInvariant() will actually check if the loop has canonical forms
