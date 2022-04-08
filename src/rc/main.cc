@@ -19,7 +19,7 @@
 
 int main(int argc, char *argv[])
 {
-    constexpr bool debug = false;
+    constexpr bool debug = true;
 
     ROSE_INITIALIZE;
 

@@ -1313,7 +1313,7 @@ namespace AutoParallelization
         }
     }
 
-    bool ParallelizeOutermostLoop(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot)
+    bool CanParallelizeOutermostLoop(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot)
     {
         ROSE_ASSERT(loop && array_interface && annot);
         ROSE_ASSERT(isSgForStatement(loop));
@@ -1349,14 +1349,13 @@ namespace AutoParallelization
         // This step is done before DependenceElimination(), so the irrelevant
         // dependencies associated with the autoscoped variables can be
         // eliminated.
-        // OmpSupport::OmpAttribute* omp_attribute = new OmpSupport::OmpAttribute();
-        OmpSupport::OmpAttribute *omp_attribute = buildOmpAttribute(OmpSupport::e_unknown, nullptr, false);
+        std::unique_ptr<OmpSupport::OmpAttribute> omp_attribute(buildOmpAttribute(OmpSupport::e_unknown, nullptr, false));
         ROSE_ASSERT(omp_attribute != nullptr);
 
-        AutoScoping(sg_node, omp_attribute, depgraph);
+        AutoScoping(sg_node, omp_attribute.get(), depgraph);
 
         // If there are unallowed autoscoped, the loop is not parallelizable
-        std::vector<SgInitializedName *> unallowed_scoped_variables = CollectUnallowedScopedVariables(omp_attribute);
+        std::vector<SgInitializedName *> unallowed_scoped_variables = CollectUnallowedScopedVariables(omp_attribute.get());
         if (!unallowed_scoped_variables.empty())
         {
             isParallelizable = false;
@@ -1377,7 +1376,7 @@ namespace AutoParallelization
         {
             // X. Eliminate irrelevant dependence relations.
             std::vector<DepInfo> remainingDependences;
-            DependenceElimination(sg_node, depgraph, remainingDependences, omp_attribute, indirect_array_table, array_interface, annot);
+            DependenceElimination(sg_node, depgraph, remainingDependences, omp_attribute.get(), indirect_array_table, array_interface, annot);
 
             if (remainingDependences.size() > 0)
             {
@@ -1403,24 +1402,22 @@ namespace AutoParallelization
                     std::cout << "The minimum dependence distance of all dependences for the loop is:" << dep_dist << std::endl;
                 }
             }
-            else
-            {
-                // write log entries for success
-                std::ostringstream oss;
-                oss << "Auto parallelized a loop@" << filename << ":" << lineno << ":" << colno << std::endl;
-
-                if (Config::get().enable_debug)
-                {
-                    std::cout << "-----------------------------------------------------" << std::endl;
-                    std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
-                }
-            }
         }
 
         // comp.DetachDepGraph();// TODO release resources here
         // X.  Attach OmpAttribute to the loop node if it is parallelizable
         if (isParallelizable)
         {
+            // write log entries for success
+            std::ostringstream oss;
+            oss << "Auto parallelized a loop@" << filename << ":" << lineno << ":" << colno << std::endl;
+
+            if (Config::get().enable_debug)
+            {
+                std::cout << "-----------------------------------------------------" << std::endl;
+                std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
+            }
+
             //= OmpSupport::buildOmpAttribute(OmpSupport::e_parallel_for,sg_node);
             omp_attribute->setOmpDirectiveType(OmpSupport::e_parallel_for);
             if (Config::get().enable_debug)
@@ -1428,16 +1425,13 @@ namespace AutoParallelization
                 std::cout << "attaching auto generated OMP att to sg_node " << sg_node->class_name();
                 std::cout << " at line " << isSgLocatedNode(sg_node)->get_file_info()->get_line() << std::endl;
             }
-            OmpSupport::addOmpAttribute(omp_attribute, sg_node);
+            OmpSupport::addOmpAttribute(omp_attribute.get(), sg_node);
 
             // 6. Generate and insert #pragma omp parallel for
             // Liao, 2/12/2010
             OmpSupport::generatePragmaFromOmpAttribute(sg_node);
         }
-        else // Not parallelizable, release resources.
-        {
-            delete omp_attribute;
-        }
+
         return isParallelizable;
     }
 

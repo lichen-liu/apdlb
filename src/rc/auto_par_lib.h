@@ -72,7 +72,7 @@ namespace AutoParallelization
                                std::map<SgNode *, bool> &indirectTable, ArrayInterface *array_interface = 0, ArrayAnnotation *annot = 0);
 
     // Parallelize an input loop at its outermost loop level, return true if successful
-    bool ParallelizeOutermostLoop(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot);
+    bool CanParallelizeOutermostLoop(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot);
 
     //! Check if two expressions access different memory locations. If in double, return false
     // This is helpful to exclude some dependence relations involving two obvious different memory location accesses

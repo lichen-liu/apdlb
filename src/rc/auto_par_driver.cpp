@@ -192,6 +192,7 @@ namespace AutoParallelization
                     // FR(06/07/2011): aliasinfo was not set which caused segfault
                     LoopTransformInterface::set_aliasInfo(&array_interface);
 
+                    std::vector<SgForStatement *> parallelizable_loop_candidates;
                     for (SgForStatement *current_loop : loops)
                     {
                         if (Config::get().enable_debug)
@@ -217,19 +218,24 @@ namespace AutoParallelization
                         SgInitializedName *invarname = getLoopInvariant(current_loop);
                         if (invarname != nullptr)
                         {
-                            bool ret = ParallelizeOutermostLoop(current_loop, &array_interface, annot);
-                            if (ret) // if at least one loop is parallelized, we set hasERT to be true for the entire file.
-                                hasERT = true;
+                            bool ret = CanParallelizeOutermostLoop(current_loop, &array_interface, annot);
+                            if (ret)
+                            {
+                                parallelizable_loop_candidates.emplace_back(current_loop);
+                            }
                         }
                         else // cannot grab loop index from a non-conforming loop, skip parallelization
                         {
                             if (Config::get().enable_debug)
                                 std::cout << "Skipping a non-canonical loop at line:" << current_loop->get_file_info()->get_line() << "..." << std::endl;
-                            // We should not reset it to false. The last loop may not be parallelizable. But a previous one may be.
-                            // hasERT = false;
                         }
                     } // end for loops
-                }     // end for-loop for declarations
+
+                    if (!parallelizable_loop_candidates.empty())
+                    {
+                        hasERT = true;
+                    }
+                } // end for-loop for declarations
 
                 // insert ERT-related files if needed
                 if (hasERT)
