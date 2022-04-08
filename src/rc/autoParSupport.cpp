@@ -28,10 +28,8 @@ namespace AutoParallelization
         }
 
         ROSE_ASSERT(defuse != nullptr);
-        // int result = ;
         defuse->run(debug);
-        //  if (result==1)
-        //    std::std::cerr<<"Error in Def-use analysis!"<<std::std::endl;
+
         if (debug)
             defuse->dfaToDOT();
 
@@ -43,10 +41,9 @@ namespace AutoParallelization
         std::vector<FilteredCFGNode<IsDFAFilter>> dfaFunctions;
         NodeQuerySynthesizedAttributeType vars =
             NodeQuery::querySubTree(project, V_SgFunctionDefinition);
-        NodeQuerySynthesizedAttributeType::const_iterator i;
         bool abortme = false;
         // run liveness analysis on each function body
-        for (i = vars.begin(); i != vars.end(); ++i)
+        for (auto i = vars.begin(); i != vars.end(); ++i)
         {
             SgFunctionDefinition *func = isSgFunctionDefinition(*i);
             if (debug)
@@ -414,7 +411,7 @@ namespace AutoParallelization
     /*                              live-in      live-out
                      shared            Y           Y      no written, no dependences: no special handling, shared by default
                      private           N           N      written (depVars), need privatization: depVars- liveIns - liveOuts
-                     firstprivate      Y           N      liveIns - LiveOus - writtenVariables
+                     firstprivate      Y           N      liveIns - LiveOuts - writtenVariables
                      lastprivate       N           Y      liveOuts - LiveIns
                      reduction         Y           Y      depVars Intersection (liveIns Intersection liveOuts)
                      */

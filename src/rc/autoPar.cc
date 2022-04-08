@@ -87,8 +87,7 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
 
         // normalize C99 style for (int i= x, ...) to C89 style: int i;  (i=x, ...)
         // Liao, 10/22/2009. Thank Jeff Keasler for spotting this bug
-        for (Rose_STL_Container<SgNode *>::iterator iter = loops.begin();
-             iter != loops.end(); iter++)
+        for (auto iter = loops.begin(); iter != loops.end(); iter++)
         {
             SgForStatement *cur_loop = isSgForStatement(*iter);
             ROSE_ASSERT(cur_loop);
@@ -138,8 +137,7 @@ int main(int argc, char *argv[])
         //
         // For each source file in the project
         SgFilePtrList &ptr_list = project->get_fileList();
-        for (SgFilePtrList::iterator iter = ptr_list.begin(); iter != ptr_list.end();
-             iter++)
+        for (auto iter = ptr_list.begin(); iter != ptr_list.end(); iter++)
         {
             SgFile *sageFile = (*iter);
             SgSourceFile *sfile = isSgSourceFile(sageFile);
@@ -151,10 +149,8 @@ int main(int argc, char *argv[])
             bool hasERT = false;
 
             // For each function body in the scope
-            // for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p)
-            for (Rose_STL_Container<SgNode *>::iterator p = defList.begin(); p != defList.end(); ++p)
+            for (auto p = defList.begin(); p != defList.end(); ++p)
             {
-
                 //      std::cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<std::endl;
 
                 SgFunctionDefinition *defn = isSgFunctionDefinition(*p);
@@ -198,8 +194,7 @@ int main(int argc, char *argv[])
                 // FR(06/07/2011): aliasinfo was not set which caused segfault
                 LoopTransformInterface::set_aliasInfo(&array_interface);
 
-                for (Rose_STL_Container<SgNode *>::iterator iter = loops.begin();
-                     iter != loops.end(); iter++)
+                for (auto iter = loops.begin(); iter != loops.end(); iter++)
                 {
                     SgNode *current_loop = *iter;
 
@@ -248,10 +243,8 @@ int main(int argc, char *argv[])
         } // end for-loop of files
 
         // undo loop normalization
-        std::map<SgForStatement *, bool>::iterator iter = trans_records.forLoopInitNormalizationTable.begin();
-        for (; iter != trans_records.forLoopInitNormalizationTable.end(); iter++)
+        for (auto [for_loop, _] : trans_records.forLoopInitNormalizationTable)
         {
-            SgForStatement *for_loop = (*iter).first;
             unnormalizeForLoopInitDeclaration(for_loop);
         }
         // Qing's loop normalization is not robust enough to pass all tests
