@@ -25,7 +25,7 @@ using namespace SageInterface;
 
 void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunctionDefinition *> &candidateFuncDefs)
 {
-    ROSE_ASSERT(project != NULL);
+    ROSE_ASSERT(project != nullptr);
     // For each source file in the project
     SgFilePtrList &ptr_list = project->get_fileList();
     for (SgFilePtrList::iterator iter = ptr_list.begin(); iter != ptr_list.end();
@@ -51,10 +51,10 @@ void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunction
         for (Rose_STL_Container<SgNode *>::iterator p = defList.begin(); p != defList.end(); ++p)
         {
             SgFunctionDefinition *defn = isSgFunctionDefinition(*p);
-            ROSE_ASSERT(defn != NULL);
+            ROSE_ASSERT(defn != nullptr);
 
             SgFunctionDeclaration *func = defn->get_declaration();
-            ROSE_ASSERT(func != NULL);
+            ROSE_ASSERT(func != nullptr);
 
             if (Config::get().enable_debug)
                 std::cout << "\t considering function " << func->get_name() << " at " << func->get_file_info()->get_line() << std::endl;
@@ -97,7 +97,7 @@ void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
                 std::cout << "\t loop at:" << cur_loop->get_file_info()->get_line() << std::endl;
             // skip for (;;) , SgForStatement::get_test_expr() has a buggy assertion.
             SgStatement *test_stmt = cur_loop->get_test();
-            if (test_stmt != NULL &&
+            if (test_stmt != nullptr &&
                 isSgNullStatement(test_stmt))
             {
                 if (Config::get().enable_debug)
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     ROSE_INITIALIZE;
 
     SgProject *project = frontend(argc, argv);
-    ROSE_ASSERT(project != NULL);
+    ROSE_ASSERT(project != nullptr);
 
     // create a block to avoid jump crosses initialization of candidateFuncDefs etc.
     {
@@ -158,10 +158,10 @@ int main(int argc, char *argv[])
                 //      std::cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<std::endl;
 
                 SgFunctionDefinition *defn = isSgFunctionDefinition(*p);
-                ROSE_ASSERT(defn != NULL);
+                ROSE_ASSERT(defn != nullptr);
 
                 SgFunctionDeclaration *func = defn->get_declaration();
-                ROSE_ASSERT(func != NULL);
+                ROSE_ASSERT(func != nullptr);
 
                 // ignore functions in system headers, Can keep them to test robustness
                 if (defn->get_file_info()->get_filename() != sageFile->get_file_info()->get_filename())
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
                     }
 
                     SgInitializedName *invarname = getLoopInvariant(current_loop);
-                    if (invarname != NULL)
+                    if (invarname != nullptr)
                     {
                         bool ret = ParallelizeOutermostLoop(current_loop, &array_interface, annot);
                         if (ret) // if at least one loop is parallelized, we set hasERT to be true for the entire file.

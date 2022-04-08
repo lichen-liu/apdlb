@@ -12,22 +12,22 @@ using namespace SageInterface;
 // Everything should go into the name space here!!
 namespace AutoParallelization
 {
-    DFAnalysis *defuse = NULL;
-    LivenessAnalysis *liv = NULL;
+    DFAnalysis *defuse = nullptr;
+    LivenessAnalysis *liv = nullptr;
 
-    bool initialize_analysis(SgProject *project /*=NULL*/, bool debug /*=false*/)
+    bool initialize_analysis(SgProject *project /*=nullptr*/, bool debug /*=false*/)
     {
-        if (project == NULL)
+        if (project == nullptr)
             project = SageInterface::getProject();
 
         // Prepare def-use analysis
-        if (defuse == NULL)
+        if (defuse == nullptr)
         {
-            ROSE_ASSERT(project != NULL);
+            ROSE_ASSERT(project != nullptr);
             defuse = new DefUseAnalysis(project);
         }
 
-        ROSE_ASSERT(defuse != NULL);
+        ROSE_ASSERT(defuse != nullptr);
         // int result = ;
         defuse->run(debug);
         //  if (result==1)
@@ -36,9 +36,9 @@ namespace AutoParallelization
             defuse->dfaToDOT();
 
         // Prepare variable liveness analysis
-        if (liv == NULL)
+        if (liv == nullptr)
             liv = new LivenessAnalysis(debug, (DefUseAnalysis *)defuse);
-        ROSE_ASSERT(liv != NULL);
+        ROSE_ASSERT(liv != nullptr);
 
         std::vector<FilteredCFGNode<IsDFAFilter>> dfaFunctions;
         NodeQuerySynthesizedAttributeType vars =
@@ -56,7 +56,7 @@ namespace AutoParallelization
                 std::cout << " .. running liveness analysis for function: " << funcName << std::endl;
             }
             FilteredCFGNode<IsDFAFilter> rem_source = liv->run(func, abortme);
-            if (rem_source.getNode() != NULL)
+            if (rem_source.getNode() != nullptr)
                 dfaFunctions.push_back(rem_source);
             if (abortme)
                 break;
@@ -78,9 +78,9 @@ namespace AutoParallelization
 
     void release_analysis()
     {
-        if (defuse != NULL)
+        if (defuse != nullptr)
             delete defuse;
-        if (liv != NULL)
+        if (liv != nullptr)
             delete liv;
     }
 
@@ -111,7 +111,7 @@ namespace AutoParallelization
         if (Config::get().enable_debug)
         {
             SgStatement *stmt = isSgStatement(loop);
-            ROSE_ASSERT(stmt != NULL);
+            ROSE_ASSERT(stmt != nullptr);
             std::cout << "--------------------------------------------------------" << std::endl;
             std::cout << "Debug: ComputeDependenceGraph() dumps the dependence graph for the loop at line :" << stmt->get_file_info()->get_line() << std::endl;
             comp->DumpDep();
@@ -124,7 +124,7 @@ namespace AutoParallelization
         // Get the loop hierarchy :grab just a top one for now
         // TODO consider complex loop nests like loop {loop, loop} and loop{loop {loop}}
         LoopTreeNode *loop_root = comp->GetLoopTreeRoot();
-        ROSE_ASSERT(loop_root != NULL);
+        ROSE_ASSERT(loop_root != nullptr);
         // loop_root->Dump();
         LoopTreeTraverseSelectLoop loop_nodes(loop_root, LoopTreeTraverse::PreOrder);
         LoopTreeNode *cur_loop = loop_nodes.Current();
@@ -139,7 +139,7 @@ namespace AutoParallelization
             // loop_nodes.Current()->Dump();
             ast_ptr = dynamic_cast<LoopTreeLoopNode *>(cur_loop)->GetOrigLoop();
             // std::cout<<AstToString(ast_ptr)<<std::endl;
-            ROSE_ASSERT(ast_ptr != NULL);
+            ROSE_ASSERT(ast_ptr != nullptr);
             SgNode *sg_node = AstNodePtr2Sage(ast_ptr);
             ROSE_ASSERT(sg_node == loop);
             // std::cout<<"-------------Dump the loops in question------------"<<std::endl;
@@ -149,7 +149,7 @@ namespace AutoParallelization
         else
         {
             std::cout << "Skipping a loop not recognized by LoopTreeTraverseSelectLoop ..." << std::endl;
-            return NULL;
+            return nullptr;
             // Not all loop can be collected by LoopTreeTraverseSelectLoop right now
             // e.g: loops in template function bodies
             // ROSE_ASSERT(false);
@@ -255,14 +255,14 @@ namespace AutoParallelization
     //  * an increment expression using i=i+1, or i=i-1.
     // If yes, grab its invariant, lower bound, upper bound, step, and body if requested
     // Return the loop invariant of a canonical loop
-    // Return NULL if the loop is not canonical
+    // Return nullptr if the loop is not canonical
     SgInitializedName *getLoopInvariant(SgNode *loop)
     {
         // Qing's IsFortranLoop does not check the structured block requirement
         // We use our own isCanonicalLoop instead.
-        SgInitializedName *invarname = NULL;
+        SgInitializedName *invarname = nullptr;
         if (!SageInterface::isCanonicalForLoop(loop, &invarname))
-            return NULL;
+            return nullptr;
 
         return invarname;
     }
@@ -272,11 +272,11 @@ namespace AutoParallelization
     // They are less interesting for auto parallelization
     void CollectVisibleVaribles(SgNode *loop, std::vector<SgInitializedName *> &resultVars, std::vector<SgInitializedName *> &invariantVars, bool scalarOnly /*=false*/)
     {
-        ROSE_ASSERT(loop != NULL);
+        ROSE_ASSERT(loop != nullptr);
         // Get the scope of the loop
 
         SgScopeStatement *currentscope = SageInterface::getEnclosingNode<SgScopeStatement>(loop, false);
-        ROSE_ASSERT(currentscope != NULL);
+        ROSE_ASSERT(currentscope != nullptr);
 
         SgInitializedName *invarname = getLoopInvariant(loop);
         Rose_STL_Container<SgNode *> reflist = NodeQuery::querySubTree(loop, V_SgVarRefExp);
@@ -347,9 +347,9 @@ namespace AutoParallelization
                     bool insideLoop1 = false, insideLoop2 = false;
 
                     SgScopeStatement *loopscope = SageInterface::getScope(loop);
-                    SgScopeStatement *varscope = NULL;
+                    SgScopeStatement *varscope = nullptr;
                     SgNode *src_node = AstNodePtr2Sage(info.SrcRef());
-                    SgInitializedName *src_name = NULL;
+                    SgInitializedName *src_name = nullptr;
                     if (src_node)
                     { // TODO May need to consider a wider concept of variable reference
                         // like AstInterface::IsVarRef()
@@ -366,7 +366,7 @@ namespace AutoParallelization
                         } // end if(var_ref)
                     }     // end if (src_node)
                     SgNode *snk_node = AstNodePtr2Sage(info.SnkRef());
-                    SgInitializedName *snk_name = NULL;
+                    SgInitializedName *snk_name = nullptr;
                     if (snk_node)
                     {
                         SgVarRefExp *var_ref = isSgVarRefExp(snk_node);
@@ -437,7 +437,7 @@ namespace AutoParallelization
         // Remove loop invariant variable, which is always private
         SgInitializedName *invarname = getLoopInvariant(sg_node);
         SgForStatement *for_stmt = isSgForStatement(sg_node);
-        ROSE_ASSERT(for_stmt != NULL);
+        ROSE_ASSERT(for_stmt != nullptr);
 
         remove(liveIns0.begin(), liveIns0.end(), invarname);
         remove(liveOuts0.begin(), liveOuts0.end(), invarname);
@@ -495,7 +495,7 @@ namespace AutoParallelization
         if (Config::get().enable_debug)
             std::cout << "Debug dump private:" << std::endl;
         bool hasNormalization = trans_records.forLoopInitNormalizationTable[for_stmt];
-        SgVariableSymbol *ndecl_sym = NULL;
+        SgVariableSymbol *ndecl_sym = nullptr;
         if (hasNormalization)
         {
             // get the normalization generated declaration
@@ -503,13 +503,13 @@ namespace AutoParallelization
             ndecl_sym = getFirstVarSym(ndecl);
         }
 
-        for (std::vector<SgInitializedName *>::iterator iter = privateVars.begin(); iter != privateVars.end(); iter++)
+        for (auto name : privateVars)
         {
             // Liao 6/22/2016.
             // Loop normalization will convert C99 loop init-stmt into two statements and rename the loop index variable.
             // This causes problem for patch generation since an additional loop variable (e.g. i_norm_1) shows up in the private () clause.
             // To workaround this problem, we skip recording the loop index variable generated by loop normalization.
-            std::string var_name = (*iter)->get_name().getString();
+            std::string var_name = name->get_name().getString();
             bool skipAdd = false;
             // This does not work unless the normalized c99 init-stmt is undone!!
             // The same attribute is used for both patch generation and code generation!
@@ -524,16 +524,16 @@ namespace AutoParallelization
 
             // this is a variable generated by loop normalization
             // the current rule is originalName_norm_id;
-            if (hasNormalization && ndecl_sym == (*iter)->search_for_symbol_from_symbol_table())
+            if (hasNormalization && ndecl_sym == name->search_for_symbol_from_symbol_table())
             {
                 skipAdd = true;
             }
             if (!skipAdd)
             {
-                attribute->addVariable(OmpSupport::e_private, var_name, *iter);
+                attribute->addVariable(OmpSupport::e_private, var_name, name);
 
                 if (Config::get().enable_debug)
-                    std::cout << (*iter) << " " << (*iter)->get_qualified_name().getString() << std::endl;
+                    std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
             }
         }
 
@@ -547,11 +547,11 @@ namespace AutoParallelization
 
         if (Config::get().enable_debug)
             std::cout << "Debug dump lastprivate:" << std::endl;
-        for (std::vector<SgInitializedName *>::iterator iter = lastprivateVars.begin(); iter != lastprivateVars.end(); iter++)
+        for (auto name : lastprivateVars)
         {
-            attribute->addVariable(OmpSupport::e_lastprivate, (*iter)->get_name().getString(), *iter);
+            attribute->addVariable(OmpSupport::e_lastprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
-                std::cout << (*iter) << " " << (*iter)->get_qualified_name().getString() << std::endl;
+                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
         }
         // reduction recognition
         //---------------------------------------------
@@ -564,12 +564,8 @@ namespace AutoParallelization
         SageInterface::ReductionRecognition(isSgForStatement(sg_node), reductionResults);
         if (Config::get().enable_debug)
             std::cout << "Debug dump reduction:" << std::endl;
-        for (std::set<std::pair<SgInitializedName *, OmpSupport::omp_construct_enum>>::iterator
-                 iter = reductionResults.begin();
-             iter != reductionResults.end(); iter++)
+        for (auto [iname, optype] : reductionResults)
         {
-            SgInitializedName *iname = (*iter).first;
-            OmpSupport::omp_construct_enum optype = (*iter).second;
             attribute->addVariable(optype, iname->get_name().getString(), iname);
             if (Config::get().enable_debug)
                 std::cout << iname->get_qualified_name().getString() << std::endl;
@@ -596,18 +592,18 @@ namespace AutoParallelization
         // some liveIn variables may not show up at all in the loop body we concern about
         // So we have to intersect with visible variables to make sure we only put used variables into the firstprivate clause
         set_intersection(temp3.begin(), temp3.end(), allVars.begin(), allVars.end(), inserter(firstprivateVars, firstprivateVars.begin()));
-        for (std::vector<SgInitializedName *>::iterator iter = firstprivateVars.begin(); iter != firstprivateVars.end(); iter++)
+        for (auto name : firstprivateVars)
         {
-            attribute->addVariable(OmpSupport::e_firstprivate, (*iter)->get_name().getString(), *iter);
+            attribute->addVariable(OmpSupport::e_firstprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
-                std::cout << (*iter) << " " << (*iter)->get_qualified_name().getString() << std::endl;
+                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
         }
     } // end AutoScoping()
 
     // Collect all classified variables from an OmpAttribute attached to a loop node
     void CollectScopedVariables(OmpSupport::OmpAttribute *attribute, std::vector<SgInitializedName *> &result)
     {
-        ROSE_ASSERT(attribute != NULL);
+        ROSE_ASSERT(attribute != nullptr);
         // private, firstprivate, lastprivate, reduction
         std::vector<std::pair<std::string, SgNode *>> privateVars, firstprivateVars,
             lastprivateVars, reductionVars;
@@ -622,25 +618,25 @@ namespace AutoParallelization
         for (iter = privateVars.begin(); iter != privateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != NULL);
+            ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
         for (iter = firstprivateVars.begin(); iter != firstprivateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != NULL);
+            ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
         for (iter = lastprivateVars.begin(); iter != lastprivateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != NULL);
+            ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
         for (iter = reductionVars.begin(); iter != reductionVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != NULL);
+            ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
         // avoid duplicated items
@@ -654,7 +650,7 @@ namespace AutoParallelization
     static bool isStaticArrayRef(SgNode *ref)
     {
         bool ret = false;
-        ROSE_ASSERT(ref != NULL);
+        ROSE_ASSERT(ref != nullptr);
 
         if (SgPntrArrRefExp *aref = isSgPntrArrRefExp(ref))
         {
@@ -663,10 +659,10 @@ namespace AutoParallelization
                 return isStaticArrayRef(nestRef);
 
             SgVarRefExp *lhs = isSgVarRefExp(aref->get_lhs_operand_i());
-            if (lhs != NULL)
+            if (lhs != nullptr)
             {
                 SgVariableSymbol *varSym = isSgVariableSymbol(lhs->get_symbol());
-                if (varSym != NULL)
+                if (varSym != nullptr)
                 {
                     SgInitializedName *iname = varSym->get_declaration();
                     if (isSgArrayType(iname->get_type()))
@@ -717,12 +713,12 @@ namespace AutoParallelization
                                   << info.toString() << std::endl;
 
                     SgScopeStatement *currentscope = SageInterface::getScope(sg_node);
-                    SgScopeStatement *varscope = NULL;
+                    SgScopeStatement *varscope = nullptr;
                     SgNode *src_node = AstNodePtr2Sage(info.SrcRef());
-                    SgInitializedName *src_name = NULL;
+                    SgInitializedName *src_name = nullptr;
                     // two variables will be set if source or snk nodes are variable references nodes
-                    SgVarRefExp *src_var_ref = NULL;
-                    SgVarRefExp *snk_var_ref = NULL;
+                    SgVarRefExp *src_var_ref = nullptr;
+                    SgVarRefExp *snk_var_ref = nullptr;
 
                     // x. Ignore dependence caused by locally declared variables: declared within the loop
                     if (src_node)
@@ -746,7 +742,7 @@ namespace AutoParallelization
                     }     // end if (src_node)
 
                     SgNode *snk_node = AstNodePtr2Sage(info.SnkRef());
-                    SgInitializedName *snk_name = NULL;
+                    SgInitializedName *snk_name = nullptr;
                     // x. Eliminate dependence relationship if one of the pair is thread local
                     // -----------------------------------------------
                     // either of the source or sink variables are thread-local:
@@ -777,7 +773,7 @@ namespace AutoParallelization
                     // x. Eliminate a dependence if it is empty entry
                     //  -----------------------------------------------
                     //  Ignore possible empty depInfo entry
-                    if (src_node == NULL || snk_node == NULL)
+                    if (src_node == nullptr || snk_node == nullptr)
                     {
                         if (Config::get().enable_debug)
                         {
@@ -885,8 +881,8 @@ namespace AutoParallelization
                         }
                     }
                     // x. Eliminate a dependence if a dependence involving two different array references and no-aliasing is assumed.
-                    SgExpression *src_array_exp = NULL;
-                    SgExpression *snk_array_exp = NULL;
+                    SgExpression *src_array_exp = nullptr;
+                    SgExpression *snk_array_exp = nullptr;
                     SgExpression *src_exp = isSgExpression(src_node);
                     SgExpression *snk_exp = isSgExpression(snk_node);
                     if (src_exp && snk_exp)
@@ -1068,22 +1064,22 @@ namespace AutoParallelization
     {
         if (Config::get().enable_debug)
             std::cout << "Entering uniformIndirectIndexedArrayRefs() ..." << std::endl;
-        ROSE_ASSERT(for_loop != NULL);
-        ROSE_ASSERT(for_loop->get_loop_body() != NULL);
-        SgInitializedName *loop_index_name = NULL;
+        ROSE_ASSERT(for_loop != nullptr);
+        ROSE_ASSERT(for_loop->get_loop_body() != nullptr);
+        SgInitializedName *loop_index_name = nullptr;
         bool isCanonical = SageInterface::isCanonicalForLoop(for_loop, &loop_index_name);
         ROSE_ASSERT(isCanonical == true);
 
         // prepare def/use analysis, it should already exist as part of initialize_analysis()
         // SgProject * project = getProject();
-        ROSE_ASSERT(defuse != NULL);
+        ROSE_ASSERT(defuse != nullptr);
 
         // For each array reference:
         Rose_STL_Container<SgNode *> nodeList = NodeQuery::querySubTree(for_loop->get_loop_body(), V_SgPntrArrRefExp);
         for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
         {
             SgPntrArrRefExp *aRef = isSgPntrArrRefExp((*i));
-            ROSE_ASSERT(aRef != NULL);
+            ROSE_ASSERT(aRef != nullptr);
             SgExpression *rhs = aRef->get_rhs_operand_i();
             switch (rhs->variantT())
             {
@@ -1097,7 +1093,7 @@ namespace AutoParallelization
                 {
                     SgVarRefExp *varRef = isSgVarRefExp(the_end_value);
                     SgInitializedName *initName = isSgInitializedName(varRef->get_symbol()->get_declaration());
-                    ROSE_ASSERT(initName != NULL);
+                    ROSE_ASSERT(initName != nullptr);
                     // stop tracing if it is already the current loop's index
                     if (initName == loop_index_name)
                         break;
@@ -1202,10 +1198,10 @@ namespace AutoParallelization
     static bool isIndirectIndexedArrayRef(SgForStatement *for_loop, SgPntrArrRefExp *aRef)
     {
         bool rtval = false;
-        ROSE_ASSERT(for_loop != NULL);
-        ROSE_ASSERT(aRef != NULL);
+        ROSE_ASSERT(for_loop != nullptr);
+        ROSE_ASSERT(aRef != nullptr);
         // grab the loop index variable
-        SgInitializedName *loop_index_name = NULL;
+        SgInitializedName *loop_index_name = nullptr;
         bool isCanonical = SageInterface::isCanonicalForLoop(for_loop, &loop_index_name);
         bool hasIndirecting = false;
         ROSE_ASSERT(isCanonical == true);
@@ -1268,9 +1264,9 @@ namespace AutoParallelization
      */
     static void collectIndirectIndexedArrayReferences(SgNode *loop, std::map<SgNode *, bool> &indirect_array_table)
     {
-        ROSE_ASSERT(loop != NULL);
+        ROSE_ASSERT(loop != nullptr);
         SgForStatement *for_loop = isSgForStatement(loop);
-        ROSE_ASSERT(for_loop != NULL);
+        ROSE_ASSERT(for_loop != nullptr);
 
         Rose_STL_Container<SgNode *> nodeList = NodeQuery::querySubTree(for_loop->get_loop_body(), V_SgPntrArrRefExp);
         for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
@@ -1306,7 +1302,7 @@ namespace AutoParallelization
         // X. Compute dependence graph for the target loop
         SgNode *sg_node = loop;
         LoopTreeDepGraph *depgraph = ComputeDependenceGraph(sg_node, array_interface, annot);
-        if (depgraph == NULL)
+        if (depgraph == nullptr)
         {
             std::cout << "Warning: skipping a loop at line " << sg_node->get_file_info()->get_line() << " since failed to compute depgraph for it:";
             //<<sg_node->unparseToString()<<std::endl;
@@ -1318,8 +1314,8 @@ namespace AutoParallelization
         // dependencies associated with the autoscoped variabled can be
         // eliminated.
         // OmpSupport::OmpAttribute* omp_attribute = new OmpSupport::OmpAttribute();
-        OmpSupport::OmpAttribute *omp_attribute = buildOmpAttribute(OmpSupport::e_unknown, NULL, false);
-        ROSE_ASSERT(omp_attribute != NULL);
+        OmpSupport::OmpAttribute *omp_attribute = buildOmpAttribute(OmpSupport::e_unknown, nullptr, false);
+        ROSE_ASSERT(omp_attribute != nullptr);
 
         AutoScoping(sg_node, omp_attribute, depgraph);
 
@@ -1421,8 +1417,8 @@ namespace AutoParallelization
     // strip off arrow, dot expressions and get down to smallest data member access expression
     SgExpression *getBottomVariableAccess(SgExpression *e)
     {
-        SgExpression *ret = NULL;
-        ROSE_ASSERT(e != NULL);
+        SgExpression *ret = nullptr;
+        ROSE_ASSERT(e != nullptr);
         if (isSgVarRefExp(e))
             ret = e;
         else if (SgDotExp *dot_exp = isSgDotExp(e))
@@ -1438,7 +1434,7 @@ namespace AutoParallelization
             ret = getBottomVariableAccess(arr_exp->get_lhs_operand_i());
         }
 
-        if (ret == NULL)
+        if (ret == nullptr)
         {
             std::cerr << "getBottomVariableAccess() reached unhandled expression type:" << e->class_name() << std::endl;
             e->get_file_info()->display();
@@ -1470,7 +1466,7 @@ namespace AutoParallelization
     {
         // default: self is the top already.
         SgExpression *ret = e;
-        ROSE_ASSERT(e != NULL);
+        ROSE_ASSERT(e != nullptr);
 
         // check if it is a SgDotExp or ArrowExp first,
         // if So, walk to its left child
@@ -1507,9 +1503,9 @@ namespace AutoParallelization
     // TODO: move to SageInterface when ready
     SgSymbol *getSymbol(SgExpression *exp)
     {
-        SgSymbol *s = NULL;
+        SgSymbol *s = nullptr;
 
-        ROSE_ASSERT(exp != NULL);
+        ROSE_ASSERT(exp != nullptr);
 
         if (SgVarRefExp *e = isSgVarRefExp(exp))
         {
@@ -1551,15 +1547,15 @@ namespace AutoParallelization
             s = e->get_symbol();
         else if (isSgConstructorInitializer(exp)) // void reportAlgorithmStats(const std::string& err="");
         {                                         // temporary initializer on the right hand , assigned by value to left side, it has persistent no mem location is concerned.
-            s = NULL;
+            s = nullptr;
         }
         else
         {
             std::cerr << "Error. getSymbol(SgExpression* exp) encounters unhandled exp:" << exp->class_name() << std::endl;
             ROSE_ASSERT(false);
         }
-        // We allow NULL symbol here. Naturally eliminate some strange expressions in the dependence pair.
-        //    ROSE_ASSERT (s!=NULL);
+        // We allow nullptr symbol here. Naturally eliminate some strange expressions in the dependence pair.
+        //    ROSE_ASSERT (s!=nullptr);
 
         return s;
     }
@@ -1577,22 +1573,22 @@ namespace AutoParallelization
         // if same expressions, not different then
         if (e1 == e2)
             return false;
-        if ((e1 == NULL) || (e2 == NULL))
+        if ((e1 == nullptr) || (e2 == nullptr))
         {
             return false;
         }
 
-        // now get down to the lowest level
+        // now get down to the lowest levels
         SgExpression *var1 = getTopVariableAccess(e1);
         SgExpression *var2 = getTopVariableAccess(e2);
 
         // at this stage, dot or arrow expressions should be stripped off.
-        ROSE_ASSERT(isSgDotExp(var1) == NULL);
-        ROSE_ASSERT(isSgArrowExp(var1) == NULL);
-        ROSE_ASSERT(isSgDotExp(var2) == NULL);
-        ROSE_ASSERT(isSgArrowExp(var2) == NULL);
+        ROSE_ASSERT(isSgDotExp(var1) == nullptr);
+        ROSE_ASSERT(isSgArrowExp(var1) == nullptr);
+        ROSE_ASSERT(isSgDotExp(var2) == nullptr);
+        ROSE_ASSERT(isSgArrowExp(var2) == nullptr);
 
-        if (var1 != NULL && var2 != NULL)
+        if (var1 != nullptr && var2 != nullptr)
         { // We must check if e1's top variable is itself: If yes, no aggregate types are involved. e1 and e2 may be pointer scalars aliasing to each other
             if (getSymbol(var1) != getSymbol(var2) && (e1 != var1 && e2 != var2))
                 retval = true; // pointing to two different parent symbols?

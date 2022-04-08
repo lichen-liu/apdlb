@@ -58,13 +58,13 @@ namespace AutoParallelization
     };
 
     // Conduct necessary analyses on the project, can be called multiple times during program transformations.
-    bool initialize_analysis(SgProject *project = NULL, bool debug = false);
+    bool initialize_analysis(SgProject *project = nullptr, bool debug = false);
 
     //----------------------end of the cost modeling section ------------------------
     // Release the resources for analyses
     void release_analysis();
 
-    // Return the loop invariant of a canonical loop, return NULL otherwise
+    // Return the loop invariant of a canonical loop, return nullptr otherwise
     SgInitializedName *getLoopInvariant(SgNode *loop);
 
     // Compute dependence graph for a loop, using ArrayInterface and ArrayAnnoation
