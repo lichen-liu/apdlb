@@ -63,13 +63,11 @@ namespace AutoParallelization
         ROSE_ASSERT(l_liv != nullptr);
 
         std::vector<FilteredCFGNode<IsDFAFilter>> dfaFunctions;
-        NodeQuerySynthesizedAttributeType vars =
-            NodeQuery::querySubTree(project, V_SgFunctionDefinition);
+        std::vector<SgFunctionDefinition *> vars = querySubTree<SgFunctionDefinition>(project, V_SgFunctionDefinition);
         bool abortme = false;
         // run liveness analysis on each function body
-        for (auto i = vars.begin(); i != vars.end(); ++i)
+        for (SgFunctionDefinition *func : vars)
         {
-            SgFunctionDefinition *func = isSgFunctionDefinition(*i);
             if (debug)
             {
                 std::string name = func->class_name();
@@ -294,10 +292,10 @@ namespace AutoParallelization
         ROSE_ASSERT(currentscope != nullptr);
 
         SgInitializedName *invarname = getLoopInvariant(loop);
-        Rose_STL_Container<SgNode *> reflist = NodeQuery::querySubTree(loop, V_SgVarRefExp);
-        for (Rose_STL_Container<SgNode *>::iterator i = reflist.begin(); i != reflist.end(); i++)
+        std::vector<SgVarRefExp *> reflist = querySubTree<SgVarRefExp>(loop, V_SgVarRefExp);
+        for (SgVarRefExp *varRef : reflist)
         {
-            SgInitializedName *initname = isSgVarRefExp(*i)->get_symbol()->get_declaration();
+            SgInitializedName *initname = varRef->get_symbol()->get_declaration();
             SgScopeStatement *varscope = initname->get_scope();
             // only collect variables which are visible at the loop's scope
             // varscope is equal or higher than currentscope
@@ -312,11 +310,9 @@ namespace AutoParallelization
         } // end for()
 
         // collect loop invariants here
-        Rose_STL_Container<SgNode *> loopnests = NodeQuery::querySubTree(loop, V_SgForStatement);
-        for (Rose_STL_Container<SgNode *>::iterator iter = loopnests.begin();
-             iter != loopnests.end(); iter++)
+        std::vector<SgForStatement *> loopnests = querySubTree<SgForStatement>(loop, V_SgForStatement);
+        for (SgForStatement *forstmt : loopnests)
         {
-            SgForStatement *forstmt = isSgForStatement(*iter);
             SgInitializedName *invariant = getLoopInvariant(forstmt);
             if (invariant)
             {
@@ -330,12 +326,10 @@ namespace AutoParallelization
 
         // Remove duplicated items
         std::sort(resultVars.begin(), resultVars.end());
-        std::vector<SgInitializedName *>::iterator new_end = std::unique(resultVars.begin(), resultVars.end());
-        resultVars.erase(new_end, resultVars.end());
+        resultVars.erase(std::unique(resultVars.begin(), resultVars.end()), resultVars.end());
 
         std::sort(invariantVars.begin(), invariantVars.end());
-        new_end = std::unique(invariantVars.begin(), invariantVars.end());
-        invariantVars.erase(new_end, invariantVars.end());
+        invariantVars.erase(std::unique(invariantVars.begin(), invariantVars.end()), invariantVars.end());
     }
 
     //! Collect a loop's variables which cause any kind of dependencies. Consider scalars only if requested.
@@ -1116,11 +1110,9 @@ namespace AutoParallelization
         ROSE_ASSERT(l_defuse != nullptr);
 
         // For each array reference:
-        Rose_STL_Container<SgNode *> nodeList = NodeQuery::querySubTree(for_loop->get_loop_body(), V_SgPntrArrRefExp);
-        for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
+        std::vector<SgPntrArrRefExp *> nodeList = querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
+        for (SgPntrArrRefExp *aRef : nodeList)
         {
-            SgPntrArrRefExp *aRef = isSgPntrArrRefExp((*i));
-            ROSE_ASSERT(aRef != nullptr);
             SgExpression *rhs = aRef->get_rhs_operand_i();
             switch (rhs->variantT())
             {
@@ -1309,10 +1301,9 @@ namespace AutoParallelization
         SgForStatement *for_loop = isSgForStatement(loop);
         ROSE_ASSERT(for_loop != nullptr);
 
-        Rose_STL_Container<SgNode *> nodeList = NodeQuery::querySubTree(for_loop->get_loop_body(), V_SgPntrArrRefExp);
-        for (Rose_STL_Container<SgNode *>::iterator i = nodeList.begin(); i != nodeList.end(); i++)
+        std::vector<SgPntrArrRefExp *> nodeList = querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
+        for (SgPntrArrRefExp *aRef : nodeList)
         {
-            SgPntrArrRefExp *aRef = isSgPntrArrRefExp((*i));
             if (isIndirectIndexedArrayRef(for_loop, aRef))
             {
                 indirect_array_table[aRef] = true;

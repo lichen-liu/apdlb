@@ -49,25 +49,15 @@ namespace
             SgFile *sageFile = (*iter);
             SgSourceFile *sfile = isSgSourceFile(sageFile);
             ROSE_ASSERT(sfile);
-            //    SgGlobal *root = sfile->get_globalScope();
 
             if (Config::get().enable_debug)
                 std::cout << "Processing each function within the files " << sfile->get_file_info()->get_filename() << std::endl;
-            //      std::cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<std::endl;
 
-            // This is wrong, many functions in question are not top level declarations!!
-            // SgDeclarationStatementPtrList& declList = root->get_declarations ();
-            // VariantVector vv;
-            Rose_STL_Container<SgNode *> defList = NodeQuery::querySubTree(sfile, V_SgFunctionDefinition);
-            //    bool hasOpenMP= false; // flag to indicate if omp.h is needed in this file
+            std::vector<SgFunctionDefinition *> defList = querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
 
             // For each function body in the scope
-            // for (SgDeclarationStatementPtrList::iterator p = declList.begin(); p != declList.end(); ++p)
-            for (Rose_STL_Container<SgNode *>::iterator p = defList.begin(); p != defList.end(); ++p)
+            for (SgFunctionDefinition *defn : defList)
             {
-                SgFunctionDefinition *defn = isSgFunctionDefinition(*p);
-                ROSE_ASSERT(defn != nullptr);
-
                 SgFunctionDeclaration *func = defn->get_declaration();
                 ROSE_ASSERT(func != nullptr);
 
