@@ -403,8 +403,7 @@ namespace AutoParallelization
         }         // end of iterate dependence graph
         // remove duplicated items
         sort(resultVars.begin(), resultVars.end());
-        std::vector<SgInitializedName *>::iterator new_end = unique(resultVars.begin(), resultVars.end());
-        resultVars.erase(new_end, resultVars.end());
+        resultVars.erase(unique(resultVars.begin(), resultVars.end()), resultVars.end());
     }
 
     // Variable classification for a loop node based on liveness analysis
@@ -451,15 +450,15 @@ namespace AutoParallelization
         if (Config::get().enable_debug)
         {
             std::cout << "Debug after CollectVisibleVaribles ():" << std::endl;
-            for (std::vector<SgInitializedName *>::iterator iter = allVars.begin(); iter != allVars.end(); iter++)
+            for (auto name : allVars)
             {
-                std::cout << (*iter) << " " << (*iter)->get_qualified_name().getString() << std::endl;
+                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
             }
 
             std::cout << "Debug after CollectVariablesWithDependence():" << std::endl;
-            for (std::vector<SgInitializedName *>::iterator iter = depVars.begin(); iter != depVars.end(); iter++)
+            for (auto name : depVars)
             {
-                std::cout << (*iter) << " " << (*iter)->get_qualified_name().getString() << std::endl;
+                std::cout << name << " " << name->get_qualified_name().getString() << std::endl;
             }
         }
         sort(liveIns0.begin(), liveIns0.end());
@@ -489,9 +488,8 @@ namespace AutoParallelization
                        inserter(privateVars, privateVars.end()));
         // loop invariants are private
         // insert all loops, including nested ones' visible invariants
-        for (std::vector<SgInitializedName *>::iterator iter = invariantVars.begin();
-             iter != invariantVars.end(); iter++)
-            privateVars.push_back(*iter);
+        for (auto name : invariantVars)
+            privateVars.push_back(name);
         if (Config::get().enable_debug)
             std::cout << "Debug dump private:" << std::endl;
         bool hasNormalization = trans_records.forLoopInitNormalizationTable[for_stmt];
@@ -614,26 +612,25 @@ namespace AutoParallelization
         //  different reduction operators
         reductionVars = attribute->getVariableList(OmpSupport::e_reduction);
 
-        std::vector<std::pair<std::string, SgNode *>>::iterator iter;
-        for (iter = privateVars.begin(); iter != privateVars.end(); iter++)
+        for (auto iter = privateVars.begin(); iter != privateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
             ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
-        for (iter = firstprivateVars.begin(); iter != firstprivateVars.end(); iter++)
+        for (auto iter = firstprivateVars.begin(); iter != firstprivateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
             ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
-        for (iter = lastprivateVars.begin(); iter != lastprivateVars.end(); iter++)
+        for (auto iter = lastprivateVars.begin(); iter != lastprivateVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
             ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
-        for (iter = reductionVars.begin(); iter != reductionVars.end(); iter++)
+        for (auto iter = reductionVars.begin(); iter != reductionVars.end(); iter++)
         {
             SgInitializedName *initname = isSgInitializedName((*iter).second);
             ROSE_ASSERT(initname != nullptr);
@@ -641,8 +638,7 @@ namespace AutoParallelization
         }
         // avoid duplicated items
         sort(result.begin(), result.end());
-        std::vector<SgInitializedName *>::iterator new_end = unique(result.begin(), result.end());
-        result.erase(new_end, result.end());
+        result.erase(unique(result.begin(), result.end()), result.end());
     }
 
     //! Check if a reference is an array reference of statically declared arrays
@@ -927,7 +923,8 @@ namespace AutoParallelization
                     {
                         std::vector<SgInitializedName *> scoped_vars;
                         CollectScopedVariables(att, scoped_vars);
-                        std::vector<SgInitializedName *>::iterator hit1 = scoped_vars.end(), hit2 = scoped_vars.end();
+                        auto hit1 = scoped_vars.end();
+                        auto hit2 = scoped_vars.end();
                         // for (hit1=scoped_vars.begin();hit1!=scoped_vars.end();hit1++)
                         //   std::cout<<"scoped var:"<<*hit1 <<" name:"<<(*hit1)->get_name().getString()<<std::endl;
                         if (src_name)
