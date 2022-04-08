@@ -60,6 +60,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_rc ARGS="benchmark/kernel
         - Use lambda [=] to capture the scope into a tp task
             - shared: readonly, can be caputed by ref or value
             - private: equivalent to firstprivate (does not need to be captured unless declared outside, can be reduced into firstprivate by init the variable)
+                - Fix bug when autoPar incorrectly captures nested normalized loop variables as private
             - firstprivate: needs to be captured by value
             - lastprivate: not allowed
             - reduction: not allowed
