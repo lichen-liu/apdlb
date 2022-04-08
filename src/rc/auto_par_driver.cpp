@@ -113,6 +113,43 @@ namespace
             } // end for all loops
         }     // end for all function defs
     }
+
+    std::vector<SgForStatement *> decideFinalLoopCandidates(const std::vector<SgForStatement *> &candidates)
+    {
+        if (Config::get().enable_debug)
+        {
+            std::cout << std::endl;
+            std::cout << "Determining final loop candidates for parallelization.." << std::endl;
+        }
+        std::vector<SgForStatement *> final_candidates;
+        for (SgForStatement *cur_node : candidates)
+        {
+            bool not_descendent = std::all_of(candidates.begin(),
+                                              candidates.end(),
+                                              [cur_node](SgForStatement *target_node)
+                                              {
+                                                  return !isAncestor(target_node, cur_node);
+                                              });
+            if (not_descendent)
+            {
+                final_candidates.emplace_back(cur_node);
+            }
+        }
+        if (Config::get().enable_debug)
+        {
+            std::cout << "Loop candidates below are rejected because they are descendeds of another loop candidate:" << std::endl;
+            std::vector<SgForStatement *> rejected_loop_candidates;
+            std::set_difference(candidates.begin(), candidates.end(),
+                                final_candidates.begin(), final_candidates.end(),
+                                std::back_inserter(rejected_loop_candidates));
+            for (SgForStatement *rejected_loop_candidate : rejected_loop_candidates)
+            {
+                std::cout << "  loop at line:" << rejected_loop_candidate->get_file_info()->get_line() << std::endl;
+            }
+        }
+
+        return final_candidates;
+    }
 }
 
 namespace AutoParallelization
@@ -155,7 +192,7 @@ namespace AutoParallelization
                     std::cout << std::endl;
                     std::cout << std::endl;
                     std::cout << "===========================" << std::endl;
-                    std::cout << "|| Function at: " << defn->get_file_info()->get_line() << std::endl;
+                    std::cout << "|| Function at line:" << defn->get_file_info()->get_line() << std::endl;
                     std::cout << "===========================" << std::endl;
 
                     SgFunctionDeclaration *func = defn->get_declaration();
@@ -203,7 +240,7 @@ namespace AutoParallelization
                         {
                             std::cout << std::endl;
                             std::cout << "\t\t ------------------------------" << std::endl;
-                            std::cout << "\t\t | Considering loop at " << current_loop->get_file_info()->get_line() << std::endl;
+                            std::cout << "\t\t | Considering loop at line:" << current_loop->get_file_info()->get_line() << std::endl;
                             std::cout << "\t\t ------------------------------" << std::endl;
                         }
                         // X. Parallelize loop one by one
@@ -236,27 +273,15 @@ namespace AutoParallelization
                     } // end for loops
 
                     // Only parallelizable loops that are not nested inside any of other parallelizable loops are parallelized
-                    std::vector<SgForStatement *> parallelizable_loop_final_candidates;
-                    for (SgForStatement *cur_node : parallelizable_loop_candidates)
-                    {
-                        bool not_descendent = std::all_of(parallelizable_loop_candidates.begin(),
-                                                          parallelizable_loop_candidates.end(),
-                                                          [cur_node](SgForStatement *target_node)
-                                                          {
-                                                              return !isAncestor(target_node, cur_node);
-                                                          });
-                        if (not_descendent)
-                        {
-                            parallelizable_loop_final_candidates.emplace_back(cur_node);
-                        }
-                    }
+                    std::vector<SgForStatement *> parallelizable_loop_final_candidates = decideFinalLoopCandidates(parallelizable_loop_candidates);
 
-                    // Parallelize loop
+                    // Parallelize loops
                     if (!parallelizable_loop_final_candidates.empty())
                     {
                         std::cout << "-----------------------------------------------------" << std::endl;
                         for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
                         {
+                            attachComment(for_stmt, "================ APERT ================");
                             if (Config::get().enable_debug)
                             {
                                 std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
