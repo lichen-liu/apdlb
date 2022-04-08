@@ -42,11 +42,9 @@ namespace
     {
         ROSE_ASSERT(project != nullptr);
         // For each source file in the project
-        SgFilePtrList &ptr_list = project->get_fileList();
-        for (SgFilePtrList::iterator iter = ptr_list.begin(); iter != ptr_list.end();
-             iter++)
+        const std::vector<SgFile *> &ptr_list = project->get_fileList();
+        for (SgFile *sageFile : ptr_list)
         {
-            SgFile *sageFile = (*iter);
             SgSourceFile *sfile = isSgSourceFile(sageFile);
             ROSE_ASSERT(sfile);
 

@@ -1450,11 +1450,11 @@ namespace AutoParallelization
 
         // build a dictionary of language constructs shown up in the loop, then query it
         RoseAst ast(loop);
-        for (RoseAst::iterator i = ast.begin(); i != ast.end(); ++i)
+        for (SgNode *node : ast)
         {
-            if (blackListDict.find((*i)->variantT()) != blackListDict.end())
+            if (blackListDict.find(node->variantT()) != blackListDict.end())
             {
-                *blackConstruct = (*i)->variantT();
+                *blackConstruct = node->variantT();
                 return true;
             }
         }
