@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7.0)
 project(kernels)
 
-add_compile_options(-Werror -Wall -Wno-missing-braces -O3 -std=c++11)
+add_compile_options(-Werror -Wall -Wno-missing-braces -O3 -std=c++17)
 
 find_package(Threads REQUIRED)
 link_libraries(Threads::Threads)

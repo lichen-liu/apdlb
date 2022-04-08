@@ -1,4 +1,4 @@
-#include <cstdlib>
+#include "utils.hpp"
 
 void matvecp_kernel(size_t lower, size_t upper)
 {
@@ -91,7 +91,9 @@ void matvecp_kernel(size_t lower, size_t upper)
     delete[] mats; // 1st dim
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    const double start_time = KBM::get_time_stamp();
     matvecp_kernel(0, 200);
+    KBM::print_elapsed(argv[0], start_time);
 }
