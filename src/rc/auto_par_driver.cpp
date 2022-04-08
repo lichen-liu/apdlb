@@ -81,19 +81,15 @@ namespace
             ROSE_ASSERT(funcDef);
             // This has to happen before analyses are called.
             // For each loop
-            VariantVector vv(V_SgForStatement);
-            Rose_STL_Container<SgNode *> loops = NodeQuery::querySubTree(funcDef, vv);
+            std::vector<SgForStatement *> loops = querySubTree<SgForStatement>(funcDef, V_SgForStatement);
 
             if (Config::get().enable_debug)
                 std::cout << "Normalize loops queried from memory pool ...." << std::endl;
 
             // normalize C99 style for (int i= x, ...) to C89 style: int i;  (i=x, ...)
             // Liao, 10/22/2009. Thank Jeff Keasler for spotting this bug
-            for (auto iter = loops.begin(); iter != loops.end(); iter++)
+            for (SgForStatement *cur_loop : loops)
             {
-                SgForStatement *cur_loop = isSgForStatement(*iter);
-                ROSE_ASSERT(cur_loop);
-
                 if (Config::get().enable_debug)
                     std::cout << "\t loop at:" << cur_loop->get_file_info()->get_line() << std::endl;
                 // skip for (;;) , SgForStatement::get_test_expr() has a buggy assertion.
@@ -142,25 +138,21 @@ namespace AutoParallelization
             // But we do need the per file control to decide if omp.h is needed for each file
             //
             // For each source file in the project
-            SgFilePtrList &ptr_list = project->get_fileList();
-            for (auto iter = ptr_list.begin(); iter != ptr_list.end(); iter++)
+            const std::vector<SgFile *> &ptr_list = project->get_fileList();
+            for (SgFile *sageFile : ptr_list)
             {
-                SgFile *sageFile = (*iter);
                 SgSourceFile *sfile = isSgSourceFile(sageFile);
                 ROSE_ASSERT(sfile);
                 SgGlobal *root = sfile->get_globalScope();
 
-                Rose_STL_Container<SgNode *> defList = NodeQuery::querySubTree(sfile, V_SgFunctionDefinition);
+                std::vector<SgFunctionDefinition *> defList = querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
                 // flag to indicate if there is at least one loop is parallelized. Also means execution runtime headers are needed
                 bool hasERT = false;
 
                 // For each function body in the scope
-                for (auto p = defList.begin(); p != defList.end(); ++p)
+                for (SgFunctionDefinition *defn : defList)
                 {
                     //      std::cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<std::endl;
-
-                    SgFunctionDefinition *defn = isSgFunctionDefinition(*p);
-                    ROSE_ASSERT(defn != nullptr);
 
                     SgFunctionDeclaration *func = defn->get_declaration();
                     ROSE_ASSERT(func != nullptr);
@@ -173,7 +165,7 @@ namespace AutoParallelization
 
                     SgBasicBlock *body = defn->get_body();
                     // For each loop
-                    Rose_STL_Container<SgNode *> loops = NodeQuery::querySubTree(defn, V_SgForStatement);
+                    std::vector<SgForStatement *> loops = querySubTree<SgForStatement>(defn, V_SgForStatement);
                     if (loops.size() == 0)
                     {
                         if (Config::get().enable_debug)
@@ -200,16 +192,13 @@ namespace AutoParallelization
                     // FR(06/07/2011): aliasinfo was not set which caused segfault
                     LoopTransformInterface::set_aliasInfo(&array_interface);
 
-                    for (auto iter = loops.begin(); iter != loops.end(); iter++)
+                    for (SgForStatement *current_loop : loops)
                     {
-                        SgNode *current_loop = *iter;
-
                         if (Config::get().enable_debug)
                         {
-                            SgForStatement *fl = isSgForStatement(current_loop);
                             std::cout << std::endl;
                             std::cout << "\t\t ------------------------------" << std::endl;
-                            std::cout << "\t\t | Considering loop at " << fl->get_file_info()->get_line() << std::endl;
+                            std::cout << "\t\t | Considering loop at " << current_loop->get_file_info()->get_line() << std::endl;
                             std::cout << "\t\t ------------------------------" << std::endl;
                         }
                         // X. Parallelize loop one by one
