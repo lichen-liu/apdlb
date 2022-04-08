@@ -152,7 +152,11 @@ namespace AutoParallelization
                 // For each function body in the scope
                 for (SgFunctionDefinition *defn : defList)
                 {
-                    //      std::cout<<"\t loop at:"<< cur_loop->get_file_info()->get_line() <<std::endl;
+                    std::cout << std::endl;
+                    std::cout << std::endl;
+                    std::cout << "===========================" << std::endl;
+                    std::cout << "|| Function at: " << defn->get_file_info()->get_line() << std::endl;
+                    std::cout << "===========================" << std::endl;
 
                     SgFunctionDeclaration *func = defn->get_declaration();
                     ROSE_ASSERT(func != nullptr);
@@ -231,8 +235,33 @@ namespace AutoParallelization
                         }
                     } // end for loops
 
-                    if (!parallelizable_loop_candidates.empty())
+                    // Only parallelizable loops that are not nested inside any of other parallelizable loops are parallelized
+                    std::vector<SgForStatement *> parallelizable_loop_final_candidates;
+                    for (SgForStatement *cur_node : parallelizable_loop_candidates)
                     {
+                        bool not_descendent = std::all_of(parallelizable_loop_candidates.begin(),
+                                                          parallelizable_loop_candidates.end(),
+                                                          [cur_node](SgForStatement *target_node)
+                                                          {
+                                                              return !isAncestor(target_node, cur_node);
+                                                          });
+                        if (not_descendent)
+                        {
+                            parallelizable_loop_final_candidates.emplace_back(cur_node);
+                        }
+                    }
+
+                    // Parallelize loop
+                    if (!parallelizable_loop_final_candidates.empty())
+                    {
+                        std::cout << "-----------------------------------------------------" << std::endl;
+                        for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
+                        {
+                            if (Config::get().enable_debug)
+                            {
+                                std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
+                            }
+                        }
                         hasERT = true;
                     }
                 } // end for-loop for declarations

@@ -1408,16 +1408,6 @@ namespace AutoParallelization
         // X.  Attach OmpAttribute to the loop node if it is parallelizable
         if (isParallelizable)
         {
-            // write log entries for success
-            std::ostringstream oss;
-            oss << "Auto parallelized a loop@" << filename << ":" << lineno << ":" << colno << std::endl;
-
-            if (Config::get().enable_debug)
-            {
-                std::cout << "-----------------------------------------------------" << std::endl;
-                std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
-            }
-
             //= OmpSupport::buildOmpAttribute(OmpSupport::e_parallel_for,sg_node);
             omp_attribute->setOmpDirectiveType(OmpSupport::e_parallel_for);
             if (Config::get().enable_debug)
