@@ -14,14 +14,23 @@
 
 #include "utils.h"
 #include "archived.h"
+#include "auto_par_driver.h"
 #include "rose.h"
 
 int main(int argc, char *argv[])
 {
-    constexpr bool debug = false;
+    // constexpr bool debug = false;
+
+    ROSE_INITIALIZE;
 
     // Build a project
     SgProject *project = frontend(argc, argv);
+
+    AutoParallelization::auto_parallize(project);
+
+    return backend(project);
+
+#if 0
     ROSE_ASSERT(project);
 
     // For each source file in the project
@@ -56,7 +65,5 @@ int main(int argc, char *argv[])
     }     // end for-loop for files
 
     std::cout << "Done ..." << std::endl;
-
-    // Generate the source code
-    // return backend(project);
+#endif
 }
