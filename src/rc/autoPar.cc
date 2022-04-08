@@ -16,9 +16,22 @@
  *
  * By Chunhua Liao
  * Nov 3, 2008
+ *
+ * autoParallelization Project:
+ * https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar#Alternative:_using_the_virtual_machine_image
+ *
+ * autoPar.cc from rose/projects/autoParallelization
+ * Originally by Chunhua Liao
+ *
+ *
+ * -----------------------------------------------------------
+ * Refactored and modified by Lichen Liu
+ *
  */
 #include "rose.h"
-#include "autoParSupport.h"
+#include "auto_par_lib.h"
+
+#include <iostream>
 
 using namespace AutoParallelization;
 using namespace SageInterface;
@@ -73,9 +86,8 @@ void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunction
 // normalize all loops within candidate function definitions
 void normalizeLoops(std::vector<SgFunctionDefinition *> candidateFuncDefs)
 {
-    for (std::vector<SgFunctionDefinition *>::iterator iter = candidateFuncDefs.begin(); iter != candidateFuncDefs.end(); iter++)
+    for (SgFunctionDefinition *funcDef : candidateFuncDefs)
     {
-        SgFunctionDefinition *funcDef = *iter;
         ROSE_ASSERT(funcDef);
         // This has to happen before analyses are called.
         // For each loop

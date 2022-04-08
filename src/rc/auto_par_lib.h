@@ -1,48 +1,24 @@
-#ifndef auto_par_support_INCLUDED
-#define auto_par_support_INCLUDED
-
-// Common headers for a ROSE translator
-//#include <rose.h>
-#include "LivenessAnalysis.h"
-#include "CommandOptions.h"
+#pragma once
 
 // OpenMP attribute for OpenMP 3.0
 #include "OmpAttribute.h"
 
 // Array Annotation headers
-#include <CPPAstInterface.h>
 #include <ArrayAnnot.h>
 #include <ArrayRewrite.h>
 
 // Dependence graph headers
 #include <AstInterface_ROSE.h>
 #include <LoopTransformInterface.h>
-#include <AnnotCollect.h>
-#include <OperatorAnnotation.h>
 #include <LoopTreeDepComp.h>
-
-// Variable classification support
-#include "DefUseAnalysis.h"
 
 // Other standard C++ headers
 #include <vector>
 #include <string>
 #include <map>
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-
 namespace AutoParallelization
 {
-    // Handle annotation, debugging flags, no longer used, replaced by using Sawyer command line processing
-    //   void autopar_command_processing(std::vector<std::string>&argvList);
-
-    // Required analysis and their initialization
-    extern DFAnalysis *defuse;
-    extern LivenessAnalysis *liv;
-
     struct Config
     {
         bool enable_debug = true;            // maximum debugging output to the screen
@@ -60,7 +36,6 @@ namespace AutoParallelization
     // Conduct necessary analyses on the project, can be called multiple times during program transformations.
     bool initialize_analysis(SgProject *project = nullptr, bool debug = false);
 
-    //----------------------end of the cost modeling section ------------------------
     // Release the resources for analyses
     void release_analysis();
 
@@ -86,10 +61,6 @@ namespace AutoParallelization
     // Collect private, firstprivate, lastprivate, reduction and save into attribute
     void AutoScoping(SgNode *sg_node, OmpSupport::OmpAttribute *attribute, LoopTreeDepGraph *depgraph);
 
-    // Recognize reduction variables for a loop
-    // Refactored into SageInterface
-    // std::vector<SgInitializedName*> RecognizeReduction(SgNode *sg_node, OmpSupport::OmpAttribute* attribute, std::vector<SgInitializedName*>& candidateVars);
-
     std::vector<SgInitializedName *> CollectUnallowedScopedVariables(OmpSupport::OmpAttribute *attribute);
 
     // Collect all classified variables from an OmpAttribute attached to a loop node,regardless their omp type
@@ -112,5 +83,3 @@ namespace AutoParallelization
     bool useUnsupportedLanguageFeatures(SgNode *loop, VariantT *blackConstruct);
 
 } // end namespace
-
-#endif // auto_par_support_INCLUDED

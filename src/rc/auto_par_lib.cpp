@@ -1,43 +1,65 @@
+/**
+ * autoParallelization Project:
+ * https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar#Alternative:_using_the_virtual_machine_image
+ *
+ * autoParSupport.cpp from rose/projects/autoParallelization
+ * Originally by Chunhua Liao
+ *
+ *
+ * -----------------------------------------------------------
+ * Refactored and modified by Lichen Liu
+ *
+ */
 #include "rose.h"
-#include "autoParSupport.h"
+#include "auto_par_lib.h"
 #include <algorithm> // for set union, intersection etc.
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include "RoseAst.h"
+#include "LivenessAnalysis.h"
+#include "DefUseAnalysis.h" // Variable classification support
 #include "utils.h"
+// Dependence graph headers
+#include <AnnotCollect.h>
+#include <OperatorAnnotation.h>
 
 using namespace Rose;
 using namespace OmpSupport;
 using namespace SageInterface;
+
+namespace
+{
+    std::unique_ptr<DFAnalysis> l_defuse;
+    std::unique_ptr<LivenessAnalysis> l_liv;
+}
+
 // Everything should go into the name space here!!
 namespace AutoParallelization
 {
-    DFAnalysis *defuse = nullptr;
-    LivenessAnalysis *liv = nullptr;
-
     bool initialize_analysis(SgProject *project /*=nullptr*/, bool debug /*=false*/)
     {
         if (project == nullptr)
             project = SageInterface::getProject();
 
         // Prepare def-use analysis
-        if (defuse == nullptr)
+        if (l_defuse == nullptr)
         {
             ROSE_ASSERT(project != nullptr);
-            defuse = new DefUseAnalysis(project);
+            l_defuse = std::make_unique<DefUseAnalysis>(project);
         }
 
-        ROSE_ASSERT(defuse != nullptr);
-        defuse->run(debug);
+        ROSE_ASSERT(l_defuse != nullptr);
+        l_defuse->run(debug);
 
         if (debug)
-            defuse->dfaToDOT();
+            l_defuse->dfaToDOT();
 
         // Prepare variable liveness analysis
-        if (liv == nullptr)
-            liv = new LivenessAnalysis(debug, (DefUseAnalysis *)defuse);
-        ROSE_ASSERT(liv != nullptr);
+        if (l_liv == nullptr)
+            l_liv = std::make_unique<LivenessAnalysis>(debug, (DefUseAnalysis *)l_defuse.get());
+        ROSE_ASSERT(l_liv != nullptr);
 
         std::vector<FilteredCFGNode<IsDFAFilter>> dfaFunctions;
         NodeQuerySynthesizedAttributeType vars =
@@ -53,7 +75,7 @@ namespace AutoParallelization
                 std::string funcName = func->get_declaration()->get_qualified_name().str();
                 std::cout << " .. running liveness analysis for function: " << funcName << std::endl;
             }
-            FilteredCFGNode<IsDFAFilter> rem_source = liv->run(func, abortme);
+            FilteredCFGNode<IsDFAFilter> rem_source = l_liv->run(func, abortme);
             if (rem_source.getNode() != nullptr)
                 dfaFunctions.push_back(rem_source);
             if (abortme)
@@ -63,7 +85,7 @@ namespace AutoParallelization
         {
             std::cout << "Writing out liveness analysis results into var.dot... " << std::endl;
             std::ofstream f2("var.dot");
-            dfaToDot(f2, "var", dfaFunctions, (DefUseAnalysis *)defuse, liv);
+            dfaToDot(f2, "var", dfaFunctions, (DefUseAnalysis *)l_defuse.get(), l_liv.get());
             f2.close();
         }
         if (abortme)
@@ -76,17 +98,14 @@ namespace AutoParallelization
 
     void release_analysis()
     {
-        if (defuse != nullptr)
-            delete defuse;
-        if (liv != nullptr)
-            delete liv;
+        l_defuse.reset(nullptr);
+        l_liv.reset(nullptr);
     }
 
     // Compute dependence graph for a loop, using ArrayInterface and ArrayAnnoation
     //  TODO generate dep graph for the entire function and reuse it for all loops
     LoopTreeDepGraph *ComputeDependenceGraph(SgNode *loop, ArrayInterface *array_interface, ArrayAnnotation *annot)
     {
-
         ROSE_ASSERT(loop && array_interface && annot);
         // TODO check if its a canonical loop
 
@@ -192,7 +211,7 @@ namespace AutoParallelization
             if (edge.condition() == eckTrue)
             {
                 SgNode *firstnode = edge.target().getNode();
-                liveIns0 = liv->getIn(firstnode);
+                liveIns0 = l_liv->getIn(firstnode);
                 if (Config::get().enable_debug)
                     std::cout << "Live-in variables for loop:" << firstnode->get_file_info()->get_line() << std::endl;
                 for (auto name : liveIns0)
@@ -210,7 +229,7 @@ namespace AutoParallelization
             else if (edge.condition() == eckFalse)
             {
                 SgNode *firstnode = edge.target().getNode();
-                liveOuts0 = liv->getIn(firstnode);
+                liveOuts0 = l_liv->getIn(firstnode);
                 if (Config::get().enable_debug)
                     std::cout << "Live-out variables for loop before line:" << firstnode->get_file_info()->get_line() << std::endl;
                 for (auto name : liveOuts0)
@@ -1080,7 +1099,7 @@ namespace AutoParallelization
 
         // prepare def/use analysis, it should already exist as part of initialize_analysis()
         // SgProject * project = getProject();
-        ROSE_ASSERT(defuse != nullptr);
+        ROSE_ASSERT(l_defuse != nullptr);
 
         // For each array reference:
         Rose_STL_Container<SgNode *> nodeList = NodeQuery::querySubTree(for_loop->get_loop_body(), V_SgPntrArrRefExp);
@@ -1107,7 +1126,7 @@ namespace AutoParallelization
                         break;
 
                     // get the reaching definitions of the variable
-                    std::vector<SgNode *> vec = defuse->getDefFor(varRef, initName);
+                    std::vector<SgNode *> vec = l_defuse->getDefFor(varRef, initName);
                     if (vec.size() == 0)
                     {
                         std::cerr << "Warning: cannot find a reaching definition for an initialized name:" << std::endl;
