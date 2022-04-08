@@ -253,6 +253,7 @@ int main(int argc, char *argv[])
             {
                 SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
                 std::cout << std::endl;
+                std::cout << "====================================================="<<std::endl;
                 std::cout << "Successfully found parallelizable loops and added Execution Runtime for parallelization!" << std::endl;
             }
         } // end for-loop of files

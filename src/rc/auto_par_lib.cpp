@@ -129,10 +129,9 @@ namespace AutoParallelization
         {
             SgStatement *stmt = isSgStatement(loop);
             ROSE_ASSERT(stmt != nullptr);
-            std::cout << "--------------------------------------------------------" << std::endl;
-            std::cout << "Debug: ComputeDependenceGraph() dumps the dependence graph for the loop at line :" << stmt->get_file_info()->get_line() << std::endl;
+            std::cout << "START ComputeDependenceGraph() dumps the dependence graph for the loop at line :" << stmt->get_file_info()->get_line() << std::endl;
             comp->DumpDep();
-            std::cout << "--------------------------------------------------------" << std::endl;
+            std::cout << "END ComputeDependenceGraph()" << std::endl;
         }
 
         // The following code was used when an entire function body with several loops
@@ -1406,7 +1405,7 @@ namespace AutoParallelization
 
                 if (Config::get().enable_debug)
                 {
-                    std::cout << "=====================================================" << std::endl;
+                    std::cout << "-----------------------------------------------------" << std::endl;
                     std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
                 }
             }
