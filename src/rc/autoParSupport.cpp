@@ -595,47 +595,57 @@ namespace AutoParallelization
         }
     } // end AutoScoping()
 
-    // Collect all classified variables from an OmpAttribute attached to a loop node
-    void CollectScopedVariables(OmpSupport::OmpAttribute *attribute, std::vector<SgInitializedName *> &result)
+    std::vector<SgInitializedName *> CollectUnallowedScopedVariables(OmpSupport::OmpAttribute *attribute)
     {
         ROSE_ASSERT(attribute != nullptr);
-        // private, firstprivate, lastprivate, reduction
-        std::vector<std::pair<std::string, SgNode *>> privateVars, firstprivateVars,
-            lastprivateVars, reductionVars;
-        privateVars = attribute->getVariableList(OmpSupport::e_private);
-        firstprivateVars = attribute->getVariableList(OmpSupport::e_firstprivate);
-        lastprivateVars = attribute->getVariableList(OmpSupport::e_lastprivate);
-        // reduction is a little different: may have multiple reduction clauses for
-        //  different reduction operators
-        reductionVars = attribute->getVariableList(OmpSupport::e_reduction);
+        std::vector<SgInitializedName *> result;
+        // lastprivate, reduction
+        std::vector<std::pair<std::string, SgNode *>> lastVars = attribute->getVariableList(OmpSupport::e_lastprivate);
+        std::vector<std::pair<std::string, SgNode *>> reductionVars = attribute->getVariableList(OmpSupport::e_reduction);
 
-        for (auto iter = privateVars.begin(); iter != privateVars.end(); iter++)
+        for (const auto &[_, name] : lastVars)
         {
-            SgInitializedName *initname = isSgInitializedName((*iter).second);
+            SgInitializedName *initname = isSgInitializedName(name);
             ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
-        for (auto iter = firstprivateVars.begin(); iter != firstprivateVars.end(); iter++)
+        for (const auto &[_, name] : reductionVars)
         {
-            SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != nullptr);
-            result.push_back(initname);
-        }
-        for (auto iter = lastprivateVars.begin(); iter != lastprivateVars.end(); iter++)
-        {
-            SgInitializedName *initname = isSgInitializedName((*iter).second);
-            ROSE_ASSERT(initname != nullptr);
-            result.push_back(initname);
-        }
-        for (auto iter = reductionVars.begin(); iter != reductionVars.end(); iter++)
-        {
-            SgInitializedName *initname = isSgInitializedName((*iter).second);
+            SgInitializedName *initname = isSgInitializedName(name);
             ROSE_ASSERT(initname != nullptr);
             result.push_back(initname);
         }
         // avoid duplicated items
         sort(result.begin(), result.end());
         result.erase(unique(result.begin(), result.end()), result.end());
+        return result;
+    }
+
+    // Collect all classified variables from an OmpAttribute attached to a loop node
+    std::vector<SgInitializedName *> CollectAllowedScopedVariables(OmpSupport::OmpAttribute *attribute)
+    {
+        ROSE_ASSERT(attribute != nullptr);
+        std::vector<SgInitializedName *> result;
+        // private, firstprivate
+        std::vector<std::pair<std::string, SgNode *>> privateVars = attribute->getVariableList(OmpSupport::e_private);
+        std::vector<std::pair<std::string, SgNode *>> firstprivateVars = attribute->getVariableList(OmpSupport::e_firstprivate);
+
+        for (const auto &[_, name] : privateVars)
+        {
+            SgInitializedName *initname = isSgInitializedName(name);
+            ROSE_ASSERT(initname != nullptr);
+            result.push_back(initname);
+        }
+        for (const auto &[_, name] : firstprivateVars)
+        {
+            SgInitializedName *initname = isSgInitializedName(name);
+            ROSE_ASSERT(initname != nullptr);
+            result.push_back(initname);
+        }
+        // avoid duplicated items
+        sort(result.begin(), result.end());
+        result.erase(unique(result.begin(), result.end()), result.end());
+        return result;
     }
 
     //! Check if a reference is an array reference of statically declared arrays
@@ -918,12 +928,9 @@ namespace AutoParallelization
                     //  such as private, firstprivate, lastprivate, and reduction
                     if (att && (src_name || snk_name)) // either src or snk might be an array reference
                     {
-                        std::vector<SgInitializedName *> scoped_vars;
-                        CollectScopedVariables(att, scoped_vars);
+                        std::vector<SgInitializedName *> scoped_vars = CollectAllowedScopedVariables(att);
                         auto hit1 = scoped_vars.end();
                         auto hit2 = scoped_vars.end();
-                        // for (hit1=scoped_vars.begin();hit1!=scoped_vars.end();hit1++)
-                        //   std::cout<<"scoped var:"<<*hit1 <<" name:"<<(*hit1)->get_name().getString()<<std::endl;
                         if (src_name)
                             hit1 = find(scoped_vars.begin(), scoped_vars.end(), src_name);
                         if (snk_name)
@@ -1293,19 +1300,23 @@ namespace AutoParallelization
             collectIndirectIndexedArrayReferences(loop, indirect_array_table);
         }
 
-        // X. Compute dependence graph for the target loop
         SgNode *sg_node = loop;
+        std::string filename = sg_node->get_file_info()->get_filename();
+        int lineno = sg_node->get_file_info()->get_line();
+        int colno = sg_node->get_file_info()->get_col();
+
+        // X. Compute dependence graph for the target loop
         LoopTreeDepGraph *depgraph = ComputeDependenceGraph(sg_node, array_interface, annot);
         if (depgraph == nullptr)
         {
-            std::cout << "Warning: skipping a loop at line " << sg_node->get_file_info()->get_line() << " since failed to compute depgraph for it:";
+            std::cout << "Warning: skipping a loop at line " << lineno << " since failed to compute depgraph for it:";
             //<<sg_node->unparseToString()<<std::endl;
             return false;
         }
 
         // X. Variable classification (autoscoping):
         // This step is done before DependenceElimination(), so the irrelevant
-        // dependencies associated with the autoscoped variabled can be
+        // dependencies associated with the autoscoped variables can be
         // eliminated.
         // OmpSupport::OmpAttribute* omp_attribute = new OmpSupport::OmpAttribute();
         OmpSupport::OmpAttribute *omp_attribute = buildOmpAttribute(OmpSupport::e_unknown, nullptr, false);
@@ -1313,30 +1324,44 @@ namespace AutoParallelization
 
         AutoScoping(sg_node, omp_attribute, depgraph);
 
-        // X. Eliminate irrelevant dependence relations.
-        std::vector<DepInfo> remainingDependences;
-        DependenceElimination(sg_node, depgraph, remainingDependences, omp_attribute, indirect_array_table, array_interface, annot);
-        std::string filename = sg_node->get_file_info()->get_filename();
-        int lineno = sg_node->get_file_info()->get_line();
-        int colno = sg_node->get_file_info()->get_col();
-
-        if (remainingDependences.size() > 0)
+        // If there are unallowed autoscoped, the loop is not parallelizable
+        std::vector<SgInitializedName *> unallowed_scoped_variables = CollectUnallowedScopedVariables(omp_attribute);
+        if (!unallowed_scoped_variables.empty())
         {
-            // write log entries for failed attempts
             isParallelizable = false;
             std::ostringstream oss;
             oss << "Unparallelizable loop@" << filename << ":" << lineno << ":" << colno << std::endl;
 
             if (Config::get().enable_debug) // diff user vs. autopar needs cleaner output
             {
-                constexpr bool enable_distance = true;
                 std::cout << "=====================================================" << std::endl;
-                std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to the following dependencies:" << std::endl;
-                for (const auto &di : remainingDependences)
+                std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to scoped variables of unallowed types:" << std::endl;
+                for (auto name : unallowed_scoped_variables)
                 {
-                    std::cout << di.toString() << std::endl;
-                    if (enable_distance)
+                    std::cout << name->get_qualified_name().getString() << std::endl;
+                }
+            }
+        }
+        else
+        {
+            // X. Eliminate irrelevant dependence relations.
+            std::vector<DepInfo> remainingDependences;
+            DependenceElimination(sg_node, depgraph, remainingDependences, omp_attribute, indirect_array_table, array_interface, annot);
+
+            if (remainingDependences.size() > 0)
+            {
+                // write log entries for failed attempts
+                isParallelizable = false;
+                std::ostringstream oss;
+                oss << "Unparallelizable loop@" << filename << ":" << lineno << ":" << colno << std::endl;
+
+                if (Config::get().enable_debug) // diff user vs. autopar needs cleaner output
+                {
+                    std::cout << "=====================================================" << std::endl;
+                    std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to the following dependencies:" << std::endl;
+                    for (const auto &di : remainingDependences)
                     {
+                        std::cout << di.toString() << std::endl;
                         if (di.rows() > 0 && di.cols() > 0)
                         {
                             int dist = abs((di.Entry(0, 0)).GetAlign());
@@ -1344,21 +1369,20 @@ namespace AutoParallelization
                                 dep_dist = dist;
                         }
                     }
-                }
-                if (enable_distance)
                     std::cout << "The minimum dependence distance of all dependences for the loop is:" << dep_dist << std::endl;
+                }
             }
-        }
-        else
-        {
-            // write log entries for success
-            std::ostringstream oss;
-            oss << "Auto parallelized a loop@" << filename << ":" << lineno << ":" << colno << std::endl;
-
-            if (Config::get().enable_debug)
+            else
             {
-                std::cout << "=====================================================" << std::endl;
-                std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
+                // write log entries for success
+                std::ostringstream oss;
+                oss << "Auto parallelized a loop@" << filename << ":" << lineno << ":" << colno << std::endl;
+
+                if (Config::get().enable_debug)
+                {
+                    std::cout << "=====================================================" << std::endl;
+                    std::cout << "Automatically parallelized a loop at line:" << sg_node->get_file_info()->get_line() << std::endl;
+                }
             }
         }
 

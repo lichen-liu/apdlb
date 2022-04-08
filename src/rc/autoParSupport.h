@@ -90,8 +90,10 @@ namespace AutoParallelization
     // Refactored into SageInterface
     // std::vector<SgInitializedName*> RecognizeReduction(SgNode *sg_node, OmpSupport::OmpAttribute* attribute, std::vector<SgInitializedName*>& candidateVars);
 
+    std::vector<SgInitializedName *> CollectUnallowedScopedVariables(OmpSupport::OmpAttribute *attribute);
+
     // Collect all classified variables from an OmpAttribute attached to a loop node,regardless their omp type
-    void CollectScopedVariables(OmpSupport::OmpAttribute *attribute, std::vector<SgInitializedName *> &result);
+    std::vector<SgInitializedName *> CollectAllowedScopedVariables(OmpSupport::OmpAttribute *attribute);
 
     // Eliminate irrelevant dependencies for a loop node 'sg_node'
     // Save the remaining dependencies which prevent parallelization
