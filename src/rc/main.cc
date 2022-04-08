@@ -19,14 +19,14 @@
 
 int main(int argc, char *argv[])
 {
-    // constexpr bool debug = false;
+    constexpr bool debug = false;
 
     ROSE_INITIALIZE;
 
     // Build a project
     SgProject *project = frontend(argc, argv);
 
-    AutoParallelization::auto_parallize(project);
+    AutoParallelization::auto_parallize(project, debug);
 
     return backend(project);
 

@@ -121,9 +121,13 @@ namespace
 
 namespace AutoParallelization
 {
-    void auto_parallize(SgProject *project)
+    void auto_parallize(SgProject *project, bool enable_debug)
     {
         ROSE_ASSERT(project != nullptr);
+
+        {
+            Config::get().enable_debug = enable_debug;
+        }
 
         // create a block to avoid jump crosses initialization of candidateFuncDefs etc.
         {

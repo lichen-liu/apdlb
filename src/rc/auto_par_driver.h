@@ -4,5 +4,5 @@
 
 namespace AutoParallelization
 {
-    void auto_parallize(SgProject *project);
+    void auto_parallize(SgProject *project, bool enable_debug);
 }
