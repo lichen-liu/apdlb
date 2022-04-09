@@ -26,9 +26,25 @@ int main(int argc, char *argv[])
     // Build a project
     SgProject *project = frontend(argc, argv);
 
+    // Auto parallelization
     AutoParallelization::auto_parallize(project, debug);
 
-    return backend(project);
+    // Generate code
+    const std::string gen_code_dir = "./ap_gen";
+    const std::vector<SgFile *> &ptr_list = project->get_fileList();
+    for (SgFile *file : ptr_list)
+    {
+        SageInterface::moveToSubdirectory(gen_code_dir, file);
+    }
+    project->unparse();
+    std::cout << "Code generated at: " << gen_code_dir << std::endl;
+
+    // Clean up the project
+    delete project;
+    project = nullptr;
+
+    return 0;
+    // return backend(project);
 
 #if 0
     ROSE_ASSERT(project);
