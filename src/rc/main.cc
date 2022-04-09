@@ -14,7 +14,7 @@
 
 #include "utils.h"
 #include "archived.h"
-#include "auto_par_driver.h"
+#include "driver.h"
 #include "rose.h"
 
 int main(int argc, char *argv[])

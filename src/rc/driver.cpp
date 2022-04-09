@@ -28,8 +28,10 @@
  * Refactored and modified by Lichen Liu
  *
  */
-#include "auto_par_driver.h"
-#include "auto_par_lib.h"
+#include "driver.h"
+#include "ert_insertion.h"
+#include "loop_analysis.h"
+#include "utils.h"
 
 #include <iostream>
 
@@ -278,14 +280,17 @@ namespace AutoParallelization
                     // Parallelize loops
                     if (!parallelizable_loop_final_candidates.empty())
                     {
-                        std::cout << "-----------------------------------------------------" << std::endl;
+                        if (Config::get().enable_debug)
+                        {
+                            std::cout << "-----------------------------------------------------" << std::endl;
+                        }
                         for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
                         {
-                            attachComment(for_stmt, "================ APERT ================");
                             if (Config::get().enable_debug)
                             {
                                 std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
                             }
+                            RC::insertERTIntoForLoop(for_stmt);
                         }
                         hasERT = true;
                     }

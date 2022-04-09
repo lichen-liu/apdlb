@@ -11,7 +11,7 @@
  *
  */
 #include "rose.h"
-#include "auto_par_lib.h"
+#include "loop_analysis.h"
 #include <algorithm> // for set union, intersection etc.
 #include <fstream>
 #include <iostream>
