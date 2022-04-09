@@ -49,6 +49,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernel
     - Adapted to avoid external function calls, to bypass side effect analysis
         - This can be fixed by providing annot
 3. rose compiler auto parallelization
+    - http://rosecompiler.org/uploads/ROSE-UserManual.pdf, p161
     - Only support c-style source code
     - Adapted from autoPar (rose/projects/autoParallelization)
     - Modifications
