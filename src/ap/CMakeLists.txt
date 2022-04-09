@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(rc VERSION 0.1.0)
+project(ap VERSION 0.1.0)
 include(CTest)
 
 if(DEFINED ENV{ROSE_PATH})
@@ -24,15 +24,15 @@ message(STATUS "ROSE lib = ${ROSE_LIB_DIR}")
 # Set up Boost
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
-file(GLOB_RECURSE rc_lib_SRC
+file(GLOB_RECURSE ap_lib_SRC
     "*.cpp"
 )
-add_library(rc ${rc_lib_SRC})
-target_link_libraries(rc librose.so ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+add_library(ap ${ap_lib_SRC})
+target_link_libraries(ap librose.so ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
-add_executable(rc_exe main.cc)
-target_link_libraries(rc_exe rc)
+add_executable(ap_exe main.cc)
+target_link_libraries(ap_exe ap)
 
-add_custom_target(rc_all DEPENDS
-    rc
-    rc_exe)
+add_custom_target(ap_all DEPENDS
+    ap
+    ap_exe)

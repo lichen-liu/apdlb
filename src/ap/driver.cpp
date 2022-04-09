@@ -290,7 +290,7 @@ namespace AutoParallelization
                             {
                                 std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
                             }
-                            RC::insertERTIntoForLoop(for_stmt);
+                            AP::insertERTIntoForLoop(for_stmt);
                         }
                         hasERT = true;
                     }

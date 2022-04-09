@@ -26,25 +26,25 @@ tp: prepare
 	@echo 
 .PHONY: tp
 
-# rc
+# ap
 ifdef ROSE_PATH # ROSE Compiler exists
-rc: prepare
-	$(MAKE) -C build rc_all
-	@echo [=== rc is successfully built ===]
+ap: prepare
+	$(MAKE) -C build ap_all
+	@echo [=== ap is successfully built ===]
 	@echo 
-.PHONY: rc
+.PHONY: ap
 
-run_rc: rc
-	./build/rc/rc_exe ${ARGS}
-.PHONY: run_rc
+run_ap: ap
+	./build/ap/ap_exe ${ARGS}
+.PHONY: run_ap
 else # ROSE Compiler does not exist
-rc: prepare
-	@echo [=== rc is not supported ===]
+ap: prepare
+	@echo [=== ap is not supported ===]
 	@echo 
-.PHONY: rc
+.PHONY: ap
 
-run_rc: rc
-.PHONY: run_rc
+run_ap: ap
+.PHONY: run_ap
 endif
 
 # kbm
@@ -57,5 +57,5 @@ kbm: prepare
 
 # all
 
-all: rc tp kbm
+all: ap tp kbm
 .PHONY: all

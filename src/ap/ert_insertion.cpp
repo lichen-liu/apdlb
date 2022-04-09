@@ -1,7 +1,7 @@
 #include "ert_insertion.h"
 #include "utils.h"
 
-namespace RC
+namespace AP
 {
     void insertERTIntoForLoop(SgForStatement *for_stmt)
     {

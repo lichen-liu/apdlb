@@ -7,7 +7,7 @@ Auto-Parallelization Execution Run Time
 See `src/tp`
 
 ## Auto Parallelization with Rose Compiler
-See `src/rc`
+See `src/ap`
 
 ### (Optional) Rose Compiler Installation via Docker
 ```bash
@@ -23,20 +23,20 @@ docker build . --platform x86_64 --tag rose_build
 docker run -v "$(pwd)":/apert -w="/apert" -it rose_build bash
 ```
 
-Build `rc`
+Build `ap`
 ```bash
 # If ROSE_PATH env is set
-make rc
+make ap
 # Or set ROSE_PATH env by yourself
-ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make rc
+ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
-Run `rc_exe`
+Run `ap_exe`
 ```bash
 # If ROSE_PATH env is set
-make run_rc ARGS="benchmark/kernels/matvecp_bm.cpp"
+make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
 # Or set ROSE_PATH env by yourself
-ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_rc ARGS="benchmark/kernels/matvecp_bm.cpp" 
+ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp" 
 ```
 
 ## Notes

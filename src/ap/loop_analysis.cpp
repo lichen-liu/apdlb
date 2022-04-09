@@ -461,13 +461,13 @@ namespace AutoParallelization
             std::cout << "Debug after CollectVisibleVaribles ():" << std::endl;
             for (auto name : allVars)
             {
-                std::cout << "  " << RC::to_string(name) << std::endl;
+                std::cout << "  " << AP::to_string(name) << std::endl;
             }
 
             std::cout << "Debug after CollectVariablesWithDependence():" << std::endl;
             for (auto name : depVars)
             {
-                std::cout << "  " << RC::to_string(name) << std::endl;
+                std::cout << "  " << AP::to_string(name) << std::endl;
             }
         }
         std::sort(liveIns0.begin(), liveIns0.end());
@@ -495,7 +495,7 @@ namespace AutoParallelization
                                 std::back_inserter(sharedVars));
             for (auto name : sharedVars)
             {
-                std::cout << "  " << RC::to_string(name) << std::endl;
+                std::cout << "  " << AP::to_string(name) << std::endl;
             }
         }
 
@@ -559,7 +559,7 @@ namespace AutoParallelization
 
                 if (Config::get().enable_debug)
                 {
-                    std::cout << "  " << RC::to_string(name) << std::endl;
+                    std::cout << "  " << AP::to_string(name) << std::endl;
                 }
             }
         }
@@ -579,7 +579,7 @@ namespace AutoParallelization
             attribute->addVariable(OmpSupport::e_lastprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
             {
-                std::cout << "  " << RC::to_string(name) << std::endl;
+                std::cout << "  " << AP::to_string(name) << std::endl;
             }
         }
         // reduction recognition
@@ -598,7 +598,7 @@ namespace AutoParallelization
             attribute->addVariable(optype, iname->get_name().getString(), iname);
             if (Config::get().enable_debug)
             {
-                std::cout << "  " << RC::to_string(iname) << std::endl;
+                std::cout << "  " << AP::to_string(iname) << std::endl;
             }
         }
 
@@ -627,7 +627,7 @@ namespace AutoParallelization
             attribute->addVariable(OmpSupport::e_firstprivate, name->get_name().getString(), name);
             if (Config::get().enable_debug)
             {
-                std::cout << "  " << RC::to_string(name) << std::endl;
+                std::cout << "  " << AP::to_string(name) << std::endl;
             }
         }
     } // end AutoScoping()
