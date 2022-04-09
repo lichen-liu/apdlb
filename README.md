@@ -57,6 +57,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_rc ARGS="benchmark/kernel
         - Code clean up and remove unrelated code
         - Change rules for parallelization, autoPar was originally designed to generate openMP parallelism
             - Disallow reduction and lastprivate types of variable sharing
+            - When both inner and outer for loops are found to be parallelizable, only parallelize the outer one
         - Use lambda [=] to capture the scope into a tp task
             - shared: readonly, can be caputed by ref or value
             - private: equivalent to firstprivate (does not need to be captured unless declared outside, can be reduced into firstprivate by init the variable)
