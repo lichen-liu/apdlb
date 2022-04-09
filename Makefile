@@ -17,14 +17,14 @@ prepare:
 	@echo 
 .PHONY: prepare
 
-# tp
+# ert
 
-tp: prepare
-	$(MAKE) -C build tp_tests
-	$(MAKE) -C build test ARGS="-R '^tp_.*_tests'"
-	@echo [=== tp is successfully tested ===]
+ert: prepare
+	$(MAKE) -C build ert_tests
+	$(MAKE) -C build test ARGS="-R '^ert_.*_tests'"
+	@echo [=== ert is successfully tested ===]
 	@echo 
-.PHONY: tp
+.PHONY: ert
 
 # ap
 ifdef ROSE_PATH # ROSE Compiler exists
@@ -57,5 +57,5 @@ kbm: prepare
 
 # all
 
-all: ap tp kbm
+all: ap ert kbm
 .PHONY: all

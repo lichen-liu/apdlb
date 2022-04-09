@@ -3,8 +3,8 @@ Auto-Parallelization Execution Run Time
 
 [![main-ci-actions-badge](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml/badge.svg)](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml)
 
-## Thread Pool
-See `src/tp`
+## Execution Runtime
+See `src/ert`
 
 ## Auto Parallelization with Rose Compiler
 See `src/ap`
@@ -40,7 +40,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernel
 ```
 
 ## Notes
-1. thread pool - tp
+1. execution runtime - ert
     a. wspdr_worker, wspdr_pool
     b. suap_worker, suap_pool
     c. serial_pool
@@ -59,7 +59,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernel
         - Change rules for parallelization, autoPar was originally designed to generate openMP parallelism
             - Disallow reduction and lastprivate types of variable sharing
             - When both inner and outer for loops are found to be parallelizable, only parallelize the outer one
-        - Use lambda [=] to capture the scope into a tp task
+        - Use lambda [=] to capture the scope into an ert task
             - shared: readonly, can be caputed by ref or value
             - private: equivalent to firstprivate (does not need to be captured unless declared outside, can be reduced into firstprivate by init the variable)
                 - Fix bug when autoPar incorrectly captures nested normalized loop variables as private

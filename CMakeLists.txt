@@ -3,7 +3,7 @@ project(apert)
 
 include(CTest)
 
-add_subdirectory(src/tp tp)
+add_subdirectory(src/ert ert)
 
 if(DEFINED ENV{ROSE_PATH})
     add_subdirectory(src/ap ap)
