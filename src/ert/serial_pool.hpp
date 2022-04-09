@@ -9,7 +9,7 @@
 
 /// SERIAL POOL
 
-namespace TP
+namespace ERT
 {
     class SERIAL_POOL : public POOL
     {
@@ -21,7 +21,7 @@ namespace TP
     };
 }
 
-namespace TP
+namespace ERT
 {
     inline void SERIAL_POOL::execute(const std::vector<RAW_TASK> &tasks)
     {

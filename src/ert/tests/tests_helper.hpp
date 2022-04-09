@@ -9,9 +9,9 @@
 namespace TESTS
 {
     template <typename POOL_IF>
-    void quick_launch(size_t num_workers, const std::vector<TP::RAW_TASK> &tasks)
+    void quick_launch(size_t num_workers, const std::vector<ERT::RAW_TASK> &tasks)
     {
-        TP::TIMER timer(typeid(POOL_IF).name());
+        ERT::TIMER timer(typeid(POOL_IF).name());
         auto pool = std::make_unique<POOL_IF>(num_workers);
         pool->start();
         timer.elapsed_previous("init");

@@ -10,7 +10,7 @@
 #include "serial_pool.hpp"
 #include "suap_pool.hpp"
 
-using namespace TP;
+using namespace ERT;
 
 UTST_MAIN();
 

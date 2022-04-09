@@ -14,7 +14,7 @@
 
 /// Statically and Uniformly Assigned Private POOL
 
-namespace TP
+namespace ERT
 {
     class SUAP_WORKER;
     class SUAP_POOL : public POOL
@@ -80,7 +80,7 @@ namespace TP
 
 }
 
-namespace TP
+namespace ERT
 {
     inline SUAP_POOL::~SUAP_POOL()
     {

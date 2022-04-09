@@ -16,7 +16,7 @@
 
 /// Work Stealing Private Deque POOL - Receiver initiated
 
-namespace TP
+namespace ERT
 {
     class WSPDR_WORKER;
     class WSPDR_POOL : public POOL
@@ -90,7 +90,7 @@ namespace TP
     };
 }
 
-namespace TP
+namespace ERT
 {
     inline WSPDR_POOL::~WSPDR_POOL()
     {

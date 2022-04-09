@@ -11,7 +11,7 @@
 
 /// Helpers
 
-namespace TP::UTST
+namespace ERT::UTST
 {
     class TEST_REGISTRY
     {
@@ -59,7 +59,7 @@ namespace TP::UTST
 /// UTST Utilities
 
 #define UTST_MAIN()                                      \
-    static TP::UTST::TEST_REGISTRY __utst_test_registry; \
+    static ERT::UTST::TEST_REGISTRY __utst_test_registry; \
                                                          \
     int main()                                           \
     {                                                    \

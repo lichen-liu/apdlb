@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-namespace TP
+namespace ERT
 {
     struct WORKER_PROXY;
 

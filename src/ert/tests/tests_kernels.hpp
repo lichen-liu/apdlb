@@ -13,29 +13,29 @@
 
 namespace TESTS
 {
-    std::vector<TP::RAW_TASK> generate_n_tasks(size_t num_tasks, std::function<void(size_t)> task);
+    std::vector<ERT::RAW_TASK> generate_n_tasks(size_t num_tasks, std::function<void(size_t)> task);
 
     inline void simple_print_kernel(size_t i)
     {
         printf("%lu\n", i);
     }
-    inline std::vector<TP::RAW_TASK> generate_simple_print_tasks(size_t num_tasks)
+    inline std::vector<ERT::RAW_TASK> generate_simple_print_tasks(size_t num_tasks)
     {
         return generate_n_tasks(num_tasks, simple_print_kernel);
     }
 
     size_t collatz_conjecture_kernel(size_t lower, size_t upper, size_t num_attempts = 1);
-    std::tuple<std::function<size_t()>, std::vector<TP::RAW_TASK>, std::unique_ptr<std::atomic<size_t>>>
+    std::tuple<std::function<size_t()>, std::vector<ERT::RAW_TASK>, std::unique_ptr<std::atomic<size_t>>>
     generate_collatz_conjecture_tasks();
 
     void sorting_kernel(size_t i);
-    inline std::vector<TP::RAW_TASK> generate_sorting_tasks(size_t num_tasks)
+    inline std::vector<ERT::RAW_TASK> generate_sorting_tasks(size_t num_tasks)
     {
         return generate_n_tasks(num_tasks, sorting_kernel);
     }
 
     void matvecp_kernel(size_t i);
-    inline std::vector<TP::RAW_TASK> generate_matvecp_tasks(size_t num_tasks)
+    inline std::vector<ERT::RAW_TASK> generate_matvecp_tasks(size_t num_tasks)
     {
         return generate_n_tasks(num_tasks, matvecp_kernel);
     }
@@ -44,9 +44,9 @@ namespace TESTS
 /// Implementation
 namespace TESTS
 {
-    inline std::vector<TP::RAW_TASK> generate_n_tasks(size_t num_tasks, std::function<void(size_t)> task)
+    inline std::vector<ERT::RAW_TASK> generate_n_tasks(size_t num_tasks, std::function<void(size_t)> task)
     {
-        std::vector<TP::RAW_TASK> tasks;
+        std::vector<ERT::RAW_TASK> tasks;
         tasks.reserve(num_tasks);
         for (size_t i = 0; i < num_tasks; i++)
         {
@@ -89,7 +89,7 @@ namespace TESTS
         return step / num_attempts;
     }
 
-    inline std::tuple<std::function<size_t()>, std::vector<TP::RAW_TASK>, std::unique_ptr<std::atomic<size_t>>>
+    inline std::tuple<std::function<size_t()>, std::vector<ERT::RAW_TASK>, std::unique_ptr<std::atomic<size_t>>>
     generate_collatz_conjecture_tasks()
     {
         constexpr size_t num_attempts = 1;
@@ -103,7 +103,7 @@ namespace TESTS
         };
 
         auto result_ptr = std::make_unique<std::atomic<size_t>>(0);
-        std::vector<TP::RAW_TASK> tasks =
+        std::vector<ERT::RAW_TASK> tasks =
             generate_n_tasks(num_shards,
                              [result = result_ptr.get()](size_t i)
                              { *result +=

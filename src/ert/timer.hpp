@@ -4,7 +4,7 @@
 #include <string>
 #include <sys/time.h>
 
-namespace TP
+namespace ERT
 {
     /// Time stamp function in milliseconds
     double get_time_stamp();
@@ -29,7 +29,7 @@ namespace TP
 }
 
 // Implementation
-namespace TP
+namespace ERT
 {
     inline double get_time_stamp()
     {

@@ -3,7 +3,7 @@
 #include <thread>
 #include <sstream>
 
-namespace TP
+namespace ERT
 {
     inline const char *bool_to_cstr(bool val)
     {

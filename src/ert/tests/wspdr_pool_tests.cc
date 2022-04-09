@@ -10,7 +10,7 @@
 #include "utst.hpp"
 #include "wspdr_pool.hpp"
 
-using namespace TP;
+using namespace ERT;
 
 UTST_MAIN();
 
