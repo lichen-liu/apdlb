@@ -1,4 +1,5 @@
 #include "ert_insertion.h"
+#include "config.hpp"
 #include "utils.h"
 
 namespace AP
@@ -7,6 +8,9 @@ namespace AP
     void insertERTIntoForLoop(SgForStatement *for_stmt)
     {
         SageInterface::attachComment(for_stmt, "================ APERT ================");
-        print_ast(for_stmt);
+        if (Config::get().enable_debug)
+        {
+            print_ast(for_stmt);
+        }
     }
 }

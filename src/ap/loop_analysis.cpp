@@ -21,6 +21,7 @@
 #include "RoseAst.h"
 #include "LivenessAnalysis.h"
 #include "DefUseAnalysis.h" // Variable classification support
+#include "config.hpp"
 #include "utils.h"
 // Dependence graph headers
 #include <AnnotCollect.h>
@@ -124,7 +125,7 @@ namespace AutoParallelization
         // the third parameter sets supportNonFortranLoop to true
         // TODO when to release this?
         // Retrieve dependence graph here!
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             SgStatement *stmt = isSgStatement(loop);
             ROSE_ASSERT(stmt != nullptr);
@@ -210,14 +211,14 @@ namespace AutoParallelization
             {
                 SgNode *firstnode = edge.target().getNode();
                 liveIns0 = l_liv->getIn(firstnode);
-                if (Config::get().enable_debug)
+                if (AP::Config::get().enable_debug)
                     std::cout << "Live-in variables for loop:" << firstnode->get_file_info()->get_line() << std::endl;
                 for (auto name : liveIns0)
                 {
                     if ((SageInterface::isScalarType(name->get_type())) && (name != invarname))
                     {
                         liveIns.push_back(name);
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                             std::cout << "  " << name->get_qualified_name().getString() << std::endl;
                     }
                 }
@@ -227,13 +228,13 @@ namespace AutoParallelization
             {
                 SgNode *firstnode = edge.target().getNode();
                 liveOuts0 = l_liv->getIn(firstnode);
-                if (Config::get().enable_debug)
+                if (AP::Config::get().enable_debug)
                     std::cout << "Live-out variables for loop before line:" << firstnode->get_file_info()->get_line() << std::endl;
                 for (auto name : liveOuts0)
                 {
                     if ((SageInterface::isScalarType(name->get_type())) && (name != invarname))
                     {
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                             std::cout << "  " << name->get_qualified_name().getString() << std::endl;
                         liveOuts.push_back(name);
                     }
@@ -246,7 +247,7 @@ namespace AutoParallelization
             }
         } // end for (edges)
         // debug the final results
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             std::cout << "Final Live-in variables for loop:" << std::endl;
             for (auto name : liveIns)
@@ -456,7 +457,7 @@ namespace AutoParallelization
         CollectVisibleVaribles(sg_node, allVars, invariantVars, true);
         std::sort(allVars.begin(), allVars.end());
         CollectVariablesWithDependence(sg_node, depgraph, depVars, true);
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             std::cout << "Debug after CollectVisibleVaribles ():" << std::endl;
             for (auto name : allVars)
@@ -487,7 +488,7 @@ namespace AutoParallelization
         std::sort(liveOuts.begin(), liveOuts.end());
 
         // shared: scalars for now: allVars - depVars,
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             std::cout << "Debug dump shared:" << std::endl;
             std::vector<SgInitializedName *> sharedVars;
@@ -510,7 +511,7 @@ namespace AutoParallelization
         // loop invariants are private
         // insert all loops, including nested ones' visible invariants
         privateVars.insert(privateVars.end(), invariantVars.begin(), invariantVars.end());
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
             std::cout << "Debug dump private:" << std::endl;
 
         // Get all possible in inner loops normalized loop index variables captured by the scope of the current for_stmt
@@ -557,7 +558,7 @@ namespace AutoParallelization
             {
                 attribute->addVariable(OmpSupport::e_private, var_name, name);
 
-                if (Config::get().enable_debug)
+                if (AP::Config::get().enable_debug)
                 {
                     std::cout << "  " << AP::to_string(name) << std::endl;
                 }
@@ -572,12 +573,12 @@ namespace AutoParallelization
         std::set_difference(liveOuts.begin(), liveOuts.end(), liveIns0.begin(), liveIns0.end(),
                             std::back_inserter(lastprivateVars));
 
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
             std::cout << "Debug dump lastprivate:" << std::endl;
         for (auto name : lastprivateVars)
         {
             attribute->addVariable(OmpSupport::e_lastprivate, name->get_name().getString(), name);
-            if (Config::get().enable_debug)
+            if (AP::Config::get().enable_debug)
             {
                 std::cout << "  " << AP::to_string(name) << std::endl;
             }
@@ -591,12 +592,12 @@ namespace AutoParallelization
         //  Using the better SageInterface version , Liao 9/14/2016
         std::set<std::pair<SgInitializedName *, OmpSupport::omp_construct_enum>> reductionResults;
         SageInterface::ReductionRecognition(isSgForStatement(sg_node), reductionResults);
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
             std::cout << "Debug dump reduction:" << std::endl;
         for (auto [iname, optype] : reductionResults)
         {
             attribute->addVariable(optype, iname->get_name().getString(), iname);
-            if (Config::get().enable_debug)
+            if (AP::Config::get().enable_debug)
             {
                 std::cout << "  " << AP::to_string(iname) << std::endl;
             }
@@ -609,7 +610,7 @@ namespace AutoParallelization
         //     not liveOut: differ from Shared, we considered shared first, then firstprivate
         //     not written: ensure the correct semantics: each iteration will use a copy from the original master, not redefined
         //                  value from the previous iteration
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
             std::cout << "Debug dump firstprivate:" << std::endl;
 
         std::vector<SgInitializedName *> temp2, temp3;
@@ -625,7 +626,7 @@ namespace AutoParallelization
         for (auto name : firstprivateVars)
         {
             attribute->addVariable(OmpSupport::e_firstprivate, name->get_name().getString(), name);
-            if (Config::get().enable_debug)
+            if (AP::Config::get().enable_debug)
             {
                 std::cout << "  " << AP::to_string(name) << std::endl;
             }
@@ -730,7 +731,7 @@ namespace AutoParallelization
     {
         // LoopTreeDepGraph * depgraph =  comp.GetDepGraph();
         LoopTreeDepGraph::NodeIterator nodes = depgraph->GetNodeIterator();
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             std::cout << "Entering DependenceElimination ()" << std::endl;
         }
@@ -747,7 +748,7 @@ namespace AutoParallelization
                 {
                     LoopTreeDepGraph::Edge *e = *edges;
                     DepInfo info = e->GetInfo();
-                    if (Config::get().enable_debug)
+                    if (AP::Config::get().enable_debug)
                         std::cout << "-------------->>> Considering a new dependence edge's info:\n"
                                   << info.toString() << std::endl;
 
@@ -770,7 +771,7 @@ namespace AutoParallelization
                             src_name = var_ref->get_symbol()->get_declaration();
                             if (SageInterface::isAncestor(currentscope, varscope))
                             {
-                                if (Config::get().enable_debug)
+                                if (AP::Config::get().enable_debug)
                                 {
                                     std::cout << "Eliminating a dep relation due to locally declared src variable" << std::endl;
                                     info.Dump();
@@ -797,7 +798,7 @@ namespace AutoParallelization
                             snk_name = var_ref->get_symbol()->get_declaration();
                             if (SageInterface::isAncestor(currentscope, varscope))
                             {
-                                if (Config::get().enable_debug)
+                                if (AP::Config::get().enable_debug)
                                 {
                                     std::cout << "Eliminating a dep relation due to locally declared sink variable" << std::endl;
                                     info.Dump();
@@ -806,7 +807,7 @@ namespace AutoParallelization
                             }
                         } // end if(var_ref)
                     }     // end if (snk_node)
-                    if (Config::get().enable_debug)
+                    if (AP::Config::get().enable_debug)
                         std::cout << "Neither source nor sink node is locally decalared variables." << std::endl;
 
                     // x. Eliminate a dependence if it is empty entry
@@ -814,7 +815,7 @@ namespace AutoParallelization
                     //  Ignore possible empty depInfo entry
                     if (src_node == nullptr || snk_node == nullptr)
                     {
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                         {
                             std::cout << "Eliminating a dep relation due to empty entry for either src or sink variables or both" << std::endl;
                             info.Dump();
@@ -822,7 +823,7 @@ namespace AutoParallelization
                         continue;
                     }
 
-                    if (Config::get().enable_debug)
+                    if (AP::Config::get().enable_debug)
                         std::cout << "Neither source nor sink node is empty entry." << std::endl;
 
                     // x. Eliminate a dependence if scalar type dependence involving array references.
@@ -862,16 +863,16 @@ namespace AutoParallelization
                     // if (isArray1 && isArray2) // changed from both to either to be aggressive, 5/25/2010
                     if (isArray1 || isArray2)
                     {
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                             std::cout << "Either source or sink reference is an array reference..." << std::endl;
 
                         if ((info.GetDepType() & DEPTYPE_SCALAR) || (info.GetDepType() & DEPTYPE_BACKSCALAR))
                         {
-                            if (Config::get().enable_debug)
+                            if (AP::Config::get().enable_debug)
                                 std::cout << "\t Dep type is scalar or backscalar " << std::endl;
                             if (src_var_ref || snk_var_ref) // at least one is a scalar: we have scalar vs. array
                             {
-                                if (Config::get().enable_debug)
+                                if (AP::Config::get().enable_debug)
                                     std::cout << "Either source or sink reference is a scalar reference..." << std::endl;
                                 // we have to check the type of the scalar:
                                 //  integer type? skip
@@ -879,11 +880,11 @@ namespace AutoParallelization
                                 SgVarRefExp *one_var = src_var_ref ? src_var_ref : snk_var_ref;
 
                                 // non-pointer type or pointertype && no_aliasing, we skip it
-                                if (!isPointerType(one_var->get_type()) || Config::get().no_aliasing)
+                                if (!isPointerType(one_var->get_type()) || AP::Config::get().no_aliasing)
                                 {
-                                    if (Config::get().enable_debug)
+                                    if (AP::Config::get().enable_debug)
                                     {
-                                        if (Config::get().no_aliasing)
+                                        if (AP::Config::get().no_aliasing)
                                             std::cout << "Non-aliasing assumed, eliminating a dep relation due to scalar dep type for at least one array variable (pointers used as arrays)" << std::endl;
                                         else
                                             std::cout << "Found a non-pointer scalar, eliminating a dep relation due to the scalar dep type between a scalar and an array" << std::endl;
@@ -895,11 +896,11 @@ namespace AutoParallelization
                             }
                             else // both are arrays
                             {
-                                if (Config::get().enable_debug)
+                                if (AP::Config::get().enable_debug)
                                     std::cout << "\t both are arrray references " << std::endl;
-                                if (Config::get().no_aliasing)
+                                if (AP::Config::get().no_aliasing)
                                 {
-                                    if (Config::get().enable_debug)
+                                    if (AP::Config::get().enable_debug)
                                     {
                                         std::cout << "Non-aliasing assumed, eliminating a dep relation due to scalar dep type for at least one array variable (pointers used as arrays)" << std::endl;
                                         info.Dump();
@@ -909,7 +910,7 @@ namespace AutoParallelization
                                 // both are arrays and both are statically allocated ones
                                 else if (isStaticArrayRef(src_node) && isStaticArrayRef(snk_node))
                                 {
-                                    if (Config::get().enable_debug)
+                                    if (AP::Config::get().enable_debug)
                                     {
                                         std::cout << "Eliminating a dep relation due to both references are references to static allocated arrays " << std::endl;
                                         info.Dump();
@@ -939,16 +940,16 @@ namespace AutoParallelization
                             SgSymbol *snk_sym = snk_array_iname->search_for_symbol_from_symbol_table();
                             if (src_sym != snk_sym)
                             {
-                                if (Config::get().enable_debug)
+                                if (AP::Config::get().enable_debug)
                                     std::cout << "Both source and sink reference are array references..." << std::endl;
 
                                 if ((info.GetDepType() & DEPTYPE_ANTI) || (info.GetDepType() & DEPTYPE_TRUE) || (info.GetDepType() & DEPTYPE_OUTPUT))
                                 {
-                                    if (Config::get().enable_debug)
+                                    if (AP::Config::get().enable_debug)
                                         std::cout << "\t Dep type is TRUE_DEP or ANTI_DEP or OUTPUT_DEP" << std::endl;
-                                    if (Config::get().no_aliasing)
+                                    if (AP::Config::get().no_aliasing)
                                     {
-                                        if (Config::get().enable_debug)
+                                        if (AP::Config::get().enable_debug)
                                         {
                                             std::cout << "Non-aliasing assumed, eliminating a dep relation due to two pointers used as arrays)" << std::endl;
                                             info.Dump();
@@ -973,7 +974,7 @@ namespace AutoParallelization
                             hit2 = find(scoped_vars.begin(), scoped_vars.end(), snk_name);
                         if (hit1 != scoped_vars.end() || (hit2 != scoped_vars.end()))
                         {
-                            if (Config::get().enable_debug)
+                            if (AP::Config::get().enable_debug)
                             {
                                 std::cout << "Eliminating a dep relation due to at least one autoscoped variables" << std::endl;
                                 info.Dump();
@@ -989,11 +990,11 @@ namespace AutoParallelization
                     //    Since each iteration will access a unique element of the array, no loop carried data dependences
                     //   Lookup the table, rule out a dependence relationship if both source and sink are one of the unique array reference expressions.
                     //   AND both references to the same array symbol , and uses the same index variable!!
-                    if (Config::get().b_unique_indirect_index)
+                    if (AP::Config::get().b_unique_indirect_index)
                     {
                         if (indirect_table[src_node] && indirect_table[snk_node])
                         {
-                            if (Config::get().enable_debug)
+                            if (AP::Config::get().enable_debug)
                             {
                                 std::cout << "Eliminating a dep relation due to unique indirect indexed array references" << std::endl;
                                 info.Dump();
@@ -1018,7 +1019,7 @@ namespace AutoParallelization
                     {
                         if (differentMemoryLocation(src_exp, snk_exp))
                         {
-                            if (Config::get().enable_debug)
+                            if (AP::Config::get().enable_debug)
                             {
                                 std::cout << "Eliminating a dep relation between two instances of the same data member from different parent aggregate data" << std::endl;
                                 info.Dump();
@@ -1030,7 +1031,7 @@ namespace AutoParallelization
                     // -----------------------------------------------
                     if (info.CommonLevel() == 0)
                     {
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                         {
                             std::cout << "Eliminating a dep relation due to lack of common enclosing loop nests: common level ==0" << std::endl;
                             info.Dump();
@@ -1043,7 +1044,7 @@ namespace AutoParallelization
                     // loop independent dependencies: privatization can eliminate most of them
                     if (info.CarryLevel() != 0)
                     {
-                        if (Config::get().enable_debug)
+                        if (AP::Config::get().enable_debug)
                         {
                             std::cout << "Eliminating a dep relation due to carryLevel != 0 (not carried by current loop level in question)" << std::endl;
                             info.Dump();
@@ -1051,14 +1052,14 @@ namespace AutoParallelization
                         continue;
                     }
                     // Save the rest dependences which can not be ruled out
-                    if (Config::get().enable_debug)
+                    if (AP::Config::get().enable_debug)
                         std::cout << "\t this dep relation cannot be eliminated. saved into remaining depedence set." << std::endl;
                     remainings.push_back(info);
                 } // end iterator edges for a node
             }     // end if has edge
         }         // end of iterate dependence graph
 
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
         {
             std::cout << "Exiting DependenceElimination ()" << std::endl;
         }
@@ -1098,7 +1099,7 @@ namespace AutoParallelization
     */
     static void uniformIndirectIndexedArrayRefs(SgForStatement *for_loop)
     {
-        if (Config::get().enable_debug)
+        if (AP::Config::get().enable_debug)
             std::cout << "Entering uniformIndirectIndexedArrayRefs() ..." << std::endl;
         ROSE_ASSERT(for_loop != nullptr);
         ROSE_ASSERT(for_loop->get_loop_body() != nullptr);
@@ -1324,7 +1325,7 @@ namespace AutoParallelization
         // collect array references with indirect indexing within a loop, save the result in a lookup table
         // This work is context sensitive (depending on the outer loops), so we declare the table for each loop.
         std::map<SgNode *, bool> indirect_array_table;
-        if (Config::get().b_unique_indirect_index) // uniform and collect indirect indexed array only when needed
+        if (AP::Config::get().b_unique_indirect_index) // uniform and collect indirect indexed array only when needed
         {
             // uniform array reference expressions
             uniformIndirectIndexedArrayRefs(isSgForStatement(loop));
@@ -1362,7 +1363,7 @@ namespace AutoParallelization
             std::ostringstream oss;
             oss << "Unparallelizable loop@" << filename << ":" << lineno << ":" << colno << std::endl;
 
-            if (Config::get().enable_debug) // diff user vs. autopar needs cleaner output
+            if (AP::Config::get().enable_debug) // diff user vs. autopar needs cleaner output
             {
                 std::cout << "=====================================================" << std::endl;
                 std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to scoped variables of unallowed types:" << std::endl;
@@ -1385,7 +1386,7 @@ namespace AutoParallelization
                 std::ostringstream oss;
                 oss << "Unparallelizable loop@" << filename << ":" << lineno << ":" << colno << std::endl;
 
-                if (Config::get().enable_debug) // diff user vs. autopar needs cleaner output
+                if (AP::Config::get().enable_debug) // diff user vs. autopar needs cleaner output
                 {
                     std::cout << "=====================================================" << std::endl;
                     std::cout << "Unparallelizable loop at line:" << sg_node->get_file_info()->get_line() << " due to the following dependencies:" << std::endl;
@@ -1410,7 +1411,7 @@ namespace AutoParallelization
         {
             //= OmpSupport::buildOmpAttribute(OmpSupport::e_parallel_for,sg_node);
             omp_attribute->setOmpDirectiveType(OmpSupport::e_parallel_for);
-            if (Config::get().enable_debug)
+            if (AP::Config::get().enable_debug)
             {
                 std::cout << "attaching auto generated OMP att to sg_node " << sg_node->class_name();
                 std::cout << " at line " << isSgLocatedNode(sg_node)->get_file_info()->get_line() << std::endl;
