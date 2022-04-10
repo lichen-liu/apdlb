@@ -27,10 +27,6 @@
 #include <AnnotCollect.h>
 #include <OperatorAnnotation.h>
 
-using namespace Rose;
-using namespace OmpSupport;
-using namespace SageInterface;
-
 namespace
 {
     std::unique_ptr<DFAnalysis> l_defuse;
@@ -64,7 +60,8 @@ namespace AutoParallelization
         ROSE_ASSERT(l_liv != nullptr);
 
         std::vector<FilteredCFGNode<IsDFAFilter>> dfaFunctions;
-        std::vector<SgFunctionDefinition *> vars = querySubTree<SgFunctionDefinition>(project, V_SgFunctionDefinition);
+        std::vector<SgFunctionDefinition *> vars =
+            SageInterface::querySubTree<SgFunctionDefinition>(project, V_SgFunctionDefinition);
         bool abortme = false;
         // run liveness analysis on each function body
         for (SgFunctionDefinition *func : vars)
@@ -293,7 +290,7 @@ namespace AutoParallelization
         ROSE_ASSERT(currentscope != nullptr);
 
         SgInitializedName *invarname = getLoopInvariant(loop);
-        std::vector<SgVarRefExp *> reflist = querySubTree<SgVarRefExp>(loop, V_SgVarRefExp);
+        std::vector<SgVarRefExp *> reflist = SageInterface::querySubTree<SgVarRefExp>(loop, V_SgVarRefExp);
         for (SgVarRefExp *varRef : reflist)
         {
             SgInitializedName *initname = varRef->get_symbol()->get_declaration();
@@ -311,7 +308,7 @@ namespace AutoParallelization
         } // end for()
 
         // collect loop invariants here
-        std::vector<SgForStatement *> loopnests = querySubTree<SgForStatement>(loop, V_SgForStatement);
+        std::vector<SgForStatement *> loopnests = SageInterface::querySubTree<SgForStatement>(loop, V_SgForStatement);
         for (SgForStatement *forstmt : loopnests)
         {
             SgInitializedName *invariant = getLoopInvariant(forstmt);
@@ -515,17 +512,18 @@ namespace AutoParallelization
             std::cout << "Debug dump private:" << std::endl;
 
         // Get all possible in inner loops normalized loop index variables captured by the scope of the current for_stmt
-        std::vector<SgForStatement *> inner_for_stmts = querySubTree<SgForStatement>(for_stmt, V_SgForStatement);
+        std::vector<SgForStatement *> inner_for_stmts = SageInterface::querySubTree<SgForStatement>(for_stmt, V_SgForStatement);
         ROSE_ASSERT(std::count(inner_for_stmts.begin(), inner_for_stmts.end(), for_stmt) == 1);
         std::unordered_set<SgVariableSymbol *> ndecl_syms;
         for (auto inner_for_stmt : inner_for_stmts)
         {
-            bool hasNormalization = trans_records.forLoopInitNormalizationTable[inner_for_stmt];
+            bool hasNormalization = SageInterface::trans_records.forLoopInitNormalizationTable[inner_for_stmt];
             if (hasNormalization)
             {
                 // get the normalization generated declaration
-                SgVariableDeclaration *ndecl = trans_records.forLoopInitNormalizationRecord[inner_for_stmt].second;
-                ndecl_syms.emplace(getFirstVarSym(ndecl));
+                SgVariableDeclaration *ndecl =
+                    SageInterface::trans_records.forLoopInitNormalizationRecord[inner_for_stmt].second;
+                ndecl_syms.emplace(SageInterface::getFirstVarSym(ndecl));
             }
         }
 
@@ -880,7 +878,7 @@ namespace AutoParallelization
                                 SgVarRefExp *one_var = src_var_ref ? src_var_ref : snk_var_ref;
 
                                 // non-pointer type or pointertype && no_aliasing, we skip it
-                                if (!isPointerType(one_var->get_type()) || AP::Config::get().no_aliasing)
+                                if (!SageInterface::isPointerType(one_var->get_type()) || AP::Config::get().no_aliasing)
                                 {
                                     if (AP::Config::get().enable_debug)
                                     {
@@ -927,14 +925,14 @@ namespace AutoParallelization
                     SgExpression *snk_exp = isSgExpression(snk_node);
                     if (src_exp && snk_exp)
                     {
-                        isArrayReference(src_exp, &src_array_exp);
-                        isArrayReference(snk_exp, &snk_array_exp);
+                        SageInterface::isArrayReference(src_exp, &src_array_exp);
+                        SageInterface::isArrayReference(snk_exp, &snk_array_exp);
 
                         if (isArray1 && isArray2 && src_array_exp && snk_array_exp)
                         {
 
-                            SgInitializedName *src_array_iname = convertRefToInitializedName(src_array_exp);
-                            SgInitializedName *snk_array_iname = convertRefToInitializedName(snk_array_exp);
+                            SgInitializedName *src_array_iname = SageInterface::convertRefToInitializedName(src_array_exp);
+                            SgInitializedName *snk_array_iname = SageInterface::convertRefToInitializedName(snk_array_exp);
 
                             SgSymbol *src_sym = src_array_iname->search_for_symbol_from_symbol_table();
                             SgSymbol *snk_sym = snk_array_iname->search_for_symbol_from_symbol_table();
@@ -1111,7 +1109,8 @@ namespace AutoParallelization
         ROSE_ASSERT(l_defuse != nullptr);
 
         // For each array reference:
-        std::vector<SgPntrArrRefExp *> nodeList = querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
+        std::vector<SgPntrArrRefExp *> nodeList =
+            SageInterface::querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
         for (SgPntrArrRefExp *aRef : nodeList)
         {
             SgExpression *rhs = aRef->get_rhs_operand_i();
@@ -1302,7 +1301,8 @@ namespace AutoParallelization
         SgForStatement *for_loop = isSgForStatement(loop);
         ROSE_ASSERT(for_loop != nullptr);
 
-        std::vector<SgPntrArrRefExp *> nodeList = querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
+        std::vector<SgPntrArrRefExp *> nodeList =
+            SageInterface::querySubTree<SgPntrArrRefExp>(for_loop->get_loop_body(), V_SgPntrArrRefExp);
         for (SgPntrArrRefExp *aRef : nodeList)
         {
             if (isIndirectIndexedArrayRef(for_loop, aRef))
