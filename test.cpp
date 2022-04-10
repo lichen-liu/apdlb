@@ -4,9 +4,12 @@ int foo()
     int *arr = arr_raw;
     for (int i = 0; i < 10; i++)
     {
-        arr[i] = 0;
+        {
+            arr[i] = 0;
+        }
     }
 }
+
 int bar()
 {
     int arr_raw[100];
@@ -18,5 +21,6 @@ int bar()
         {
             arr[i] = 0;
         };
+        task();
     }
 }

@@ -41,13 +41,59 @@ namespace AP
         return final_candidates;
     }
 
+    SourceFileERTInserter::~SourceFileERTInserter()
+    {
+        if (this->is_ert_used())
+        {
+            this->insertERTHeaderIntoSourceFile();
+        }
+    }
+
     // http://rosecompiler.org/ROSE_HTML_Reference/namespaceSageBuilder.html#a9c9bb07f0244282e95da666ed3947940
-    void insertERTIntoForLoop(SgForStatement *for_stmt)
+    void SourceFileERTInserter::insertERTIntoForLoop(SgForStatement *for_stmt)
     {
         SageInterface::attachComment(for_stmt, "================ APERT ================");
-        if (Config::get().enable_debug)
-        {
-            print_ast(for_stmt);
-        }
+        // Create a std::vector<ERT::RAW_TASK>
+        SageInterface::addTextForUnparser(for_stmt, "{\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(for_stmt, "std::vector<ERT::RAW_TASK> " + this->ert_tasks_name_ + ";\n", AstUnparseAttribute::RelativePositionType::e_before);
+        // Execute all tasks
+        SageInterface::addTextForUnparser(for_stmt, "\n" + this->ert_pool_name_ + ".execute(std::move(" + this->ert_tasks_name_ + "));", AstUnparseAttribute::RelativePositionType::e_after);
+        SageInterface::addTextForUnparser(for_stmt, "\n}", AstUnparseAttribute::RelativePositionType::e_after);
+
+        SgStatement *body_stmt = SageInterface::getLoopBody(for_stmt);
+        // Capture the loop body into a lambda task
+        SageInterface::addTextForUnparser(body_stmt, "{\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body_stmt, "auto " + this->ert_task_name_ + " = [=]()\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body_stmt, ";", AstUnparseAttribute::RelativePositionType::e_after);
+        // Insert the lambda task into the tasks list
+        SageInterface::addTextForUnparser(body_stmt, "\n" + this->ert_tasks_name_ + ".emplace_back(std::move(" + this->ert_task_name_ + "));", AstUnparseAttribute::RelativePositionType::e_after);
+        SageInterface::addTextForUnparser(body_stmt, "\n}", AstUnparseAttribute::RelativePositionType::e_after);
+
+        this->is_ert_used_ = true;
+        // if (Config::get().enable_debug)
+        // {
+        //     print_ast(for_stmt);
+        // }
+    }
+
+    void SourceFileERTInserter::insertERTIntoFunction(SgFunctionDefinition *defn)
+    {
+        SgBasicBlock *body = defn->get_body();
+        // Declare and initialize the pool
+        SageInterface::addTextForUnparser(body, "{\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body, this->ert_pool_type_ + " " + this->ert_pool_name_ + "(4);\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body, this->ert_pool_name_ + ".start();\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body, "\n}", AstUnparseAttribute::RelativePositionType::e_after);
+
+        this->is_ert_used_ = true;
+        // if (Config::get().enable_debug)
+        // {
+        //     print_ast(defn);
+        // }
+    }
+
+    void SourceFileERTInserter::insertERTHeaderIntoSourceFile()
+    {
+        SageInterface::insertHeader(this->sfile_, this->ert_pool_type_include_, false, true);
     }
 }

@@ -143,11 +143,10 @@ namespace AutoParallelization
             {
                 SgSourceFile *sfile = isSgSourceFile(sageFile);
                 ROSE_ASSERT(sfile);
-                SgGlobal *root = sfile->get_globalScope();
 
                 std::vector<SgFunctionDefinition *> defList = SageInterface::querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
-                // flag to indicate if there is at least one loop is parallelized. Also means execution runtime headers are needed
-                bool hasERT = false;
+
+                AP::SourceFileERTInserter sgfile_ert_inserter(sfile);
 
                 // For each function body in the scope
                 for (SgFunctionDefinition *defn : defList)
@@ -248,24 +247,23 @@ namespace AutoParallelization
                         {
                             std::cout << "-----------------------------------------------------" << std::endl;
                         }
+                        sgfile_ert_inserter.insertERTIntoFunction(defn);
                         for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
                         {
                             if (AP::Config::get().enable_debug)
                             {
                                 std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
                             }
-                            AP::insertERTIntoForLoop(for_stmt);
+                            sgfile_ert_inserter.insertERTIntoForLoop(for_stmt);
                         }
-                        hasERT = true;
                     }
                 } // end for-loop for declarations
 
-                // insert ERT-related files if needed
-                if (hasERT)
+                if (sgfile_ert_inserter.is_ert_used())
                 {
-                    SageInterface::insertHeader("omp.h", PreprocessingInfo::after, true, root);
                     std::cout << std::endl;
                     std::cout << "=====================================================" << std::endl;
+                    std::cout << "In source file: " << sfile->get_file_info()->get_filename() << std::endl;
                     std::cout << "Successfully found parallelizable loops and added Execution Runtime for parallelization!" << std::endl;
                 }
             } // end for-loop of files

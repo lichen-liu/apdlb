@@ -7,7 +7,7 @@ find_package(Threads REQUIRED)
 link_libraries(Threads::Threads)
 
 # CMAKE_SOURCE_DIR
-include_directories(tp)
+include_directories(ert)
 
 add_executable(collatz_conjecture_bm collatz_conjecture_bm.cpp)
 add_test(kernels_collatz_conjecture_bm collatz_conjecture_bm)
