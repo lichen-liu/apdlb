@@ -36,9 +36,6 @@
 
 #include <iostream>
 
-using namespace AutoParallelization;
-using namespace SageInterface;
-
 namespace
 {
     void findCandidateFunctionDefinitions(SgProject *project, std::vector<SgFunctionDefinition *> &candidateFuncDefs)
@@ -54,7 +51,7 @@ namespace
             if (AP::Config::get().enable_debug)
                 std::cout << "Processing each function within the files " << sfile->get_file_info()->get_filename() << std::endl;
 
-            std::vector<SgFunctionDefinition *> defList = querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
+            std::vector<SgFunctionDefinition *> defList = SageInterface::querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
 
             // For each function body in the scope
             for (SgFunctionDefinition *defn : defList)
@@ -84,7 +81,7 @@ namespace
             ROSE_ASSERT(funcDef);
             // This has to happen before analyses are called.
             // For each loop
-            std::vector<SgForStatement *> loops = querySubTree<SgForStatement>(funcDef, V_SgForStatement);
+            std::vector<SgForStatement *> loops = SageInterface::querySubTree<SgForStatement>(funcDef, V_SgForStatement);
 
             if (AP::Config::get().enable_debug)
                 std::cout << "Normalize loops queried from memory pool ...." << std::endl;
@@ -106,7 +103,7 @@ namespace
                 }
 
                 // skip system header
-                if (insideSystemHeader(cur_loop))
+                if (SageInterface::insideSystemHeader(cur_loop))
                 {
                     if (AP::Config::get().enable_debug)
                         std::cout << "\t skipped since the loop is inside a system header " << std::endl;
@@ -148,7 +145,7 @@ namespace AutoParallelization
                 ROSE_ASSERT(sfile);
                 SgGlobal *root = sfile->get_globalScope();
 
-                std::vector<SgFunctionDefinition *> defList = querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
+                std::vector<SgFunctionDefinition *> defList = SageInterface::querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
                 // flag to indicate if there is at least one loop is parallelized. Also means execution runtime headers are needed
                 bool hasERT = false;
 
@@ -175,7 +172,7 @@ namespace AutoParallelization
 
                     SgBasicBlock *body = defn->get_body();
                     // For each loop
-                    std::vector<SgForStatement *> loops = querySubTree<SgForStatement>(defn, V_SgForStatement);
+                    std::vector<SgForStatement *> loops = SageInterface::querySubTree<SgForStatement>(defn, V_SgForStatement);
                     if (loops.size() == 0)
                     {
                         if (AP::Config::get().enable_debug)
@@ -274,9 +271,9 @@ namespace AutoParallelization
             } // end for-loop of files
 
             // undo loop normalization
-            for (auto [for_loop, _] : trans_records.forLoopInitNormalizationTable)
+            for (auto [for_loop, _] : SageInterface::trans_records.forLoopInitNormalizationTable)
             {
-                unnormalizeForLoopInitDeclaration(for_loop);
+                SageInterface::unnormalizeForLoopInitDeclaration(for_loop);
             }
             // Qing's loop normalization is not robust enough to pass all tests
             // AstTests::runAllTests(project);
