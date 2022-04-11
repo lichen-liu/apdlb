@@ -14,7 +14,6 @@
 #include <filesystem>
 
 #include "utils.h"
-#include "archived.h"
 #include "driver.h"
 #include "rose.h"
 
