@@ -40,7 +40,7 @@ ifndef WDIR
 WDIR=.
 endif
 run_ap: ap
-	cd ${WDIR}; $(CWD)/build/ap/ap_exe ${ARGS}
+	cd ${WDIR} && $(CWD)/build/ap/ap_exe ${ARGS}
 .PHONY: run_ap
 else # ROSE Compiler does not exist
 ap: prepare
