@@ -43,10 +43,10 @@ void sorting_kernel(size_t lower, size_t upper)
                         vecs[iteration][i] = (static_cast<float>(rand_val)) / (static_cast<float>(2147483647));
                     }
                     // Bubble sort
-                    for (size_t i = 0; i <= n - ((unsigned long)1) - 1; i += 1)
+                    for (long i = 0; i <= (static_cast<long>(n)) - ((long)1) - 1; i += 1)
                     {
                         // Last i elements are already in place
-                        for (size_t j = 0; j <= n - i - ((unsigned long)1) - 1; j += 1)
+                        for (long j = 0; j <= (static_cast<long>(n)) - i - ((long)1) - 1; j += 1)
                         {
                             if (vecs[iteration][j] > vecs[iteration][j + 1])
                             {

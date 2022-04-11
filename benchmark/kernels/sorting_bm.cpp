@@ -28,10 +28,10 @@ void sorting_kernel(size_t lower, size_t upper)
         }
 
         // Bubble sort
-        for (size_t i = 0; i < n - 1; i++)
+        for (long i = 0; i < static_cast<long>(n) - 1; i++)
         {
             // Last i elements are already in place
-            for (size_t j = 0; j < n - i - 1; j++)
+            for (long j = 0; j < static_cast<long>(n) - i - 1; j++)
             {
                 if (vecs[iteration][j] > vecs[iteration][j + 1])
                 {

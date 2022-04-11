@@ -55,14 +55,15 @@ kbm: prepare
 	@echo 
 .PHONY: kbm
 
-# apert_gen
-apert_gen: prepare
+# ag
+ag: prepare
 	$(MAKE) -C build apert_gen_all
+	$(MAKE) -C build test ARGS="-R '^apert_gen_.*_bm'"
 	@echo [=== ap_gen is successfully built ===]
 	@echo 
-.PHONY: ap_gen
+.PHONY: ag
 
 # all
 
-all: ap apert_gen ert kbm
+all: ap ag ert kbm
 .PHONY: all
