@@ -55,7 +55,14 @@ kbm: prepare
 	@echo 
 .PHONY: kbm
 
+# apert_gen
+apert_gen: prepare
+	$(MAKE) -C build apert_gen_all
+	@echo [=== ap_gen is successfully built ===]
+	@echo 
+.PHONY: ap_gen
+
 # all
 
-all: ap ert kbm
+all: ap apert_gen ert kbm
 .PHONY: all

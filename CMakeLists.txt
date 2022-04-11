@@ -13,3 +13,4 @@ else()
 endif()
 
 add_subdirectory(benchmark)
+add_subdirectory(apert_gen)

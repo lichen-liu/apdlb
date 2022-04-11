@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.7.0)
+project(apert_gen)
+
+add_compile_options(-Werror -Wall -Wno-missing-braces -O3 -std=c++17)
+
+find_package(Threads REQUIRED)
+link_libraries(Threads::Threads)
+
+# CMAKE_SOURCE_DIR
+include_directories(${CMAKE_SOURCE_DIR}/src/ert)
+include_directories(${CMAKE_SOURCE_DIR}/benchmark/kernels)
+
+file(GLOB testsourcefiles ./*.cpp)
+foreach(testsourcefile ${testsourcefiles})
+    get_filename_component(testname ${testsourcefile} NAME_WE)
+    add_executable(${testname} ${testsourcefile})
+    set(testnames ${testnames} ${testname})
+endforeach(testsourcefile ${APP_SOURCES})
+
+add_custom_target(apert_gen_all DEPENDS
+    ${testnames})
