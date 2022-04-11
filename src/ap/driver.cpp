@@ -18,7 +18,7 @@
  * Nov 3, 2008
  *
  * autoParallelization Project:
- * https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar#Alternative:_using_the_virtual_machine_image
+ * https://en.wikibooks.org/wiki/ROSE_Compiler_Framework/autoPar#Alternative
  *
  * autoPar.cc from rose/projects/autoParallelization
  * Originally by Chunhua Liao
