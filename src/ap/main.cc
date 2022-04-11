@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     AutoParallelization::auto_parallize(project, debug);
 
     // Generate code
-    const std::string gen_code_dir = "./ap_gen";
+    const std::string gen_code_dir = "./apert_gen";
     const std::vector<SgFile *> &ptr_list = project->get_fileList();
     for (SgFile *file : ptr_list)
     {
