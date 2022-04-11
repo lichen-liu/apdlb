@@ -1,13 +1,7 @@
 /*
- * A boiler plate starter file for using ROSE
- *
- * Input: sequential C/C++ code
- * Output: same C/C++ code
- *
  * ROSE API: http://rosecompiler.org/ROSE_HTML_Reference/
  * Tutorial: /u/course/ece1754/rose-0.11.63.0/projects/autoParallelization/
  * https://github.com/rose-compiler/rose/wiki/Tool-Developer-Tutorial
- *
  */
 
 #include <iostream>
