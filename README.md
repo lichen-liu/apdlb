@@ -38,7 +38,10 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 
 ### 2.3 `ap_exe` args
 ```
-<program_filename> [-j<num>] [-d]
+# -j: num threads for target program
+# -e: ert type enum idx
+# -d: enable debug
+<program_filename> [-j<num>] [-e<ert_type_idx>] [-d]
 ```
 
 ### 2.4 Use `ap_exe` to parallelize code
