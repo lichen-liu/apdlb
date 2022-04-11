@@ -9,7 +9,7 @@ See `src/ert`
 ## Auto Parallelization with Rose Compiler
 See `src/ap`
 
-### (Optional) Running Rose Compiler via Docker
+### (Optional) Set up Rose Compiler via Docker
 
 #### Build Docker image
 ```bash
@@ -23,9 +23,7 @@ docker build . --platform x86_64 --tag rose_build
 docker run -v "$(pwd)":/apert -w="/apert" -it rose_build bash
 ```
 
-### Running
-
-#### Build `ap`
+### Build `ap`
 ```bash
 # cd project_root
 
@@ -35,8 +33,8 @@ make ap
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
-#### Use `ap_exe` to parallelize code
-##### Running `ap_exe`
+### Use `ap_exe` to parallelize code
+#### Running `ap_exe`
 ```bash
 # cd project_root
 
@@ -46,29 +44,29 @@ make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp" 
 ```
 
-##### Running generated code
+#### Running generated code
 ```bash
 # cd project_root
 make agt
 ```
 
-#### Benchmark regression with `ap_exe`
+### Benchmark regression with `ap_exe`
 ```bash
 cd project_root
 ```
 
-##### Auto-parallelize
+#### Auto-parallelize
 ```bash
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/sorting_bm.cpp"
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/matvecp_bm.cpp"
 ```
 
-##### Rename generated code
+#### Rename generated code
 ```bash
 mv benchmark/apert_gen/rose_*.cpp benchmark/apert_gen/[new_name].cpp
 ```
 
-##### Run regression
+#### Run regression
 ```bash
 make agbm
 ```
