@@ -5,6 +5,9 @@ Auto-Parallelization Execution Run Time
 
 ## 1. Execution Runtime
 See `src/ert`
+```bash
+make ert
+```
 
 ## 2. Auto Parallelization with Rose Compiler
 See `src/ap`
