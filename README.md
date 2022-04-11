@@ -81,7 +81,7 @@ make agbm
 2. benchmarking kernels - kbm
     - Adapted to avoid external function calls, to bypass side effect analysis
         - This can be fixed by providing annot
-3. rose compiler auto parallelization
+3. rose compiler auto parallelization - analysis
     - http://rosecompiler.org/uploads/ROSE-UserManual.pdf, p161
     - Only support c-style source code
     - Adapted from autoPar (rose/projects/autoParallelization)
@@ -99,3 +99,6 @@ make agbm
             - firstprivate: needs to be captured by value
             - lastprivate: not allowed
             - reduction: not allowed
+4. rose compielr auto parallelization - code generation
+    - Text-based code generation
+    - Using lambda [=] to capture the iteration scope into an ert task
