@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(ap VERSION 0.1.0)
-include(CTest)
 
 if(DEFINED ENV{ROSE_PATH})
     set(ROSE_INSTALL_DIR $ENV{ROSE_PATH})

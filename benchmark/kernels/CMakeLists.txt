@@ -1,22 +1,16 @@
 cmake_minimum_required(VERSION 3.7.0)
 project(kernels)
+include(CTest)
 
 add_compile_options(-Werror -Wall -Wno-missing-braces -O3 -std=c++17)
 
-find_package(Threads REQUIRED)
-link_libraries(Threads::Threads)
+file(GLOB testsourcefiles ./*.cpp)
+foreach(testsourcefile ${testsourcefiles})
+    get_filename_component(testname ${testsourcefile} NAME_WE)
+    add_executable(${testname} ${testsourcefile})
+    add_test("kernels_${testname}" ${testname})
+    set(testnames ${testnames} ${testname})
+endforeach(testsourcefile ${APP_SOURCES})
 
-add_executable(collatz_conjecture_bm collatz_conjecture_bm.cpp)
-add_test(kernels_collatz_conjecture_bm collatz_conjecture_bm)
-
-add_executable(matvecp_bm matvecp_bm.cpp)
-add_test(kernels_matvecp_bm matvecp_bm)
-
-add_executable(sorting_bm sorting_bm.cpp)
-add_test(kernels_sorting_bm sorting_bm)
-
-# Add test executable here
-add_custom_target(kernels_bm DEPENDS
-    collatz_conjecture_bm
-    matvecp_bm
-    sorting_bm)
+add_custom_target(kernels_all DEPENDS
+    ${testnames})

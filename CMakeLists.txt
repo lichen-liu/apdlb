@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(apert)
-
 include(CTest)
 
 add_subdirectory(src/ert ert)

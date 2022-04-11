@@ -49,7 +49,7 @@ endif
 
 # kbm
 kbm: prepare
-	$(MAKE) -C build kernels_bm
+	$(MAKE) -C build kernels_all
 	$(MAKE) -C build test ARGS="-R '^kernels_.*_bm'"
 	@echo [=== kernels is successfully tested ===]
 	@echo 
@@ -59,7 +59,7 @@ kbm: prepare
 ag: prepare
 	$(MAKE) -C build apert_gen_all
 	$(MAKE) -C build test ARGS="-R '^apert_gen_.*_bm'"
-	@echo [=== ap_gen is successfully built ===]
+	@echo [=== apert_gen is successfully tested ===]
 	@echo 
 .PHONY: ag
 

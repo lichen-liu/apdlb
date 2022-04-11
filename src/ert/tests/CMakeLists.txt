@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.7.0)
 project(ert_tests)
+include(CTest)
 
 add_compile_options(-Werror -Wall -Wno-missing-braces -O3)
 set(CMAKE_CXX_STANDARD 17)
@@ -10,17 +11,13 @@ link_libraries(Threads::Threads)
 
 include_directories(..)
 
-add_executable(wspdr_pool_tests wspdr_pool_tests.cc)
-add_test(ert_wspdr_pool_tests wspdr_pool_tests)
+file(GLOB testsourcefiles ./*.cc)
+foreach(testsourcefile ${testsourcefiles})
+    get_filename_component(testname ${testsourcefile} NAME_WE)
+    add_executable(${testname} ${testsourcefile})
+    add_test("ert_${testname}" ${testname})
+    set(testnames ${testnames} ${testname})
+endforeach(testsourcefile ${APP_SOURCES})
 
-add_executable(suap_pool_tests suap_pool_tests.cc)
-add_test(ert_suap_pool_tests suap_pool_tests)
-
-add_executable(pool_perf_tests pool_perf_tests.cc)
-add_test(ert_pool_perf_tests pool_perf_tests)
-
-# Add test executable here
 add_custom_target(ert_tests DEPENDS
-    wspdr_pool_tests
-    suap_pool_tests
-    pool_perf_tests)
+    ${testnames})
