@@ -34,10 +34,12 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
 ### Use `ap_exe` to parallelize code
+```bash
+cd project_root
+```
+
 #### Running `ap_exe`
 ```bash
-# cd project_root
-
 # If ROSE_PATH env is set
 make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
 # Or set ROSE_PATH env by yourself
@@ -46,7 +48,6 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernel
 
 #### Running generated code
 ```bash
-# cd project_root
 make agt
 ```
 
