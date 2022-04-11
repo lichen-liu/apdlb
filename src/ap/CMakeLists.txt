@@ -27,7 +27,7 @@ file(GLOB_RECURSE ap_lib_SRC
     "*.cpp"
 )
 add_library(ap ${ap_lib_SRC})
-target_link_libraries(ap librose.so ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(ap librose.so stdc++fs ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 add_executable(ap_exe main.cc)
 target_link_libraries(ap_exe ap)

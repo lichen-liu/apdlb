@@ -1,6 +1,8 @@
 .ONESHELL: # Applies to every targets in the file!
 .SHELLFLAGS += -e
 
+CWD := $(abspath $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST))))))
+
 # Default target executed when no arguments are given to make.
 default_target: all
 .PHONY: default_target
@@ -34,8 +36,11 @@ ap: prepare
 	@echo 
 .PHONY: ap
 
+ifndef WDIR
+WDIR=.
+endif
 run_ap: ap
-	./build/ap/ap_exe ${ARGS}
+	cd ${WDIR}; $(CWD)/build/ap/ap_exe ${ARGS}
 .PHONY: run_ap
 else # ROSE Compiler does not exist
 ap: prepare
@@ -55,15 +60,23 @@ kbm: prepare
 	@echo 
 .PHONY: kbm
 
-# ag
-ag: prepare
+# agbm
+agbm: prepare
 	$(MAKE) -C build apert_gen_all
 	$(MAKE) -C build test ARGS="-R '^apert_gen_.*_bm'"
 	@echo [=== apert_gen is successfully tested ===]
 	@echo 
-.PHONY: ag
+.PHONY: agbm
+
+# agt for temporary testing
+agt: prepare
+	$(MAKE) -C build tmp_apert_gen_all
+	$(MAKE) -C build test ARGS="-R '^tmp_apert_gen_.*_bm'"
+	@echo [=== tmp_apert_gen is successfully tested ===]
+	@echo 
+.PHONY: agt
 
 # all
 
-all: ap ag ert kbm
+all: ap ert kbm agbm
 .PHONY: all
