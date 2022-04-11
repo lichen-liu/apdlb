@@ -12,6 +12,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src/ert)
 include_directories(${CMAKE_SOURCE_DIR}/benchmark/kernels)
 
 file(GLOB testsourcefiles ./*.cpp)
+file(GLOB exclude_testsourcefiles ./rose_*)
+list(REMOVE_ITEM testsourcefiles ${exclude_testsourcefiles})
 foreach(testsourcefile ${testsourcefiles})
     get_filename_component(testname ${testsourcefile} NAME_WE)
     add_executable(${testname} ${testsourcefile})
