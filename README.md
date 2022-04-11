@@ -61,7 +61,7 @@ make agt
 cd project_root
 ```
 
-#### Auto-parallelize
+#### Running `ap_exe`
 ```bash
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/sorting_bm.cpp"
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/matvecp_bm.cpp"
@@ -72,7 +72,7 @@ ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS=
 mv benchmark/apert_gen/rose_*.cpp benchmark/apert_gen/[new_name].cpp
 ```
 
-#### Run regression
+#### Running regression
 ```bash
 make agbm
 ```
