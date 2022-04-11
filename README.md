@@ -82,6 +82,7 @@ Target program
 1. Only c-style arrays are supported for parallelization
 2. Only for-loops are considered for parallelization
 3. Code block with function calls cannot be parallelized
+
 Generated Program
 1. Should be compiled with following configurations:
 ```cmakelists
