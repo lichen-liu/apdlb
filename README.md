@@ -3,27 +3,27 @@ Auto-Parallelization Execution Run Time
 
 [![main-ci-actions-badge](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml/badge.svg)](https://github.com/lichen-liu/apdlb/actions/workflows/main_ci.yml)
 
-## Execution Runtime
+## 1. Execution Runtime
 See `src/ert`
 
-## Auto Parallelization with Rose Compiler
+## 2. Auto Parallelization with Rose Compiler
 See `src/ap`
 
-### (Optional) Set up Rose Compiler via Docker
+### 2.1 (Optional) Set up Rose Compiler via Docker
 
-#### Build Docker image
+#### 2.1.1 Build Docker image
 ```bash
 cd rose_docker
 # Takes about 5 hours, or modify the make -j arg in Dockerfile line 67 to speed up
 docker build . --platform x86_64 --tag rose_build
 ```
-#### Enter Docker container
+#### 2.1.2 Enter Docker container
 ```bash
 # cd project_root
 docker run -v "$(pwd)":/apert -w="/apert" -it rose_build bash
 ```
 
-### Build `ap`
+### 2.2 Build `ap`
 ```bash
 # cd project_root
 
@@ -33,17 +33,17 @@ make ap
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
-### `ap_exe` args
+### 2.3 `ap_exe` args
 ```
 <program_filename> [-j<num>] [-d]
 ```
 
-### Use `ap_exe` to parallelize code
+### 2.4 Use `ap_exe` to parallelize code
 ```bash
 cd project_root
 ```
 
-#### Running `ap_exe`
+#### 2.4.1 Running `ap_exe`
 ```bash
 # If ROSE_PATH env is set
 make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
@@ -51,33 +51,55 @@ make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp" 
 ```
 
-#### Running generated code
+#### 2.4.2 Running generated code
 ```bash
 make agt
 ```
 
-### Benchmark regression with `ap_exe`
+### 2.5 Benchmark regression with `ap_exe`
 ```bash
 cd project_root
 ```
 
-#### Running `ap_exe`
+#### 2.5.1 Running `ap_exe`
 ```bash
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/sorting_bm.cpp"
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/matvecp_bm.cpp"
 ```
 
-#### Rename generated code
+#### 2.5.2 Rename generated code
 ```bash
 mv benchmark/apert_gen/rose_*.cpp benchmark/apert_gen/[new_name].cpp
 ```
 
-#### Running regression
+#### 2.5.3 Running regression
 ```bash
 make agbm
 ```
 
-## Notes
+### 2.6 Requirements for Target and Generated Program
+Target program
+1. Only c-style arrays are supported for parallelization
+2. Only for-loops are considered for parallelization
+3. Code block with function calls cannot be parallelized
+Generated Program
+1. Should be compiled with following configurations:
+```cmakelists
+add_compile_options([others] -std=c++17)
+find_package(Threads REQUIRED)
+link_libraries(Threads::Threads)
+```
+
+## 3. TODOs
+1. Use proper AST mechanism to insert ERT into target code
+    - Properly capture non-pointer-type arrays
+2. Fix and test the annotation mechanism for loop-analysis
+3. Automatically figure out which ERT to use depending on task workload types
+4. Proper handle of nested parallelizable regions
+   - Nested parallelizable function calls
+   - Nested parallelizable for loops
+
+## 4. Notes
 1. execution runtime - ert
     a. wspdr_worker, wspdr_pool
     b. suap_worker, suap_pool
