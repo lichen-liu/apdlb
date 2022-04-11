@@ -96,7 +96,7 @@ make agbm
             - shared: readonly, can be caputed by ref or value
             - private: equivalent to firstprivate (does not need to be captured unless declared outside, can be reduced into firstprivate by init the variable)
                 - Fix bug when autoPar incorrectly captures nested normalized loop variables as private
-            - firstprivate: needs to be captured by value
+            - firstprivate: need to be captured by value
             - lastprivate: not allowed
             - reduction: not allowed
 4. rose compielr auto parallelization - code generation
