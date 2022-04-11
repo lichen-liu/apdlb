@@ -247,7 +247,7 @@ namespace AutoParallelization
                         {
                             std::cout << "-----------------------------------------------------" << std::endl;
                         }
-                        sgfile_ert_inserter.insertERTIntoFunction(defn);
+                        sgfile_ert_inserter.insertERTIntoFunction(defn, 8);
                         for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
                         {
                             if (AP::Config::get().enable_debug)
