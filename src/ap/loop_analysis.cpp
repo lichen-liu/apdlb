@@ -1406,22 +1406,6 @@ namespace AutoParallelization
         }
 
         // comp.DetachDepGraph();// TODO release resources here
-        // X.  Attach OmpAttribute to the loop node if it is parallelizable
-        if (isParallelizable)
-        {
-            //= OmpSupport::buildOmpAttribute(OmpSupport::e_parallel_for,sg_node);
-            omp_attribute->setOmpDirectiveType(OmpSupport::e_parallel_for);
-            if (AP::Config::get().enable_debug)
-            {
-                std::cout << "attaching auto generated OMP att to sg_node " << sg_node->class_name();
-                std::cout << " at line " << isSgLocatedNode(sg_node)->get_file_info()->get_line() << std::endl;
-            }
-            OmpSupport::addOmpAttribute(omp_attribute.get(), sg_node);
-
-            // 6. Generate and insert #pragma omp parallel for
-            // Liao, 2/12/2010
-            OmpSupport::generatePragmaFromOmpAttribute(sg_node);
-        }
 
         return isParallelizable;
     }
