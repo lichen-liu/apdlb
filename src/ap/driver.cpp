@@ -237,24 +237,27 @@ namespace AutoParallelization
                         }
                     } // end for loops
 
-                    // Only parallelizable loops that are not nested inside any of other parallelizable loops are parallelized
-                    std::vector<SgForStatement *> parallelizable_loop_final_candidates = AP::decideFinalLoopCandidates(parallelizable_loop_candidates);
-
-                    // Parallelize loops
-                    if (!parallelizable_loop_final_candidates.empty())
+                    if (!parallelizable_loop_candidates.empty())
                     {
-                        if (AP::Config::get().enable_debug)
-                        {
-                            std::cout << "-----------------------------------------------------" << std::endl;
-                        }
-                        sgfile_ert_inserter.insertERTIntoFunction(defn, target_nthreads);
-                        for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
+                        // Only parallelizable loops that are not nested inside any of other parallelizable loops are parallelized
+                        std::vector<SgForStatement *> parallelizable_loop_final_candidates = AP::decideFinalLoopCandidates(parallelizable_loop_candidates);
+
+                        // Parallelize loops
+                        if (!parallelizable_loop_final_candidates.empty())
                         {
                             if (AP::Config::get().enable_debug)
                             {
-                                std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
+                                std::cout << "-----------------------------------------------------" << std::endl;
                             }
-                            sgfile_ert_inserter.insertERTIntoForLoop(for_stmt);
+                            sgfile_ert_inserter.insertERTIntoFunction(defn, target_nthreads);
+                            for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
+                            {
+                                if (AP::Config::get().enable_debug)
+                                {
+                                    std::cout << "Automatically parallelized a loop at line:" << for_stmt->get_file_info()->get_line() << std::endl;
+                                }
+                                sgfile_ert_inserter.insertERTIntoForLoop(for_stmt);
+                            }
                         }
                     }
                 } // end for-loop for declarations
