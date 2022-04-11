@@ -3,7 +3,7 @@
 
 void sorting_kernel(size_t lower, size_t upper)
 {
-    ERT::WSPDR_POOL __apert_ert_pool(4);
+    ERT::WSPDR_POOL __apert_ert_pool(2);
     __apert_ert_pool.start();
     {
         const size_t scale = 50;

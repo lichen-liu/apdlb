@@ -117,7 +117,7 @@ namespace
 
 namespace AutoParallelization
 {
-    void auto_parallize(SgProject *project, bool enable_debug)
+    void auto_parallize(SgProject *project, int target_nthreads, bool enable_debug)
     {
         ROSE_ASSERT(project != nullptr);
 
@@ -247,7 +247,7 @@ namespace AutoParallelization
                         {
                             std::cout << "-----------------------------------------------------" << std::endl;
                         }
-                        sgfile_ert_inserter.insertERTIntoFunction(defn, 8);
+                        sgfile_ert_inserter.insertERTIntoFunction(defn, target_nthreads);
                         for (SgForStatement *for_stmt : parallelizable_loop_final_candidates)
                         {
                             if (AP::Config::get().enable_debug)

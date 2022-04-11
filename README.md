@@ -33,6 +33,11 @@ make ap
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
+### `ap_exe` args
+```
+<program_filename> [-j<num>] [-d]
+```
+
 ### Use `ap_exe` to parallelize code
 ```bash
 cd project_root
