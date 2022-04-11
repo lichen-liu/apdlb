@@ -76,13 +76,28 @@ namespace AP
         // }
     }
 
-    void SourceFileERTInserter::insertERTIntoFunction(SgFunctionDefinition *defn)
+    void SourceFileERTInserter::insertERTIntoFunction(SgFunctionDefinition *defn, int num_threads)
     {
+        std::string num_threads_str;
+        if (num_threads == -1)
+        {
+            num_threads_str = "std::thread::hardware_concurrency()";
+            this->should_include_thread_header_ = true;
+        }
+        else
+        {
+            num_threads_str = std::to_string(num_threads);
+        }
+
         SgBasicBlock *body = defn->get_body();
         // Declare and initialize the pool
         SageInterface::addTextForUnparser(body, "{\n", AstUnparseAttribute::RelativePositionType::e_before);
-        SageInterface::addTextForUnparser(body, this->ert_pool_type_ + " " + this->ert_pool_name_ + "(4);\n", AstUnparseAttribute::RelativePositionType::e_before);
-        SageInterface::addTextForUnparser(body, this->ert_pool_name_ + ".start();\n", AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body,
+                                          this->ert_pool_type_ + " " + this->ert_pool_name_ + "(" + num_threads_str + ");\n",
+                                          AstUnparseAttribute::RelativePositionType::e_before);
+        SageInterface::addTextForUnparser(body,
+                                          this->ert_pool_name_ + ".start();\n",
+                                          AstUnparseAttribute::RelativePositionType::e_before);
         SageInterface::addTextForUnparser(body, "\n}", AstUnparseAttribute::RelativePositionType::e_after);
 
         this->is_ert_used_ = true;
@@ -94,6 +109,10 @@ namespace AP
 
     void SourceFileERTInserter::insertERTHeaderIntoSourceFile()
     {
-        SageInterface::insertHeader(this->sfile_, this->ert_pool_type_include_, false, true);
+        SageInterface::insertHeader(this->sfile_, this->ert_pool_type_include_header_, false, true);
+        if (this->should_include_thread_header_)
+        {
+            SageInterface::insertHeader(this->sfile_, "thread", true, true);
+        }
     }
 }
