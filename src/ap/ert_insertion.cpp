@@ -41,6 +41,35 @@ namespace AP
         return final_candidates;
     }
 
+    SourceFileERTInserter::SourceFileERTInserter(SgSourceFile *sfile, ERT_TYPE ert_type) : sfile_(sfile)
+    {
+        switch (ert_type)
+        {
+        case ERT_TYPE::WSPDR:
+        {
+            this->ert_pool_type_include_header_ = "wspdr_pool.hpp";
+            this->ert_pool_type_ = "ERT::WSPDR_POOL";
+            break;
+        }
+        case ERT_TYPE::SUAP:
+        {
+            this->ert_pool_type_include_header_ = "suap_pool.hpp";
+            this->ert_pool_type_ = "ERT::SUAP_POOL";
+            break;
+        }
+        case ERT_TYPE::SERIAL:
+        {
+            this->ert_pool_type_include_header_ = "serial_pool.hpp";
+            this->ert_pool_type_ = "ERT::SERIAL_POOL";
+            break;
+        }
+        default:
+        {
+            ROSE_ASSERT(false && "Unsupproted ert_type");
+        }
+        }
+    }
+
     SourceFileERTInserter::~SourceFileERTInserter()
     {
         if (this->is_ert_used())

@@ -14,7 +14,6 @@
 #include <filesystem>
 #include <vector>
 
-#include "utils.h"
 #include "driver.h"
 #include "rose.h"
 
@@ -27,6 +26,7 @@ int main(int argc, char *argv[])
     std::vector<std::string> processed_args;
     int target_nthreads = 8;
     bool enable_debug = false;
+    AP::ERT_TYPE ert_type = AP::ERT_TYPE::DEFAULT;
 
     // Parse args
     for (const auto &arg : args)
@@ -35,6 +35,12 @@ int main(int argc, char *argv[])
         {
             std::string target_nthreads_str = arg.substr(pos + 2);
             target_nthreads = std::stoi(target_nthreads_str);
+        }
+        else if (auto pos = arg.find("-e"); pos != std::string::npos)
+        {
+            std::string ert_type_str = arg.substr(pos + 2);
+            int ert_type_int = std::stoi(ert_type_str);
+            ert_type = static_cast<AP::ERT_TYPE>(ert_type_int);
         }
         else if (arg == "-d")
         {
@@ -54,13 +60,15 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     std::cout << "Args:" << std::endl;
     std::cout << "target_nthreads=" << target_nthreads << std::endl;
+    std::cout << "ert_type=" << static_cast<int>(ert_type) << std::endl;
+    std::cout << "enable_debug=" << enable_debug << std::endl;
     std::cout << std::endl;
 
     // Build a project
     SgProject *project = frontend(processed_args);
 
     // Auto parallelization
-    AutoParallelization::auto_parallize(project, target_nthreads, enable_debug);
+    AutoParallelization::auto_parallize(project, target_nthreads, ert_type, enable_debug);
 
     // Generate code
     const std::string gen_code_dir = std::filesystem::current_path() / "apert_gen";

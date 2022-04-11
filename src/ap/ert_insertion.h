@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rose.h"
+#include "types.hpp"
 
 #include <string>
 #include <vector>
@@ -12,7 +13,7 @@ namespace AP
     class SourceFileERTInserter
     {
     public:
-        explicit SourceFileERTInserter(SgSourceFile *sfile) : sfile_(sfile) {}
+        SourceFileERTInserter(SgSourceFile *sfile, ERT_TYPE ert_type = ERT_TYPE::DEFAULT);
         ~SourceFileERTInserter();
 
         void insertERTIntoForLoop(SgForStatement *for_stmt);

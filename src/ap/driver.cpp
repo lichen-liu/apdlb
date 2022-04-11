@@ -117,7 +117,7 @@ namespace
 
 namespace AutoParallelization
 {
-    void auto_parallize(SgProject *project, int target_nthreads, bool enable_debug)
+    void auto_parallize(SgProject *project, int target_nthreads, AP::ERT_TYPE ert_type, bool enable_debug)
     {
         ROSE_ASSERT(project != nullptr);
 
@@ -146,7 +146,7 @@ namespace AutoParallelization
 
                 std::vector<SgFunctionDefinition *> defList = SageInterface::querySubTree<SgFunctionDefinition>(sfile, V_SgFunctionDefinition);
 
-                AP::SourceFileERTInserter sgfile_ert_inserter(sfile);
+                AP::SourceFileERTInserter sgfile_ert_inserter(sfile, ert_type);
 
                 // For each function body in the scope
                 for (SgFunctionDefinition *defn : defList)
