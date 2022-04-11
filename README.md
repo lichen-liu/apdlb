@@ -9,34 +9,68 @@ See `src/ert`
 ## Auto Parallelization with Rose Compiler
 See `src/ap`
 
-### (Optional) Rose Compiler Installation via Docker
+### (Optional) Running Rose Compiler via Docker
+
+#### Build Docker image
 ```bash
 cd rose_docker
 # Takes about 5 hours, or modify the make -j arg in Dockerfile line 67 to speed up
 docker build . --platform x86_64 --tag rose_build
 ```
-
-### Running
-(Optional) Enter Docker container
+#### Enter Docker container
 ```bash
 # cd project_root
 docker run -v "$(pwd)":/apert -w="/apert" -it rose_build bash
 ```
 
-Build `ap`
+### Running
+
+#### Build `ap`
 ```bash
+# cd project_root
+
 # If ROSE_PATH env is set
 make ap
 # Or set ROSE_PATH env by yourself
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make ap
 ```
 
-Run `ap_exe`
+#### Use `ap_exe` to parallelize code
+##### Running `ap_exe`
 ```bash
+# cd project_root
+
 # If ROSE_PATH env is set
 make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp"
 # Or set ROSE_PATH env by yourself
 ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap ARGS="benchmark/kernels/matvecp_bm.cpp" 
+```
+
+##### Running generated code
+```bash
+# cd project_root
+make agt
+```
+
+#### Benchmark regression with `ap_exe`
+```bash
+cd project_root
+```
+
+##### Auto-parallelize
+```bash
+ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/sorting_bm.cpp"
+ROSE_PATH=/u/course/ece1754/rose/ROSE_INSTALL make run_ap WDIR="benchmark" ARGS="kernels/matvecp_bm.cpp"
+```
+
+##### Rename generated code
+```bash
+mv benchmark/apert_gen/rose_*.cpp benchmark/apert_gen/[new_name].cpp
+```
+
+##### Run regression
+```bash
+make agbm
 ```
 
 ## Notes
