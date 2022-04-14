@@ -1,41 +1,51 @@
 #include "kbm_utils.hpp"
 
 #define EPISLON 0.001
+#define SQRT_NUM_ITERATION 20
 
 void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *vel)
 {
     // Allocate temporary buffers
-    float *in_acc_buf_holder = new float[3 * n_body];
-    float *out_pos_buf_holder = new float[3 * n_body];
-    float *out_vel_buf_holder = new float[3 * n_body];
-    float *out_acc_buf_holder = new float[3 * n_body];
-    float *vel_tmp_buf_holder = new float[3 * n_body];
+    float *acc_x_buf = new float[n_body * 2];
+    float *acc_y_buf = new float[n_body * 2];
+    float *acc_z_buf = new float[n_body * 2];
 
-    // Compute space buffer pointers
-    float *in_pos = pos;
-    float *in_vel = vel;
-    float *in_acc = in_acc_buf_holder;
-    float *out_pos = out_pos_buf_holder;
-    float *out_vel = out_vel_buf_holder;
-    float *out_acc = out_acc_buf_holder;
-    float *vel_tmp = vel_tmp_buf_holder;
+    float *pos_x_buf = new float[n_body * 2];
+    float *pos_y_buf = new float[n_body * 2];
+    float *pos_z_buf = new float[n_body * 2];
 
+    float *vel_x_buf = new float[n_body * 2];
+    float *vel_y_buf = new float[n_body * 2];
+    float *vel_z_buf = new float[n_body * 2];
+
+    float *vel_tmp_x_buf = new float[n_body];
+    float *vel_tmp_y_buf = new float[n_body];
+    float *vel_tmp_z_buf = new float[n_body];
+
+    // Step 0: Prepare buff
+    for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
+    {
+        pos_x_buf[i_target_body] = pos[i_target_body + i_target_body + i_target_body];
+        pos_y_buf[i_target_body] = pos[i_target_body + i_target_body + i_target_body + 1];
+        pos_z_buf[i_target_body] = pos[i_target_body + i_target_body + i_target_body + 2];
+        vel_x_buf[i_target_body] = vel[i_target_body + i_target_body + i_target_body];
+        vel_y_buf[i_target_body] = vel[i_target_body + i_target_body + i_target_body + 1];
+        vel_z_buf[i_target_body] = vel[i_target_body + i_target_body + i_target_body + 2];
+    }
     // Step 1: Prepare acceleration for ic
     for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
     {
-        const int i_target_body_index = i_target_body * 3;
-        in_acc[i_target_body_index] = 0;
-        in_acc[i_target_body_index + 1] = 0;
-        in_acc[i_target_body_index + 2] = 0;
+        acc_x_buf[i_target_body] = 0;
+        acc_y_buf[i_target_body] = 0;
+        acc_z_buf[i_target_body] = 0;
+
         for (int j_source_body = 0; j_source_body < n_body; j_source_body++)
         {
             if (i_target_body != j_source_body)
             {
-                const int j_source_body_index = j_source_body * 3;
-
-                const float x_displacement = in_pos[j_source_body_index] - in_pos[i_target_body_index];
-                const float y_displacement = in_pos[j_source_body_index + 1] - in_pos[i_target_body_index + 1];
-                const float z_displacement = in_pos[j_source_body_index + 2] - in_pos[i_target_body_index + 2];
+                const float x_displacement = pos_x_buf[j_source_body] - pos_x_buf[i_target_body];
+                const float y_displacement = pos_y_buf[j_source_body] - pos_y_buf[i_target_body];
+                const float z_displacement = pos_z_buf[j_source_body] - pos_z_buf[i_target_body];
 
                 const float denom_base =
                     x_displacement * x_displacement +
@@ -46,54 +56,71 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
                 float inverse_sqrt_denom_base = 0;
                 {
                     float z = 1;
-                    for (int i = 0; i < 10; i++)
+                    for (int i = 0; i < SQRT_NUM_ITERATION; i++)
                     {
                         z -= (z * z - denom_base) / (2 * z);
                     }
                     inverse_sqrt_denom_base = 1 / z;
                 }
-                in_acc[i_target_body_index] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
-                in_acc[i_target_body_index + 1] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
-                in_acc[i_target_body_index + 2] += mass[j_source_body] * z_displacement / denom_base * inverse_sqrt_denom_base;
+                acc_x_buf[i_target_body] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
+                acc_y_buf[i_target_body] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
+                acc_z_buf[i_target_body] += mass[j_source_body] * z_displacement / denom_base * inverse_sqrt_denom_base;
             }
         }
     }
     // Core iteration loop
     for (int i_iter = 0; i_iter < n_iter; i_iter++)
     {
+        const int input_buf_offset = (i_iter % 2) * n_body;
+        const int output_buf_offset = (1 - i_iter % 2) * n_body;
+
         for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
         {
-            const int i_target_body_index = i_target_body * 3;
             // Step 3: Compute temp velocity
-            vel_tmp[i_target_body_index] = in_vel[i_target_body_index] + 0.5 * in_acc[i_target_body_index] * dt;
-            vel_tmp[i_target_body_index + 1] = in_vel[i_target_body_index + 1] + 0.5 * in_acc[i_target_body_index + 1] * dt;
-            vel_tmp[i_target_body_index + 2] = in_vel[i_target_body_index + 2] + 0.5 * in_acc[i_target_body_index + 2] * dt;
+            vel_tmp_x_buf[i_target_body] =
+                vel_x_buf[input_buf_offset + i_target_body] +
+                0.5 * acc_x_buf[input_buf_offset + i_target_body] * dt;
+            vel_tmp_y_buf[i_target_body] =
+                vel_y_buf[input_buf_offset + i_target_body] +
+                0.5 * acc_y_buf[input_buf_offset + i_target_body] * dt;
+            vel_tmp_z_buf[i_target_body] =
+                vel_z_buf[input_buf_offset + i_target_body] +
+                0.5 * acc_z_buf[input_buf_offset + i_target_body] * dt;
 
             // Step 4: Update position
-            out_pos[i_target_body_index] =
-                in_pos[i_target_body_index] + in_vel[i_target_body_index] * dt + 0.5 * in_acc[i_target_body_index] * dt * dt;
-            out_pos[i_target_body_index + 1] =
-                in_pos[i_target_body_index + 1] + in_vel[i_target_body_index + 1] * dt + 0.5 * in_acc[i_target_body_index + 1] * dt * dt;
-            out_pos[i_target_body_index + 2] =
-                in_pos[i_target_body_index + 2] + in_vel[i_target_body_index + 2] * dt + 0.5 * in_acc[i_target_body_index + 2] * dt * dt;
+            pos_x_buf[output_buf_offset + i_target_body] =
+                pos_x_buf[input_buf_offset + i_target_body] +
+                vel_x_buf[input_buf_offset + i_target_body] * dt +
+                0.5 * acc_x_buf[input_buf_offset + i_target_body] * dt * dt;
+            pos_y_buf[output_buf_offset + i_target_body] =
+                pos_y_buf[input_buf_offset + i_target_body] +
+                vel_y_buf[input_buf_offset + i_target_body] * dt +
+                0.5 * acc_y_buf[input_buf_offset + i_target_body] * dt * dt;
+            pos_z_buf[output_buf_offset + i_target_body] =
+                pos_z_buf[input_buf_offset + i_target_body] +
+                vel_z_buf[input_buf_offset + i_target_body] * dt +
+                0.5 * acc_z_buf[input_buf_offset + i_target_body] * dt * dt;
 
             for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
             {
-                const int i_target_body_index = i_target_body * 3;
-                out_acc[i_target_body_index] = 0;
-                out_acc[i_target_body_index + 1] = 0;
-                out_acc[i_target_body_index + 2] = 0;
+                acc_x_buf[output_buf_offset + i_target_body] = 0;
+                acc_y_buf[output_buf_offset + i_target_body] = 0;
+                acc_z_buf[output_buf_offset + i_target_body] = 0;
 
                 // Step 5: Compute acceleration
                 for (int j_source_body = 0; j_source_body < n_body; j_source_body++)
                 {
                     if (i_target_body != j_source_body)
                     {
-                        const int j_source_body_index = j_source_body * 3;
-
-                        const float x_displacement = out_pos[j_source_body_index] - out_pos[i_target_body_index];
-                        const float y_displacement = out_pos[j_source_body_index + 1] - out_pos[i_target_body_index + 1];
-                        const float z_displacement = out_pos[j_source_body_index + 2] - out_pos[i_target_body_index + 2];
+                        const float x_displacement =
+                            pos_x_buf[output_buf_offset + j_source_body] -
+                            pos_x_buf[output_buf_offset + i_target_body];
+                        const float y_displacement =
+                            pos_y_buf[output_buf_offset + j_source_body] -
+                            pos_y_buf[output_buf_offset + i_target_body];
+                        const float z_displacement =
+                            pos_z_buf[output_buf_offset + j_source_body] -
+                            pos_z_buf[output_buf_offset + i_target_body];
 
                         const float denom_base =
                             x_displacement * x_displacement +
@@ -104,60 +131,68 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
                         float inverse_sqrt_denom_base = 0;
                         {
                             float z = 1;
-                            for (int i = 0; i < 10; i++)
+                            for (int i = 0; i < SQRT_NUM_ITERATION; i++)
                             {
                                 z -= (z * z - denom_base) / (2 * z);
                             }
                             inverse_sqrt_denom_base = 1 / z;
                         }
-                        out_acc[i_target_body_index] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
-                        out_acc[i_target_body_index + 1] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
-                        out_acc[i_target_body_index + 2] += mass[j_source_body] * z_displacement / denom_base * inverse_sqrt_denom_base;
+                        acc_x_buf[output_buf_offset + i_target_body] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
+                        acc_y_buf[output_buf_offset + i_target_body] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
+                        acc_z_buf[output_buf_offset + i_target_body] += mass[j_source_body] * z_displacement / denom_base * inverse_sqrt_denom_base;
                     }
                 }
 
                 // Step 6: Update velocity
-                out_vel[i_target_body_index] = vel_tmp[i_target_body_index] + 0.5 * out_acc[i_target_body_index] * dt;
-                out_vel[i_target_body_index + 1] = vel_tmp[i_target_body_index + 1] + 0.5 * out_acc[i_target_body_index + 1] * dt;
-                out_vel[i_target_body_index + 2] = vel_tmp[i_target_body_index + 2] + 0.5 * out_acc[i_target_body_index + 2] * dt;
+                vel_x_buf[output_buf_offset + i_target_body] =
+                    vel_tmp_x_buf[i_target_body] +
+                    0.5 * acc_x_buf[output_buf_offset + i_target_body] * dt;
+
+                vel_y_buf[output_buf_offset + i_target_body] =
+                    vel_tmp_y_buf[i_target_body] +
+                    0.5 * acc_y_buf[output_buf_offset + i_target_body] * dt;
+
+                vel_z_buf[output_buf_offset + i_target_body] =
+                    vel_tmp_z_buf[i_target_body] +
+                    0.5 * acc_z_buf[output_buf_offset + i_target_body] * dt;
             }
         }
-        // Prepare for next iteration
-        float *tmp_pos = in_pos;
-        float *tmp_vel = in_vel;
-        float *tmp_acc = in_acc;
-        in_pos = out_pos;
-        in_vel = out_vel;
-        in_acc = out_acc;
-        out_pos = tmp_pos;
-        out_vel = tmp_vel;
-        out_acc = tmp_acc;
     }
-    if (in_pos != pos && in_vel != vel)
     {
-        // Copy in_pos to pos, in_vel to vel
-        for (int i_target = 0; i_target < n_body; i_target++)
+        // Set result
+        const int input_buf_offset = (n_iter % 2) * n_body;
+        for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
         {
-            const int i_target_index = i_target * 3;
-            pos[i_target_index] = in_pos[i_target_index];
-            pos[i_target_index + 1] = in_pos[i_target_index + 1];
-            pos[i_target_index + 2] = in_pos[i_target_index + 2];
-            vel[i_target_index] = in_vel[i_target_index];
-            vel[i_target_index + 1] = in_vel[i_target_index + 1];
-            vel[i_target_index + 2] = in_vel[i_target_index + 2];
+            pos[i_target_body + i_target_body + i_target_body] = pos_x_buf[input_buf_offset + i_target_body];
+            pos[i_target_body + i_target_body + i_target_body + 1] = pos_y_buf[input_buf_offset + i_target_body];
+            pos[i_target_body + i_target_body + i_target_body + 2] = pos_z_buf[input_buf_offset + i_target_body];
+            vel[i_target_body + i_target_body + i_target_body] = vel_x_buf[input_buf_offset + i_target_body];
+            vel[i_target_body + i_target_body + i_target_body + 1] = vel_y_buf[input_buf_offset + i_target_body];
+            vel[i_target_body + i_target_body + i_target_body + 2] = vel_z_buf[input_buf_offset + i_target_body];
         }
     }
+
     // Release temporary buffers
-    delete[] vel_tmp_buf_holder;
-    delete[] out_acc_buf_holder;
-    delete[] out_vel_buf_holder;
-    delete[] out_pos_buf_holder;
-    delete[] in_acc_buf_holder;
+    delete[] acc_x_buf;
+    delete[] acc_y_buf;
+    delete[] acc_z_buf;
+
+    delete[] pos_x_buf;
+    delete[] pos_y_buf;
+    delete[] pos_z_buf;
+
+    delete[] vel_x_buf;
+    delete[] vel_y_buf;
+    delete[] vel_z_buf;
+
+    delete[] vel_tmp_x_buf;
+    delete[] vel_tmp_y_buf;
+    delete[] vel_tmp_z_buf;
 }
 
 int main(int argc, char *argv[])
 {
-    const int n_body = 200;
+    const int n_body = 500;
     const int n_iter = 2;
     const float dt = 0.01;
     float *mass = new float[n_body];
