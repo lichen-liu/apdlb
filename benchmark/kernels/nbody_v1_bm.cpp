@@ -192,7 +192,7 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
 
 int main(int argc, char *argv[])
 {
-    const int n_body = 500;
+    const int n_body = 250;
     const int n_iter = 2;
     const float dt = 0.01;
     float *mass = new float[n_body];
