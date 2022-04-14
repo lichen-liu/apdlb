@@ -7,18 +7,13 @@ link_libraries(core)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(xyz_tests xyz_tests.cc)
-add_test(core_tests_xyz xyz_tests)
+file(GLOB testsourcefiles ./*.cc)
+foreach(testsourcefile ${testsourcefiles})
+    get_filename_component(testname ${testsourcefile} NAME_WE)
+    add_executable(${testname} ${testsourcefile})
+    add_test("core_tests_${testname}" ${testname})
+    set(testnames ${testnames} ${testname})
+endforeach(testsourcefile ${APP_SOURCES})
 
-add_executable(serde_tests serde_tests.cc)
-add_test(core_tests_serde serde_tests)
-
-add_executable(physics_tests physics_tests.cc)
-add_test(core_tests_physics physics_tests)
-
-add_executable(utility_tests utility_tests.cc)
-add_test(core_tests_utility utility_tests)
-
-# Add test executable here
-add_custom_target(core_tests)
-add_dependencies(core_tests xyz_tests serde_tests physics_tests utility_tests)
+add_custom_target(core_tests DEPENDS
+    ${testnames})
