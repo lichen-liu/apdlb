@@ -121,18 +121,12 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
 
                 float inverse_sqrt_denom_base = 0;
                 {
-                    long i;
-                    float x2, y;
-                    const float threehalfs = 1.5F;
-                    const float number = denom_base;
-
-                    x2 = number * 0.5F;
-                    y = number;
-                    i = *(long *)&y;          // evil floating point bit level hacking
-                    i = 0x5f3759df - (i / 2); // what the fuck?
-                    y = *(float *)&i;
-                    y = y * (threehalfs - (x2 * y * y)); // 1st iteration
-                    inverse_sqrt_denom_base = y;
+                    float z = 1;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        z -= (z * z - denom_base) / (2 * z);
+                    }
+                    inverse_sqrt_denom_base = 1 / z;
                 }
                 in_acc[i_target_body_index] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
                 in_acc[i_target_body_index + 1] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
@@ -185,18 +179,12 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
 
                         float inverse_sqrt_denom_base = 0;
                         {
-                            long i;
-                            float x2, y;
-                            const float threehalfs = 1.5F;
-                            const float number = denom_base;
-
-                            x2 = number * 0.5F;
-                            y = number;
-                            i = *(long *)&y;          // evil floating point bit level hacking
-                            i = 0x5f3759df - (i / 2); // what the fuck?
-                            y = *(float *)&i;
-                            y = y * (threehalfs - (x2 * y * y)); // 1st iteration
-                            inverse_sqrt_denom_base = y;
+                            float z = 1;
+                            for (int i = 0; i < 10; i++)
+                            {
+                                z -= (z * z - denom_base) / (2 * z);
+                            }
+                            inverse_sqrt_denom_base = 1 / z;
                         }
                         out_acc[i_target_body_index] += mass[j_source_body] * x_displacement / denom_base * inverse_sqrt_denom_base;
                         out_acc[i_target_body_index + 1] += mass[j_source_body] * y_displacement / denom_base * inverse_sqrt_denom_base;
@@ -209,31 +197,30 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
                 out_vel[i_target_body_index + 1] = vel_tmp[i_target_body_index + 1] + 0.5 * out_acc[i_target_body_index + 1] * dt;
                 out_vel[i_target_body_index + 2] = vel_tmp[i_target_body_index + 2] + 0.5 * out_acc[i_target_body_index + 2] * dt;
             }
-            // Prepare for next iteration
-            float *tmp_pos = in_pos;
-            float *tmp_vel = in_vel;
-            float *tmp_acc = in_acc;
-            in_pos = out_pos;
-            in_vel = out_vel;
-            in_acc = out_acc;
-            out_pos = tmp_pos;
-            out_vel = tmp_vel;
-            out_acc = tmp_acc;
         }
-
-        if (in_pos != pos && in_vel != vel)
+        // Prepare for next iteration
+        float *tmp_pos = in_pos;
+        float *tmp_vel = in_vel;
+        float *tmp_acc = in_acc;
+        in_pos = out_pos;
+        in_vel = out_vel;
+        in_acc = out_acc;
+        out_pos = tmp_pos;
+        out_vel = tmp_vel;
+        out_acc = tmp_acc;
+    }
+    if (in_pos != pos && in_vel != vel)
+    {
+        // Copy in_pos to pos, in_vel to vel
+        for (int i_target = 0; i_target < n_body; i_target++)
         {
-            // Copy in_pos to pos, in_vel to vel
-            for (int i_target = 0; i_target < n_body; i_target++)
-            {
-                const int i_target_index = i_target * 3;
-                pos[i_target_index] = in_pos[i_target_index];
-                pos[i_target_index + 1] = in_pos[i_target_index + 1];
-                pos[i_target_index + 2] = in_pos[i_target_index + 2];
-                vel[i_target_index] = in_vel[i_target_index];
-                vel[i_target_index + 1] = in_vel[i_target_index + 1];
-                vel[i_target_index + 2] = in_vel[i_target_index + 2];
-            }
+            const int i_target_index = i_target * 3;
+            pos[i_target_index] = in_pos[i_target_index];
+            pos[i_target_index + 1] = in_pos[i_target_index + 1];
+            pos[i_target_index + 2] = in_pos[i_target_index + 2];
+            vel[i_target_index] = in_vel[i_target_index];
+            vel[i_target_index + 1] = in_vel[i_target_index + 1];
+            vel[i_target_index + 2] = in_vel[i_target_index + 2];
         }
     }
     // Release temporary buffers
@@ -246,7 +233,7 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
 
 int main(int argc, char *argv[])
 {
-    const int n_body = 100;
+    const int n_body = 200;
     const int n_iter = 2;
     const float dt = 0.01;
     float *mass = new float[n_body];
