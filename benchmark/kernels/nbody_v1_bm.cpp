@@ -22,7 +22,7 @@ void compute(int n_body, int n_iter, float dt, float *mass, float *pos, float *v
     float *vel_tmp_y_buf = new float[n_body];
     float *vel_tmp_z_buf = new float[n_body];
 
-    // Step 0: Prepare buff
+    // Step 0: Prepare buffers
     for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
     {
         pos_x_buf[i_target_body] = pos[i_target_body + i_target_body + i_target_body];
