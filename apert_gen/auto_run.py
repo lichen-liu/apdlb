@@ -18,7 +18,7 @@ def get_project_root_dir():
     return pathlib.Path(get_script_dir()).parent.resolve()
 
 def get_log_file_path():
-    return path.join(get_script_dir(), 'auto_run_logs.txt')
+    return path.join(get_script_dir(), 'auto_run_logs.log')
 
 def prepare_wdir():
     current_dir = get_script_dir()
@@ -65,7 +65,9 @@ def main():
     prepare_wdir()
 
     generated_filenames = list()
-    generated_filenames.append(run_ap_exe('benchmark/kernels/matvecp_bm.cpp', 6, 0, True))
+    e_j_schedule = [(0, 1), (0, 2), (0, 4), (0, 8), (1, 1), (1, 2), (1, 4), (1,8), (2, 1)]
+    for e, j in e_j_schedule:
+        generated_filenames.append(run_ap_exe('benchmark/kernels/matvecp_bm.cpp', j, e, True))
     
     print('Info:', 'Done running', len(generated_filenames), 'ap_exe run!')
     print('Info:', '  ', 'Generated files in', get_script_dir())
