@@ -4,6 +4,7 @@ import os
 from os import path
 import pathlib
 import subprocess
+import argparse
 
 def get_filename_without_exy(filename):
     return path.splitext(filename)[0]
@@ -61,13 +62,22 @@ def run_ap_exe(target_path, j_arg, e_arg, enable_debug):
     print('Info:', '  ', 'Renamed', generated_filename, 'to', fixed_filename)
     return fixed_filename
 
-def main():
+def init_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('target', type=str,
+                        help='Path to the target program')
+    # parser.add_argument('--sum', dest='accumulate', action='store_const',
+    #                     const=sum, default=max,
+    #                     help='sum the integers (default: find the max)')
+    return parser
+
+def main(args):
     prepare_wdir()
 
     generated_filenames = list()
     e_j_schedule = [(0, 1), (0, 2), (0, 4), (0, 8), (1, 1), (1, 2), (1, 4), (1,8), (2, 1)]
     for e, j in e_j_schedule:
-        generated_filenames.append(run_ap_exe('benchmark/kernels/matvecp_bm.cpp', j, e, True))
+        generated_filenames.append(run_ap_exe(args.target, j, e, True))
     
     print('Info:', 'Done running', len(generated_filenames), 'ap_exe run!')
     print('Info:', '  ', 'Generated files in', get_script_dir())
@@ -76,4 +86,5 @@ def main():
     print('Info:', 'Log file:', get_log_file_path())
 
 if __name__ == '__main__':
-    main()
+    parser = init_parser()
+    main(parser.parse_args())
