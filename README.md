@@ -83,7 +83,12 @@ mv benchmark/apert_gen/rose_*.cpp benchmark/apert_gen/[new_name].cpp
 make agbm
 ```
 
-### 2.6 Requirements for Target and Generated Program
+### 2.6 Sweep ap_exe parameters
+```bash
+python3 ./apert_gen/auto_run.py benchmark/kernels/nbody_v2_bm.cpp
+```
+
+### 2.7 Requirements for Target and Generated Program
 Target program
 1. Only c-style arrays are supported for parallelization
 2. Only for-loops are considered for parallelization

@@ -35,3 +35,19 @@ UTST_TEST(matvecp)
     TESTS::quick_launch<SUAP_POOL>(num_workers, tasks);
     TESTS::quick_launch<WSPDR_POOL>(num_workers, tasks);
 }
+
+UTST_TEST(shared_edge)
+{
+    constexpr int n_body = 10000;
+    constexpr size_t num_workers = 4;
+
+    auto out_pos = std::make_unique<std::vector<float>>(3 * n_body);
+    auto out_acc = std::make_unique<std::vector<float>>(3 * n_body);
+    auto out_acc_locks = std::make_unique<std::vector<std::mutex>>(n_body);
+    auto mass = std::make_unique<std::vector<float>>(n_body);
+    std::vector<RAW_TASK> tasks = TESTS::generate_shared_edge_tasks(out_pos.get(), out_acc.get(), out_acc_locks.get(), mass.get());
+
+    // TESTS::quick_launch<SERIAL_POOL>(num_workers, tasks);
+    TESTS::quick_launch<SUAP_POOL>(num_workers, tasks);
+    TESTS::quick_launch<WSPDR_POOL>(num_workers, tasks);
+}
