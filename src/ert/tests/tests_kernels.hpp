@@ -5,11 +5,13 @@
 #include <cstdio>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <random>
 #include <tuple>
 #include <vector>
 
 #include "task.hpp"
+#include "macros.hpp"
 
 namespace TESTS
 {
@@ -39,6 +41,12 @@ namespace TESTS
     {
         return generate_n_tasks(num_tasks, matvecp_kernel);
     }
+
+    std::vector<ERT::RAW_TASK> generate_shared_edge_tasks(
+        std::vector<float> *out_pos,
+        std::vector<float> *out_acc,
+        std::vector<std::mutex> *out_acc_locks,
+        std::vector<float> *mass);
 }
 
 /// Implementation
@@ -164,5 +172,82 @@ namespace TESTS
                 res[row_idx] += mat[row_idx][col_idx] * vec[col_idx];
             }
         }
+    }
+
+    // auto out_pos = std::make_unique<std::vector<float>>(3 * n_body);
+    // auto out_acc = std::make_unique<std::vector<float>>(3 * n_body);
+    // auto out_acc_locks = std::make_unique<std::vector<std::mutex>>(n_body);
+    // auto mass = std::make_unique<std::vector<float>>(n_body);
+    inline std::vector<ERT::RAW_TASK> generate_shared_edge_tasks(
+        std::vector<float> *out_pos,
+        std::vector<float> *out_acc,
+        std::vector<std::mutex> *out_acc_locks,
+        std::vector<float> *mass)
+    {
+        constexpr float EPISLON = 0.001;
+        constexpr int SQRT_NUM_ITERATION = 20;
+
+        const int n_body = mass->size();
+        ASSERT(out_pos->size() == out_acc->size());
+        ASSERT(out_acc_locks->size() == mass->size());
+        ASSERT(static_cast<int>(out_pos->size() / 3) == n_body);
+
+        std::vector<ERT::RAW_TASK> tasks;
+        for (int i_target_body = 0; i_target_body < n_body; i_target_body++)
+        {
+            auto task = [=]()
+            {
+                const int i_target_body_index = i_target_body * 3;
+                (*out_acc)[i_target_body_index] = 0;
+                (*out_acc)[i_target_body_index + 1] = 0;
+                (*out_acc)[i_target_body_index + 2] = 0;
+
+                // Step 5: Compute acceleration
+                for (int j_source_body = i_target_body + 1; j_source_body < n_body; j_source_body++)
+                {
+
+                    const int j_source_body_index = j_source_body * 3;
+
+                    const float x_displacement = (*out_pos)[j_source_body_index] - (*out_pos)[i_target_body_index];
+                    const float y_displacement = (*out_pos)[j_source_body_index + 1] - (*out_pos)[i_target_body_index + 1];
+                    const float z_displacement = (*out_pos)[j_source_body_index + 2] - (*out_pos)[i_target_body_index + 2];
+
+                    const float denom_base =
+                        x_displacement * x_displacement +
+                        y_displacement * y_displacement +
+                        z_displacement * z_displacement +
+                        EPISLON * EPISLON;
+
+                    float inverse_sqrt_denom_base = 0;
+                    {
+                        float z = 1;
+                        for (int i = 0; i < SQRT_NUM_ITERATION; i++)
+                        {
+                            z -= (z * z - denom_base) / (2 * z);
+                        }
+                        inverse_sqrt_denom_base = 1 / z;
+                    }
+
+                    const float x_acc_without_mass = x_displacement / denom_base * inverse_sqrt_denom_base;
+                    const float y_acc_without_mass = y_displacement / denom_base * inverse_sqrt_denom_base;
+                    const float z_acc_without_mass = z_displacement / denom_base * inverse_sqrt_denom_base;
+
+                    {
+                        std::lock_guard<std::mutex> i_target_body_lock((*out_acc_locks)[i_target_body]);
+                        (*out_acc)[i_target_body_index] += (*mass)[j_source_body] * x_acc_without_mass;
+                        (*out_acc)[i_target_body_index + 1] += (*mass)[j_source_body] * y_acc_without_mass;
+                        (*out_acc)[i_target_body_index + 2] += (*mass)[j_source_body] * z_acc_without_mass;
+                    }
+                    {
+                        std::lock_guard<std::mutex> j_source_body_lock((*out_acc_locks)[j_source_body]);
+                        (*out_acc)[j_source_body_index] -= (*mass)[i_target_body] * x_acc_without_mass;
+                        (*out_acc)[j_source_body_index + 1] -= (*mass)[i_target_body] * y_acc_without_mass;
+                        (*out_acc)[j_source_body_index + 2] -= (*mass)[i_target_body] * z_acc_without_mass;
+                    }
+                }
+            };
+            tasks.emplace_back(std::move(task));
+        }
+        return tasks;
     }
 }
