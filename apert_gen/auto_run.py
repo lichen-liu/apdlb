@@ -75,7 +75,7 @@ def main(args):
     prepare_wdir()
 
     generated_filenames = list()
-    e_j_schedule = [(0, 1), (0, 2), (0, 4), (0, 8), (1, 1), (1, 2), (1, 4), (1,8), (2, 1)]
+    e_j_schedule = [(0, 1), (0, 2), (0, 4), (0, 8), (1, 1), (1, 2), (1, 4), (1, 8), (2, 1)]
     for e, j in e_j_schedule:
         generated_filenames.append(run_ap_exe(args.target, j, e, True))
     
