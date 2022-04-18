@@ -2,212 +2,212 @@
 # steal half, 2t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.923478 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.539521 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.787035 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.539521 seconds 1.4303543573532802x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.787035 seconds 2.0922642647876244x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.385104 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 4.888725 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.971889 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 4.888725 seconds 1.1015354719277521x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.971889 seconds 1.8120138403554102x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.041431 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.326984 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.718721 seconds
-# steal half, 2t, run0
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.326984 seconds 1.3218419653597608x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.718721 seconds 1.8935088166065699x
+# steal half, 2t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.538092 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.778762 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.870059 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.778762 seconds 1.3044475616057556x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.870059 seconds 1.9477976950738993x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.372373 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.345075 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.984941 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.345075 seconds 1.0051071313311788x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.984941 seconds 1.7998255241895902x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.149188 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.539716 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.087750 seconds
-# steal half, 2t, run0
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.539716 seconds 1.2905333053174566x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.087750 seconds 1.7489298513852365x
+# steal half, 2t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.554685 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.848398 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.820518 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.848398 seconds 1.2917528868589312x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.820518 seconds 1.9773980910441988x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.563425 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.445834 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.973515 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.445834 seconds 1.0215928359182451x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.973515 seconds 1.8709927476404187x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.008930 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.428882 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.728425 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 5.428882 seconds 1.2910448228567135x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.728425 seconds 1.879863481228669x
 
 # steal half, 4t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.283134 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.313302 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.007525 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.313302 seconds 2.198149761174804x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.007525 seconds 3.627916962428862x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.340537 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.310965 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.702589 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.310965 seconds 1.612985036084646x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.702589 seconds 3.13671532002145x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.186617 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.204512 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.937974 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.204512 seconds 2.242655668008109x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.937974 seconds 3.708314456231095x
 # steal half, 4t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.379524 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.397689 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.093774 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.397689 seconds 2.1719245051562988
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 2.093774 seconds 3.5245083757845883
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.694312 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.325876 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.691416 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.325876 seconds 1.7121239637316605x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.691416 seconds 3.36659461658161x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.274878 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.272055 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.996922 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.272055 seconds 2.223336099179262x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.996922 seconds 3.6430456472511192
 # steal half, 4t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.224679 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.302941 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.963676 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.302941 seconds 2.1873472762607626x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.963676 seconds 3.6791604113916963x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.414820 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.383682 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.706422 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.383682 seconds 1.600274493879744x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.706422 seconds 3.173201001862376x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 6.936105 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.227438 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.924158 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 3.227438 seconds 2.1491055753820834x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.924158 seconds 3.6047481547773104x
 
 # steal half, 8t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.376262 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.876483 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.283388 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.876483 seconds 3.9308973222779x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.283388 seconds 5.7474917951546995x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.518894 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 2.041379 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.115042 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 2.041379 seconds 2.7035126745205083x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.115042 seconds 4.949494279139261x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 6.992022 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.797568 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.040994 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.797568 seconds 3.8897120999038703x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.040994 seconds 6.716678482296729x
 # steal half, 8t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.322295 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.850887 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.190431 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.850887 seconds 3.956100507486411x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.190431 seconds 6.150961290490588x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.566998 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 2.030537 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.240485 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 2.030537 seconds 2.7416382956823737x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.240485 seconds 4.487759223207052x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.027650 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.814753 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.062735 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.814753 seconds 3.872510473877161x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.062735 seconds 6.612796228598851x
 # steal half, 8t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.415137 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.812073 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.217716 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.812073 seconds 4.092074105182297x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.217716 seconds 6.089381267881837x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.481646 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.983853 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.101904 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.983853 seconds 2.763131139252757x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.101904 seconds 4.974703785447733x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 6.989442 seconds
-TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.793648 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.035091 seconds
+TIMER: Subprofile [N3ERT9SUAP_POOLE/exec]: 1.793648 seconds 3.8967746179852463x
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 1.035091 seconds 6.752490360750891x
 
 # steal one, 2t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.509998 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.679350 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.679350 seconds 1.3223340699199733x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.389337 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.854902 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.854902 seconds 1.110081521727936x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 6.980642 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.264214 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.264214 seconds 1.637029004641887x
 # steal one, 2t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 8.354012 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.525165 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.525165 seconds 1.5119932164921772x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.482411 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.107933 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.107933 seconds 1.0733130211379045x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.032367 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.223294 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.223294 seconds 1.6651379231471926x
 # steal one, 2t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.232525 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.558119 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.558119 seconds 1.3012540753445545x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.325390 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.022775 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.022775 seconds 1.0602485677737903x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.034522 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.246173 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.246173 seconds 1.6566734327593342x
 
 # steal one, 4t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.525829 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.636782 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.636782 seconds 1.3351286248075587x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.312528 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.037249 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.037249 seconds 1.0546486782765752x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.024081 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.328596 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.328596 seconds 2.1102233494242015x
 # steal one, 4t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.271728 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.770156 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.770156 seconds 1.26023074592784x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.383160 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.951079 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 4.951079 seconds 1.0872700677973428x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.033137 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.993328 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.993328 seconds 1.7612219682430295x
 # steal one, 4t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.223882 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.650374 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.650374 seconds 1.278478557348593x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.346275 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.005220 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.005220 seconds 1.0681398619840887x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.014015 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.667933 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.667933 seconds 1.9122527592516x
 
 # steal one, 8t, run0
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.318685 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.823947 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.823947 seconds 1.2566537779275806x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.348741 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.247923 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.247923 seconds 1.0192110288203544x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 6.979992 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.207765 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.207765 seconds 2.1759673791565155x
 # steal one, 8t, run1
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.226244 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.868788 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.868788 seconds 1.231300909148533x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.372747 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.195844 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.195844 seconds 1.034047019117587x
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.053458 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.146271 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.146271 seconds 2.2418469356263335x
 # steal one, 8t, run2
 ... Running test [sorting]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.248248 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.806509 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.806509 seconds 1.2482970404420282x
 ... Running test [matvecp]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 5.392918 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.763826 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 5.763826 seconds 0.9356489942617976
 ... Running test [shared_edge]
 TIMER: Subprofile [N3ERT11SERIAL_POOLE/exec]: 7.190350 seconds
-TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.441966 seconds
+TIMER: Subprofile [N3ERT10WSPDR_POOLE/exec]: 3.441966 seconds 2.089024121679296

@@ -1,0 +1,62 @@
+
+# steal half, 2t
+... Running test [sorting]
+SUAP_POOL 1.3407564753955632
+WSPDR_POOL 2.004863604381855
+... Running test [matvecp]
+SUAP_POOL 1.0419084494955242
+WSPDR_POOL 1.827348328740552
+... Running test [shared_edge]
+SUAP_POOL 1.3010581006044892
+WSPDR_POOL 1.8395941131511817
+
+
+# steal half, 4t
+... Running test [sorting]
+SUAP_POOL 2.185780670021097
+WSPDR_POOL 3.6099529051254797
+... Running test [matvecp]
+SUAP_POOL 1.6410431822421625
+WSPDR_POOL 3.2239465832197163
+... Running test [shared_edge]
+SUAP_POOL 2.204661016435823
+WSPDR_POOL 3.651786385077568
+
+
+# steal half, 8t
+... Running test [sorting]
+SUAP_POOL 3.9924011206435552
+WSPDR_POOL 5.993283757663458
+... Running test [matvecp]
+SUAP_POOL 2.735982750518442
+WSPDR_POOL 4.798651385932766
+... Running test [shared_edge]
+SUAP_POOL 3.8863190273219104
+WSPDR_POOL 6.693725382361434
+
+
+# steal one, 2t
+... Running test [sorting]
+WSPDR_POOL 1.3753641851879
+... Running test [matvecp]
+WSPDR_POOL 1.0810098603833238
+... Running test [shared_edge]
+WSPDR_POOL 1.6529047636075733
+
+
+# steal one, 4t
+... Running test [sorting]
+WSPDR_POOL 1.2908889269474717
+... Running test [matvecp]
+WSPDR_POOL 1.0699359724979607
+... Running test [shared_edge]
+WSPDR_POOL 1.9226309894673663
+
+
+# steal one, 8t
+... Running test [sorting]
+WSPDR_POOL 1.2453724691025074
+... Running test [matvecp]
+WSPDR_POOL 0.9953422796305719
+... Running test [shared_edge]
+WSPDR_POOL 2.1680398680256503
