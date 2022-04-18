@@ -1,179 +1,181 @@
 # sorting_bm, run0
     Start 26: tmp_apert_gen_rose_0_1_sorting_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    7.45 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    7.45 sec 1.0630872483221476
     Start 27: tmp_apert_gen_rose_0_2_sorting_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.85 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.85 sec 2.057142857142857
     Start 28: tmp_apert_gen_rose_0_4_sorting_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.16 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.16 sec 3.6666666666666665
     Start 29: tmp_apert_gen_rose_0_8_sorting_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.51 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.51 sec 5.245033112582782
     Start 30: tmp_apert_gen_rose_1_1_sorting_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    7.40 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    7.40 sec 1.0702702702702702
     Start 31: tmp_apert_gen_rose_1_2_sorting_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.37 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.37 sec 1.0746268656716418
     Start 32: tmp_apert_gen_rose_1_4_sorting_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.95 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.95 sec 1.5999999999999999
     Start 33: tmp_apert_gen_rose_1_8_sorting_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    2.92 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    2.92 sec 2.712328767123288
     Start 34: tmp_apert_gen_rose_2_1_sorting_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_sorting_bm ...   Passed    7.92 sec
 
 # sorting_bm, run1
     Start 26: tmp_apert_gen_rose_0_1_sorting_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    7.41 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    7.41 sec 1.1012145748987854
     Start 27: tmp_apert_gen_rose_0_2_sorting_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.81 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.81 sec 2.141732283464567
     Start 28: tmp_apert_gen_rose_0_4_sorting_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.02 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.02 sec 4.03960396039604
     Start 29: tmp_apert_gen_rose_0_8_sorting_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.40 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.40 sec 5.828571428571429
     Start 30: tmp_apert_gen_rose_1_1_sorting_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    8.21 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    8.21 sec 0.9939098660170523
     Start 31: tmp_apert_gen_rose_1_2_sorting_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.48 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.48 sec 1.0909090909090908
     Start 32: tmp_apert_gen_rose_1_4_sorting_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.76 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.76 sec 1.7142857142857144
     Start 33: tmp_apert_gen_rose_1_8_sorting_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    2.82 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    2.82 sec 2.893617021276596
     Start 34: tmp_apert_gen_rose_2_1_sorting_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_sorting_bm ...   Passed    8.16 sec
 
 # sorting_bm, run2
     Start 26: tmp_apert_gen_rose_0_1_sorting_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    6.58 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    6.58 sec 1.1656534954407294
     Start 27: tmp_apert_gen_rose_0_2_sorting_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.45 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    3.45 sec 2.223188405797101
     Start 28: tmp_apert_gen_rose_0_4_sorting_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.00 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    2.00 sec 3.835
     Start 29: tmp_apert_gen_rose_0_8_sorting_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.28 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    1.28 sec 5.9921875
     Start 30: tmp_apert_gen_rose_1_1_sorting_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    7.48 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    7.48 sec 1.0254010695187166
     Start 31: tmp_apert_gen_rose_1_2_sorting_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.32 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    7.32 sec 1.0478142076502732
     Start 32: tmp_apert_gen_rose_1_4_sorting_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.90 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    4.90 sec 1.5653061224489795
     Start 33: tmp_apert_gen_rose_1_8_sorting_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    3.19 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    3.19 sec 2.4043887147335425
     Start 34: tmp_apert_gen_rose_2_1_sorting_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_sorting_bm ...   Passed    7.67 sec
 
+
 # matvecp_bm, run0
     Start 26: tmp_apert_gen_rose_0_1_matvecp_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    6.25 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    6.25 sec 0.856
     Start 27: tmp_apert_gen_rose_0_2_matvecp_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.48 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.48 sec 1.5373563218390804
     Start 28: tmp_apert_gen_rose_0_4_matvecp_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    3.10 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    3.10 sec 1.725806451612903
     Start 29: tmp_apert_gen_rose_0_8_matvecp_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.79 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.79 sec 1.9175627240143367
     Start 30: tmp_apert_gen_rose_1_1_matvecp_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    5.35 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    5.35 sec 1.0
     Start 31: tmp_apert_gen_rose_1_2_matvecp_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.70 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.70 sec 1.1382978723404253
     Start 32: tmp_apert_gen_rose_1_4_matvecp_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    5.08 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    5.08 sec 1.0531496062992125
     Start 33: tmp_apert_gen_rose_1_8_matvecp_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    3.50 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    3.50 sec 1.5285714285714285
     Start 34: tmp_apert_gen_rose_2_1_matvecp_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_matvecp_bm ...   Passed    5.35 sec
 
 # matvecp_bm, run1
     Start 26: tmp_apert_gen_rose_0_1_matvecp_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    5.84 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    5.84 sec 0.8116438356164384
     Start 27: tmp_apert_gen_rose_0_2_matvecp_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.78 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.78 sec 1.2539682539682542
     Start 28: tmp_apert_gen_rose_0_4_matvecp_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    3.07 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    3.07 sec 1.5439739413680784
     Start 29: tmp_apert_gen_rose_0_8_matvecp_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.68 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.68 sec 1.7686567164179103
     Start 30: tmp_apert_gen_rose_1_1_matvecp_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    5.21 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    5.21 sec 0.9097888675623801
     Start 31: tmp_apert_gen_rose_1_2_matvecp_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.60 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.60 sec 1.0304347826086957
     Start 32: tmp_apert_gen_rose_1_4_matvecp_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    4.57 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    4.57 sec 1.037199124726477
     Start 33: tmp_apert_gen_rose_1_8_matvecp_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    2.97 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    2.97 sec 1.595959595959596
     Start 34: tmp_apert_gen_rose_2_1_matvecp_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_matvecp_bm ...   Passed    4.74 sec
 
 # matvecp_bm, run2
     Start 26: tmp_apert_gen_rose_0_1_matvecp_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    5.10 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    5.10 sec 0.9411764705882353
     Start 27: tmp_apert_gen_rose_0_2_matvecp_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.74 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    3.74 sec 1.283422459893048
     Start 28: tmp_apert_gen_rose_0_4_matvecp_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    2.70 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    2.70 sec 1.7777777777777777
     Start 29: tmp_apert_gen_rose_0_8_matvecp_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.68 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    2.68 sec 1.7910447761194028
     Start 30: tmp_apert_gen_rose_1_1_matvecp_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    4.85 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    4.85 sec 0.9896907216494846
     Start 31: tmp_apert_gen_rose_1_2_matvecp_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.59 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    4.59 sec 1.0457516339869282
     Start 32: tmp_apert_gen_rose_1_4_matvecp_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    4.35 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    4.35 sec 1.103448275862069
     Start 33: tmp_apert_gen_rose_1_8_matvecp_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    3.26 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    3.26 sec 1.4723926380368098
     Start 34: tmp_apert_gen_rose_2_1_matvecp_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_matvecp_bm ...   Passed    4.80 sec
 
+
 # nbody_v1_bm, run0
     Start 26: tmp_apert_gen_rose_0_1_nbody_v1_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    4.01 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    4.01 sec 1.0249376558603494
     Start 27: tmp_apert_gen_rose_0_2_nbody_v1_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.27 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.27 sec 1.8105726872246697
     Start 28: tmp_apert_gen_rose_0_4_nbody_v1_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.34 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.34 sec 3.0671641791044775
     Start 29: tmp_apert_gen_rose_0_8_nbody_v1_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.04 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.04 sec 3.951923076923077
     Start 30: tmp_apert_gen_rose_1_1_nbody_v1_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.15 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.15 sec 0.9903614457831326
     Start 31: tmp_apert_gen_rose_1_2_nbody_v1_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.36 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.36 sec 1.7415254237288138
     Start 32: tmp_apert_gen_rose_1_4_nbody_v1_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.27 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.27 sec 3.236220472440945
     Start 33: tmp_apert_gen_rose_1_8_nbody_v1_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.85 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.85 sec 4.835294117647059
     Start 34: tmp_apert_gen_rose_2_1_nbody_v1_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_nbody_v1_bm ...   Passed    4.11 sec
 
 # nbody_v1_bm, run1
     Start 26: tmp_apert_gen_rose_0_1_nbody_v1_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    4.02 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    4.02 sec 1.054726368159204
     Start 27: tmp_apert_gen_rose_0_2_nbody_v1_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.31 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.31 sec 1.8354978354978355
     Start 28: tmp_apert_gen_rose_0_4_nbody_v1_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.34 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.34 sec 3.1641791044776117
     Start 29: tmp_apert_gen_rose_0_8_nbody_v1_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.02 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.02 sec 4.1568627450980395
     Start 30: tmp_apert_gen_rose_1_1_nbody_v1_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.28 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.28 sec 0.9906542056074766
     Start 31: tmp_apert_gen_rose_1_2_nbody_v1_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.25 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.25 sec 1.8844444444444446
     Start 32: tmp_apert_gen_rose_1_4_nbody_v1_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.25 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.25 sec 3.3920000000000003
     Start 33: tmp_apert_gen_rose_1_8_nbody_v1_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.83 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.83 sec 5.1084337349397595
     Start 34: tmp_apert_gen_rose_2_1_nbody_v1_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_nbody_v1_bm ...   Passed    4.24 sec
 
 # nbody_v1_bm, run2
     Start 26: tmp_apert_gen_rose_0_1_nbody_v1_bm
-1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    3.89 sec
+1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    3.89 sec 1.095115681233933
     Start 27: tmp_apert_gen_rose_0_2_nbody_v1_bm
-2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.35 sec
+2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    2.35 sec 1.8127659574468082
     Start 28: tmp_apert_gen_rose_0_4_nbody_v1_bm
-3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.42 sec
+3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    1.42 sec 3.0
     Start 29: tmp_apert_gen_rose_0_8_nbody_v1_bm
-4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.09 sec
+4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    1.09 sec 3.9082568807339446
     Start 30: tmp_apert_gen_rose_1_1_nbody_v1_bm
-5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.30 sec
+5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    4.30 sec 0.9906976744186047
     Start 31: tmp_apert_gen_rose_1_2_nbody_v1_bm
-6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.37 sec
+6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    2.37 sec 1.7974683544303796
     Start 32: tmp_apert_gen_rose_1_4_nbody_v1_bm
-7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.33 sec
+7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    1.33 sec 3.203007518796992
     Start 33: tmp_apert_gen_rose_1_8_nbody_v1_bm
-8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.93 sec
+8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    0.93 sec 4.580645161290322
     Start 34: tmp_apert_gen_rose_2_1_nbody_v1_bm
 9/9 Test #34: tmp_apert_gen_rose_2_1_nbody_v1_bm ...   Passed    4.26 sec

@@ -1,0 +1,33 @@
+# sorting_bm, run0
+1/9 Test #26: tmp_apert_gen_rose_0_1_sorting_bm ...   Passed    1.109183609423294
+2/9 Test #27: tmp_apert_gen_rose_0_2_sorting_bm ...   Passed    2.139613361611981
+3/9 Test #28: tmp_apert_gen_rose_0_4_sorting_bm ...   Passed    3.8440750909519634
+4/9 Test #29: tmp_apert_gen_rose_0_8_sorting_bm ...   Passed    5.679349348970518
+5/9 Test #30: tmp_apert_gen_rose_1_1_sorting_bm ...   Passed    1.0293855712796431
+6/9 Test #31: tmp_apert_gen_rose_1_2_sorting_bm ...   Passed    1.0709688663482386
+7/9 Test #32: tmp_apert_gen_rose_1_4_sorting_bm ...   Passed    1.6253023284389685
+8/9 Test #33: tmp_apert_gen_rose_1_8_sorting_bm ...   Passed    2.6623349115234003
+
+
+# matvecp_bm, run0
+1/9 Test #26: tmp_apert_gen_rose_0_1_matvecp_bm ...   Passed    0.8679674526863037
+2/9 Test #27: tmp_apert_gen_rose_0_2_matvecp_bm ...   Passed    1.3525196134069528
+3/9 Test #28: tmp_apert_gen_rose_0_4_matvecp_bm ...   Passed    1.6794606879655956
+4/9 Test #29: tmp_apert_gen_rose_0_8_matvecp_bm ...   Passed    1.8245951799375748
+5/9 Test #30: tmp_apert_gen_rose_1_1_matvecp_bm ...   Passed    0.9656358310238903
+6/9 Test #31: tmp_apert_gen_rose_1_2_matvecp_bm ...   Passed    1.0704547869965382
+7/9 Test #32: tmp_apert_gen_rose_1_4_matvecp_bm ...   Passed    1.064228121285867
+8/9 Test #33: tmp_apert_gen_rose_1_8_matvecp_bm ...   Passed    1.5314768009974118
+
+
+
+# nbody_v1_bm, run0
+1/9 Test #26: tmp_apert_gen_rose_0_1_nbody_v1_bm ...   Passed    1.0578702816867185
+2/9 Test #27: tmp_apert_gen_rose_0_2_nbody_v1_bm ...   Passed    1.8195773665664416
+3/9 Test #28: tmp_apert_gen_rose_0_4_nbody_v1_bm ...   Passed    3.076378580016286
+4/9 Test #29: tmp_apert_gen_rose_0_8_nbody_v1_bm ...   Passed    4.004230686406243
+5/9 Test #30: tmp_apert_gen_rose_1_1_nbody_v1_bm ...   Passed    0.990571097349131
+6/9 Test #31: tmp_apert_gen_rose_1_2_nbody_v1_bm ...   Passed    1.8068612474852208
+7/9 Test #32: tmp_apert_gen_rose_1_4_nbody_v1_bm ...   Passed    3.276050850513003
+8/9 Test #33: tmp_apert_gen_rose_1_8_nbody_v1_bm ...   Passed    4.836662352157869
+
