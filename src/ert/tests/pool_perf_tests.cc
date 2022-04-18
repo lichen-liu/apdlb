@@ -10,12 +10,16 @@
 
 using namespace ERT;
 
+namespace
+{
+    constexpr size_t num_workers = 8;
+}
+
 UTST_MAIN();
 
 UTST_TEST(sorting)
 {
     constexpr size_t num_tasks = 200;
-    constexpr size_t num_workers = 4;
 
     std::vector<RAW_TASK> tasks = TESTS::generate_sorting_tasks(num_tasks);
 
@@ -27,7 +31,6 @@ UTST_TEST(sorting)
 UTST_TEST(matvecp)
 {
     constexpr size_t num_tasks = 200;
-    constexpr size_t num_workers = 4;
 
     std::vector<RAW_TASK> tasks = TESTS::generate_matvecp_tasks(num_tasks);
 
@@ -39,7 +42,6 @@ UTST_TEST(matvecp)
 UTST_TEST(shared_edge)
 {
     constexpr int n_body = 10000;
-    constexpr size_t num_workers = 4;
 
     auto out_pos = std::make_unique<std::vector<float>>(3 * n_body);
     auto out_acc = std::make_unique<std::vector<float>>(3 * n_body);
